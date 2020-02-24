@@ -1,5 +1,6 @@
 <template>
   <v-app id="inspire">
+    <Menu />
     <v-content>
       <v-container class="fill-height" fluid>
         <v-row align="center" justify="center">
@@ -42,7 +43,9 @@
 </template>
 
 <script>
+import Menu from '../MenuBar/Menu'
 export default {
+  
   data() {
     return {
       email: null,
@@ -52,6 +55,9 @@ export default {
   },
   mounted() {
     //
+  },
+  components:{
+    Menu
   },
   methods: {
     login() {
