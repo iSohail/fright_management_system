@@ -11718,6 +11718,14 @@ __webpack_require__.r(__webpack_exports__);
 "use strict";
 __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var _MenuBar_Menu__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../MenuBar/Menu */ "./resources/js/components/MenuBar/Menu.vue");
+/* harmony import */ var _Footer_FooterPadless__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ../Footer/FooterPadless */ "./resources/js/components/Footer/FooterPadless.vue");
+//
+//
+//
+//
+//
+//
+//
 //
 //
 //
@@ -11763,21 +11771,44 @@ __webpack_require__.r(__webpack_exports__);
 //
 //
 
+
 /* harmony default export */ __webpack_exports__["default"] = ({
   data: function data() {
     return {
       email: null,
       password: null,
-      has_error: false
+      has_error: false,
+      loading: false
     };
   },
   mounted: function mounted() {//
   },
   components: {
-    Menu: _MenuBar_Menu__WEBPACK_IMPORTED_MODULE_0__["default"]
+    Menu: _MenuBar_Menu__WEBPACK_IMPORTED_MODULE_0__["default"],
+    Footer: _Footer_FooterPadless__WEBPACK_IMPORTED_MODULE_1__["default"]
   },
   methods: {
     login: function login() {
+      var _this = this;
+
+      // Add a request interceptor
+      this.axios.interceptors.request.use(function (config) {
+        _this.loading = true;
+        return config;
+      }, function (error) {
+        // Do something with request error
+        return Promise.reject(error);
+      }); // Add a response interceptor
+
+      this.axios.interceptors.response.use(function (response) {
+        _this.loading = false;
+        return response;
+      }, function (error) {
+        // Any status codes that falls outside the range of 2xx cause this function to trigger
+        // Do something with response error
+        return Promise.reject(error);
+      }); // axios.post('/api/login' , {'email': this.email , 'password' : this.password})
+
       console.log(this.email, " ", this.password); // get the redirect object
 
       var redirect = this.$auth.redirect();
@@ -11791,7 +11822,7 @@ __webpack_require__.r(__webpack_exports__);
         success: function success() {
           // handle redirection
           console.log(redirect, "success");
-          var redirectTo = redirect ? redirect.from.name : this.$auth.user().role === 2 ? "admin.dashboard" : "dashboard";
+          var redirectTo = redirect ? redirect.from.name : this.$auth.user().role === 2 ? "admin.dashboard.stats" : "dashboard";
           console.log(redirectTo, "HeLLO ROUTER");
           this.$router.push({
             name: redirectTo
@@ -11805,6 +11836,9 @@ __webpack_require__.r(__webpack_exports__);
         fetchUser: true
       });
     }
+  },
+  created: function created() {
+    this.$vuetify.theme.dark = true;
   }
 });
 
@@ -11820,6 +11854,7 @@ __webpack_require__.r(__webpack_exports__);
 "use strict";
 __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var _MenuBar_Menu__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./MenuBar/Menu */ "./resources/js/components/MenuBar/Menu.vue");
+/* harmony import */ var _Footer_FooterPadless__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./Footer/FooterPadless */ "./resources/js/components/Footer/FooterPadless.vue");
 var _this = undefined;
 
 //
@@ -11867,17 +11902,12 @@ var _this = undefined;
 //
 //
 //
-//
-//
-//
-//
-//
-//
-//
+
 
 /* harmony default export */ __webpack_exports__["default"] = ({
   components: {
-    Menu: _MenuBar_Menu__WEBPACK_IMPORTED_MODULE_0__["default"]
+    Menu: _MenuBar_Menu__WEBPACK_IMPORTED_MODULE_0__["default"],
+    Footer: _Footer_FooterPadless__WEBPACK_IMPORTED_MODULE_1__["default"]
   },
   methods: {
     changeRoute: function changeRoute() {
@@ -11885,6 +11915,9 @@ var _this = undefined;
 
       _this.$router.push('/login');
     }
+  },
+  created: function created() {
+    this.$vuetify.theme.dark = true;
   }
 });
 
@@ -11925,22 +11958,26 @@ __webpack_require__.r(__webpack_exports__);
 //
 //
 //
+//
+//
+//
 /* harmony default export */ __webpack_exports__["default"] = ({
   data: function data() {
     return {
       links: [{
+        icon: 'mdi-home',
         text: 'Home',
         route: '/'
       }, {
+        icon: 'mdi-login',
         text: 'Login',
         route: '/login'
       }, {
-        text: 'Register',
-        route: '/register'
-      }, {
+        icon: 'mdi-view-dashboard',
         text: 'Admin Dashboard',
         route: '/admin'
       }, {
+        icon: 'mdi-view-dashboard-variant',
         text: 'Dashboard',
         route: '/dashboard'
       }]
@@ -12024,13 +12061,75 @@ __webpack_require__.r(__webpack_exports__);
 //
 //
 //
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
 /* harmony default export */ __webpack_exports__["default"] = ({
   props: {
     source: String
   },
   data: function data() {
     return {
-      drawer: null
+      drawer: null,
+      dashboard: {
+        icon: "mdi-view-dashboard",
+        text: "Dashboard",
+        route: "/dashboard"
+      },
+      bilty: [{
+        title: "Add Bilty",
+        link: "/dashboard/bilty/create"
+      }, {
+        title: "Manage Bilty",
+        link: "/dashboard/bilty/manage"
+      }, {
+        title: "Manage Packages",
+        link: "/dashboard/package"
+      }],
+      customers: [{
+        title: "Add Customer",
+        link: "/dashboard/customer/create"
+      }, {
+        title: "Manage Customer",
+        link: "/dashboard/customer/manage"
+      }],
+      accounts: [{
+        title: "Customer Account",
+        link: "/dashboard/account/customer"
+      }],
+      reports: [{
+        title: "Bilty Report",
+        link: "/dashboard/report/bilty"
+      }, {
+        title: "Challan Report",
+        link: "/dashboard/report/challan"
+      }]
     };
   },
   created: function created() {
@@ -14112,7 +14211,7 @@ var render = function() {
   var _c = _vm._self._c || _h
   return _c(
     "v-app",
-    { attrs: { id: "inspire" } },
+    { attrs: { id: "inspire", dark: "" } },
     [
       _c("Menu"),
       _vm._v(" "),
@@ -14125,19 +14224,41 @@ var render = function() {
             [
               _c(
                 "v-row",
-                { attrs: { align: "center", justify: "center" } },
+                {
+                  staticClass: "mx-auto",
+                  attrs: { align: "center", justify: "center" }
+                },
                 [
                   _c(
                     "v-col",
-                    { attrs: { cols: "12", sm: "8", md: "4" } },
+                    {
+                      staticClass: "mx-auto",
+                      attrs: { cols: "12", sm: "8", md: "4" }
+                    },
                     [
                       _c(
                         "v-card",
-                        { staticClass: "elevation-12" },
+                        { staticClass: "elevation-12 mx-auto" },
                         [
+                          _c("v-progress-linear", {
+                            attrs: {
+                              active: _vm.loading,
+                              indeterminate: _vm.loading,
+                              absolute: "",
+                              top: ""
+                            }
+                          }),
+                          _vm._v(" "),
                           _c(
                             "v-toolbar",
-                            { attrs: { color: "primary", dark: "", flat: "" } },
+                            {
+                              attrs: {
+                                color: "primary",
+                                dark: "",
+                                flat: "",
+                                "max-height": "150px"
+                              }
+                            },
                             [
                               _c("v-toolbar-title", [_vm._v("Login form")]),
                               _vm._v(" "),
@@ -14151,12 +14272,31 @@ var render = function() {
                             [
                               _c(
                                 "v-form",
+                                {
+                                  nativeOn: {
+                                    keyup: function($event) {
+                                      if (
+                                        !$event.type.indexOf("key") &&
+                                        _vm._k(
+                                          $event.keyCode,
+                                          "enter",
+                                          13,
+                                          $event.key,
+                                          "Enter"
+                                        )
+                                      ) {
+                                        return null
+                                      }
+                                      return _vm.login($event)
+                                    }
+                                  }
+                                },
                                 [
                                   _c("v-text-field", {
                                     attrs: {
                                       label: "Email",
                                       name: "email",
-                                      "prepend-icon": "person",
+                                      "prepend-icon": "mdi-account",
                                       type: "text"
                                     },
                                     model: {
@@ -14173,7 +14313,7 @@ var render = function() {
                                       id: "password",
                                       label: "Password",
                                       name: "password",
-                                      "prepend-icon": "lock",
+                                      "prepend-icon": "mdi-key",
                                       type: "password"
                                     },
                                     model: {
@@ -14199,6 +14339,7 @@ var render = function() {
                               _c(
                                 "v-btn",
                                 {
+                                  staticClass: "mr-3 mb-3",
                                   attrs: { color: "primary" },
                                   on: { click: _vm.login }
                                 },
@@ -14218,7 +14359,9 @@ var render = function() {
               )
             ],
             1
-          )
+          ),
+          _vm._v(" "),
+          _c("Footer")
         ],
         1
       )
@@ -14604,6 +14747,40 @@ render._withStripped = true
 
 /***/ }),
 
+/***/ "./node_modules/vue-loader/lib/loaders/templateLoader.js?!./node_modules/vue-loader/lib/index.js?!./resources/js/components/Footer/FooterPadless.vue?vue&type=template&id=564e6768&":
+/*!***********************************************************************************************************************************************************************************************************************!*\
+  !*** ./node_modules/vue-loader/lib/loaders/templateLoader.js??vue-loader-options!./node_modules/vue-loader/lib??vue-loader-options!./resources/js/components/Footer/FooterPadless.vue?vue&type=template&id=564e6768& ***!
+  \***********************************************************************************************************************************************************************************************************************/
+/*! exports provided: render, staticRenderFns */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "render", function() { return render; });
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "staticRenderFns", function() { return staticRenderFns; });
+var render = function() {
+  var _vm = this
+  var _h = _vm.$createElement
+  var _c = _vm._self._c || _h
+  return _c(
+    "v-footer",
+    { attrs: { padless: "" } },
+    [
+      _c("v-col", { staticClass: "text-center", attrs: { cols: "12" } }, [
+        _vm._v("\n    " + _vm._s(new Date().getFullYear()) + " — "),
+        _c("strong", [_vm._v("Logical4IO")])
+      ])
+    ],
+    1
+  )
+}
+var staticRenderFns = []
+render._withStripped = true
+
+
+
+/***/ }),
+
 /***/ "./node_modules/vue-loader/lib/loaders/templateLoader.js?!./node_modules/vue-loader/lib/index.js?!./resources/js/components/Home.vue?vue&type=template&id=f2b6376c&":
 /*!*******************************************************************************************************************************************************************************************************!*\
   !*** ./node_modules/vue-loader/lib/loaders/templateLoader.js??vue-loader-options!./node_modules/vue-loader/lib??vue-loader-options!./resources/js/components/Home.vue?vue&type=template&id=f2b6376c& ***!
@@ -14648,7 +14825,7 @@ var render = function() {
                         "v-card",
                         {
                           staticClass: " mx-auto",
-                          attrs: { light: "", flat: "", "max-width": "800" }
+                          attrs: { dark: "", flat: "", "max-width": "800" }
                         },
                         [
                           _c(
@@ -14663,7 +14840,7 @@ var render = function() {
                                     "span",
                                     {
                                       staticClass:
-                                        "  accent-2  green--text font-weight-black"
+                                        "light-blue--text lighten-5 font-weight-bold"
                                     },
                                     [_vm._v("Naseeb Goods and Transport")]
                                   )
@@ -14690,21 +14867,7 @@ var render = function() {
             1
           ),
           _vm._v(" "),
-          _c(
-            "v-footer",
-            { attrs: { padless: "" } },
-            [
-              _c(
-                "v-col",
-                { staticClass: "text-center", attrs: { cols: "12" } },
-                [
-                  _vm._v("\n      " + _vm._s(new Date().getFullYear()) + " — "),
-                  _c("strong", [_vm._v("Logical4IO")])
-                ]
-              )
-            ],
-            1
-          )
+          _c("Footer")
         ],
         1
       )
@@ -14741,7 +14904,7 @@ var render = function() {
       _c(
         "v-menu",
         {
-          attrs: { bottom: "" },
+          attrs: { bottom: "", "offset-y": "" },
           scopedSlots: _vm._u([
             {
               key: "activator",
@@ -14750,7 +14913,7 @@ var render = function() {
                 return [
                   _c(
                     "v-btn",
-                    _vm._g({ attrs: { color: "dark", dark: "" } }, on),
+                    _vm._g({ attrs: { color: "dark", light: "" } }, on),
                     [_c("v-icon", [_vm._v("mdi-apps")])],
                     1
                   )
@@ -14767,12 +14930,78 @@ var render = function() {
               return _c(
                 "v-list-item",
                 { key: link.text, attrs: { router: "", to: link.route } },
-                [_c("v-list-item-title", [_vm._v(_vm._s(link.text))])],
+                [
+                  _c(
+                    "v-list-item-title",
+                    [
+                      _c("v-icon", [_vm._v(_vm._s(link.icon))]),
+                      _vm._v(
+                        "\n          " + _vm._s(link.text) + "\n          "
+                      )
+                    ],
+                    1
+                  )
+                ],
                 1
               )
             }),
             1
           )
+        ],
+        1
+      )
+    ],
+    1
+  )
+}
+var staticRenderFns = []
+render._withStripped = true
+
+
+
+/***/ }),
+
+/***/ "./node_modules/vue-loader/lib/loaders/templateLoader.js?!./node_modules/vue-loader/lib/index.js?!./resources/js/components/Operator/OperatorDashboardStats.vue?vue&type=template&id=37546102&":
+/*!**********************************************************************************************************************************************************************************************************************************!*\
+  !*** ./node_modules/vue-loader/lib/loaders/templateLoader.js??vue-loader-options!./node_modules/vue-loader/lib??vue-loader-options!./resources/js/components/Operator/OperatorDashboardStats.vue?vue&type=template&id=37546102& ***!
+  \**********************************************************************************************************************************************************************************************************************************/
+/*! exports provided: render, staticRenderFns */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "render", function() { return render; });
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "staticRenderFns", function() { return staticRenderFns; });
+var render = function() {
+  var _vm = this
+  var _h = _vm.$createElement
+  var _c = _vm._self._c || _h
+  return _c(
+    "v-card",
+    { staticClass: "mx-auto", attrs: { "max-width": "344" } },
+    [
+      _c("v-card-text", [
+        _c("div", [_vm._v("Word of the Day")]),
+        _vm._v(" "),
+        _c("p", { staticClass: "display-1 text--primary" }, [
+          _vm._v("OPERATOR/SENDER/RECEIVER DASHBOARD STATS")
+        ]),
+        _vm._v(" "),
+        _c("p", [_vm._v("adjective")]),
+        _vm._v(" "),
+        _c("div", { staticClass: "text--primary" }, [
+          _vm._v("\n      well meaning and kindly.\n      "),
+          _c("br"),
+          _vm._v('"a benevolent smile"\n    ')
+        ])
+      ]),
+      _vm._v(" "),
+      _c(
+        "v-card-actions",
+        [
+          _c("v-btn", { attrs: { text: "", color: "deep-purple accent-4" } }, [
+            _vm._v("Learn More")
+          ])
         ],
         1
       )
@@ -14821,21 +15050,24 @@ var render = function() {
         [
           _c(
             "v-list",
-            { attrs: { dense: "" } },
             [
               _c(
                 "v-list-item",
-                { attrs: { link: "" } },
+                { attrs: { router: "", to: _vm.dashboard.route } },
                 [
                   _c(
                     "v-list-item-action",
-                    [_c("v-icon", [_vm._v("mdi-view-dashboard")])],
+                    [_c("v-icon", [_vm._v(_vm._s(_vm.dashboard.icon))])],
                     1
                   ),
                   _vm._v(" "),
                   _c(
                     "v-list-item-content",
-                    [_c("v-list-item-title", [_vm._v("Dashboard")])],
+                    [
+                      _c("v-list-item-title", [
+                        _vm._v(_vm._s(_vm.dashboard.text))
+                      ])
+                    ],
                     1
                   )
                 ],
@@ -14843,22 +15075,175 @@ var render = function() {
               ),
               _vm._v(" "),
               _c(
-                "v-list-item",
-                { attrs: { link: "" } },
+                "v-list-group",
+                {
+                  attrs: { "prepend-icon": "" },
+                  scopedSlots: _vm._u([
+                    {
+                      key: "activator",
+                      fn: function() {
+                        return [
+                          _c(
+                            "v-list-item-icon",
+                            [_c("v-icon", [_vm._v("mdi-home")])],
+                            1
+                          ),
+                          _vm._v(" "),
+                          _c("v-list-item-title", [_vm._v("Bilty")])
+                        ]
+                      },
+                      proxy: true
+                    }
+                  ])
+                },
                 [
-                  _c(
-                    "v-list-item-action",
-                    [_c("v-icon", [_vm._v("mdi-settings")])],
-                    1
-                  ),
                   _vm._v(" "),
-                  _c(
-                    "v-list-item-content",
-                    [_c("v-list-item-title", [_vm._v("Settings")])],
-                    1
-                  )
+                  _vm._l(_vm.bilty, function(bilty, i) {
+                    return _c(
+                      "v-list-item",
+                      { key: i, attrs: { router: "", to: bilty.link } },
+                      [
+                        _c("v-list-item-title", {
+                          staticClass: "pl-4",
+                          domProps: { textContent: _vm._s(bilty.title) }
+                        }),
+                        _vm._v(" "),
+                        _c("v-list-item-icon")
+                      ],
+                      1
+                    )
+                  })
                 ],
-                1
+                2
+              ),
+              _vm._v(" "),
+              _c(
+                "v-list-group",
+                {
+                  attrs: { "prepend-icon": "" },
+                  scopedSlots: _vm._u([
+                    {
+                      key: "activator",
+                      fn: function() {
+                        return [
+                          _c(
+                            "v-list-item-icon",
+                            [_c("v-icon", [_vm._v("mdi-home")])],
+                            1
+                          ),
+                          _vm._v(" "),
+                          _c("v-list-item-title", [_vm._v("Customer")])
+                        ]
+                      },
+                      proxy: true
+                    }
+                  ])
+                },
+                [
+                  _vm._v(" "),
+                  _vm._l(_vm.customers, function(customer, i) {
+                    return _c(
+                      "v-list-item",
+                      { key: i, attrs: { router: "", to: customer.link } },
+                      [
+                        _c("v-list-item-title", {
+                          staticClass: "pl-4",
+                          domProps: { textContent: _vm._s(customer.title) }
+                        }),
+                        _vm._v(" "),
+                        _c("v-list-item-icon")
+                      ],
+                      1
+                    )
+                  })
+                ],
+                2
+              ),
+              _vm._v(" "),
+              _c(
+                "v-list-group",
+                {
+                  attrs: { "prepend-icon": "" },
+                  scopedSlots: _vm._u([
+                    {
+                      key: "activator",
+                      fn: function() {
+                        return [
+                          _c(
+                            "v-list-item-icon",
+                            [_c("v-icon", [_vm._v("mdi-home")])],
+                            1
+                          ),
+                          _vm._v(" "),
+                          _c("v-list-item-title", [_vm._v("Accounts")])
+                        ]
+                      },
+                      proxy: true
+                    }
+                  ])
+                },
+                [
+                  _vm._v(" "),
+                  _vm._l(_vm.accounts, function(account, i) {
+                    return _c(
+                      "v-list-item",
+                      { key: i, attrs: { router: "", to: account.link } },
+                      [
+                        _c("v-list-item-title", {
+                          staticClass: "pl-4",
+                          domProps: { textContent: _vm._s(account.title) }
+                        }),
+                        _vm._v(" "),
+                        _c("v-list-item-icon")
+                      ],
+                      1
+                    )
+                  })
+                ],
+                2
+              ),
+              _vm._v(" "),
+              _c(
+                "v-list-group",
+                {
+                  attrs: { "prepend-icon": "" },
+                  scopedSlots: _vm._u([
+                    {
+                      key: "activator",
+                      fn: function() {
+                        return [
+                          _c(
+                            "v-list-item-icon",
+                            [_c("v-icon", [_vm._v("mdi-home")])],
+                            1
+                          ),
+                          _vm._v(" "),
+                          _c("v-list-item-title", [_vm._v("Reports")])
+                        ]
+                      },
+                      proxy: true
+                    }
+                  ])
+                },
+                [
+                  _vm._v(" "),
+                  _vm._l(_vm.reports, function(report, i) {
+                    return _c(
+                      "v-list-item",
+                      { key: i, attrs: { router: "", to: report.link } },
+                      [
+                        _c("v-list-item-title", {
+                          staticClass: "pl-4",
+                          domProps: { textContent: _vm._s(report.title) }
+                        }),
+                        _vm._v(" "),
+                        _c("v-list-item-icon")
+                      ],
+                      1
+                    )
+                  })
+                ],
+                2
               )
             ],
             1
@@ -14885,112 +15270,10 @@ var render = function() {
         1
       ),
       _vm._v(" "),
-      _c(
-        "v-content",
-        [
-          _c(
-            "v-container",
-            { staticClass: "fill-height", attrs: { fluid: "" } },
-            [
-              _c(
-                "v-row",
-                { attrs: { align: "center", justify: "center" } },
-                [
-                  _c(
-                    "v-col",
-                    { staticClass: "shrink" },
-                    [
-                      _c(
-                        "v-tooltip",
-                        {
-                          attrs: { right: "" },
-                          scopedSlots: _vm._u([
-                            {
-                              key: "activator",
-                              fn: function(ref) {
-                                var on = ref.on
-                                return [
-                                  _c(
-                                    "v-btn",
-                                    _vm._g(
-                                      {
-                                        attrs: {
-                                          href: _vm.source,
-                                          icon: "",
-                                          large: "",
-                                          target: "_blank"
-                                        }
-                                      },
-                                      on
-                                    ),
-                                    [
-                                      _c("v-icon", { attrs: { large: "" } }, [
-                                        _vm._v("mdi-code-tags")
-                                      ])
-                                    ],
-                                    1
-                                  )
-                                ]
-                              }
-                            }
-                          ])
-                        },
-                        [_vm._v(" "), _c("span", [_vm._v("Source")])]
-                      ),
-                      _vm._v(" "),
-                      _c(
-                        "v-tooltip",
-                        {
-                          attrs: { right: "" },
-                          scopedSlots: _vm._u([
-                            {
-                              key: "activator",
-                              fn: function(ref) {
-                                var on = ref.on
-                                return [
-                                  _c(
-                                    "v-btn",
-                                    _vm._g(
-                                      {
-                                        attrs: {
-                                          icon: "",
-                                          large: "",
-                                          href:
-                                            "https://codepen.io/johnjleider/pen/bXNzZL",
-                                          target: "_blank"
-                                        }
-                                      },
-                                      on
-                                    ),
-                                    [
-                                      _c("v-icon", { attrs: { large: "" } }, [
-                                        _vm._v("mdi-codepen")
-                                      ])
-                                    ],
-                                    1
-                                  )
-                                ]
-                              }
-                            }
-                          ])
-                        },
-                        [_vm._v(" "), _c("span", [_vm._v("Codepen")])]
-                      )
-                    ],
-                    1
-                  )
-                ],
-                1
-              )
-            ],
-            1
-          )
-        ],
-        1
-      ),
+      _c("v-content", [_c("router-view")], 1),
       _vm._v(" "),
       _c("v-footer", { attrs: { app: "" } }, [
-        _c("span", [_vm._v("© 2019 Operator")])
+        _c("span", [_vm._v("© 2019 Admin")])
       ])
     ],
     1
@@ -72275,6 +72558,59 @@ __webpack_require__.r(__webpack_exports__);
 
 /***/ }),
 
+/***/ "./resources/js/components/Footer/FooterPadless.vue":
+/*!**********************************************************!*\
+  !*** ./resources/js/components/Footer/FooterPadless.vue ***!
+  \**********************************************************/
+/*! exports provided: default */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony import */ var _FooterPadless_vue_vue_type_template_id_564e6768___WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./FooterPadless.vue?vue&type=template&id=564e6768& */ "./resources/js/components/Footer/FooterPadless.vue?vue&type=template&id=564e6768&");
+/* harmony import */ var _node_modules_vue_loader_lib_runtime_componentNormalizer_js__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ../../../../node_modules/vue-loader/lib/runtime/componentNormalizer.js */ "./node_modules/vue-loader/lib/runtime/componentNormalizer.js");
+
+var script = {}
+
+
+/* normalize component */
+
+var component = Object(_node_modules_vue_loader_lib_runtime_componentNormalizer_js__WEBPACK_IMPORTED_MODULE_1__["default"])(
+  script,
+  _FooterPadless_vue_vue_type_template_id_564e6768___WEBPACK_IMPORTED_MODULE_0__["render"],
+  _FooterPadless_vue_vue_type_template_id_564e6768___WEBPACK_IMPORTED_MODULE_0__["staticRenderFns"],
+  false,
+  null,
+  null,
+  null
+  
+)
+
+/* hot reload */
+if (false) { var api; }
+component.options.__file = "resources/js/components/Footer/FooterPadless.vue"
+/* harmony default export */ __webpack_exports__["default"] = (component.exports);
+
+/***/ }),
+
+/***/ "./resources/js/components/Footer/FooterPadless.vue?vue&type=template&id=564e6768&":
+/*!*****************************************************************************************!*\
+  !*** ./resources/js/components/Footer/FooterPadless.vue?vue&type=template&id=564e6768& ***!
+  \*****************************************************************************************/
+/*! exports provided: render, staticRenderFns */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony import */ var _node_modules_vue_loader_lib_loaders_templateLoader_js_vue_loader_options_node_modules_vue_loader_lib_index_js_vue_loader_options_FooterPadless_vue_vue_type_template_id_564e6768___WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! -!../../../../node_modules/vue-loader/lib/loaders/templateLoader.js??vue-loader-options!../../../../node_modules/vue-loader/lib??vue-loader-options!./FooterPadless.vue?vue&type=template&id=564e6768& */ "./node_modules/vue-loader/lib/loaders/templateLoader.js?!./node_modules/vue-loader/lib/index.js?!./resources/js/components/Footer/FooterPadless.vue?vue&type=template&id=564e6768&");
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "render", function() { return _node_modules_vue_loader_lib_loaders_templateLoader_js_vue_loader_options_node_modules_vue_loader_lib_index_js_vue_loader_options_FooterPadless_vue_vue_type_template_id_564e6768___WEBPACK_IMPORTED_MODULE_0__["render"]; });
+
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "staticRenderFns", function() { return _node_modules_vue_loader_lib_loaders_templateLoader_js_vue_loader_options_node_modules_vue_loader_lib_index_js_vue_loader_options_FooterPadless_vue_vue_type_template_id_564e6768___WEBPACK_IMPORTED_MODULE_0__["staticRenderFns"]; });
+
+
+
+/***/ }),
+
 /***/ "./resources/js/components/Home.vue":
 /*!******************************************!*\
   !*** ./resources/js/components/Home.vue ***!
@@ -72408,6 +72744,59 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "render", function() { return _node_modules_vue_loader_lib_loaders_templateLoader_js_vue_loader_options_node_modules_vue_loader_lib_index_js_vue_loader_options_Menu_vue_vue_type_template_id_403d4365___WEBPACK_IMPORTED_MODULE_0__["render"]; });
 
 /* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "staticRenderFns", function() { return _node_modules_vue_loader_lib_loaders_templateLoader_js_vue_loader_options_node_modules_vue_loader_lib_index_js_vue_loader_options_Menu_vue_vue_type_template_id_403d4365___WEBPACK_IMPORTED_MODULE_0__["staticRenderFns"]; });
+
+
+
+/***/ }),
+
+/***/ "./resources/js/components/Operator/OperatorDashboardStats.vue":
+/*!*********************************************************************!*\
+  !*** ./resources/js/components/Operator/OperatorDashboardStats.vue ***!
+  \*********************************************************************/
+/*! exports provided: default */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony import */ var _OperatorDashboardStats_vue_vue_type_template_id_37546102___WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./OperatorDashboardStats.vue?vue&type=template&id=37546102& */ "./resources/js/components/Operator/OperatorDashboardStats.vue?vue&type=template&id=37546102&");
+/* harmony import */ var _node_modules_vue_loader_lib_runtime_componentNormalizer_js__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ../../../../node_modules/vue-loader/lib/runtime/componentNormalizer.js */ "./node_modules/vue-loader/lib/runtime/componentNormalizer.js");
+
+var script = {}
+
+
+/* normalize component */
+
+var component = Object(_node_modules_vue_loader_lib_runtime_componentNormalizer_js__WEBPACK_IMPORTED_MODULE_1__["default"])(
+  script,
+  _OperatorDashboardStats_vue_vue_type_template_id_37546102___WEBPACK_IMPORTED_MODULE_0__["render"],
+  _OperatorDashboardStats_vue_vue_type_template_id_37546102___WEBPACK_IMPORTED_MODULE_0__["staticRenderFns"],
+  false,
+  null,
+  null,
+  null
+  
+)
+
+/* hot reload */
+if (false) { var api; }
+component.options.__file = "resources/js/components/Operator/OperatorDashboardStats.vue"
+/* harmony default export */ __webpack_exports__["default"] = (component.exports);
+
+/***/ }),
+
+/***/ "./resources/js/components/Operator/OperatorDashboardStats.vue?vue&type=template&id=37546102&":
+/*!****************************************************************************************************!*\
+  !*** ./resources/js/components/Operator/OperatorDashboardStats.vue?vue&type=template&id=37546102& ***!
+  \****************************************************************************************************/
+/*! exports provided: render, staticRenderFns */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony import */ var _node_modules_vue_loader_lib_loaders_templateLoader_js_vue_loader_options_node_modules_vue_loader_lib_index_js_vue_loader_options_OperatorDashboardStats_vue_vue_type_template_id_37546102___WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! -!../../../../node_modules/vue-loader/lib/loaders/templateLoader.js??vue-loader-options!../../../../node_modules/vue-loader/lib??vue-loader-options!./OperatorDashboardStats.vue?vue&type=template&id=37546102& */ "./node_modules/vue-loader/lib/loaders/templateLoader.js?!./node_modules/vue-loader/lib/index.js?!./resources/js/components/Operator/OperatorDashboardStats.vue?vue&type=template&id=37546102&");
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "render", function() { return _node_modules_vue_loader_lib_loaders_templateLoader_js_vue_loader_options_node_modules_vue_loader_lib_index_js_vue_loader_options_OperatorDashboardStats_vue_vue_type_template_id_37546102___WEBPACK_IMPORTED_MODULE_0__["render"]; });
+
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "staticRenderFns", function() { return _node_modules_vue_loader_lib_loaders_templateLoader_js_vue_loader_options_node_modules_vue_loader_lib_index_js_vue_loader_options_OperatorDashboardStats_vue_vue_type_template_id_37546102___WEBPACK_IMPORTED_MODULE_0__["staticRenderFns"]; });
 
 
 
@@ -72656,20 +73045,22 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var _components_Authentication_Register__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ./components/Authentication/Register */ "./resources/js/components/Authentication/Register.vue");
 /* harmony import */ var _components_AdminDashboard__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! ./components/AdminDashboard */ "./resources/js/components/AdminDashboard.vue");
 /* harmony import */ var _components_Admin_AdminDashboardStats__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(/*! ./components/Admin/AdminDashboardStats */ "./resources/js/components/Admin/AdminDashboardStats.vue");
-/* harmony import */ var _components_OperatorDashboard__WEBPACK_IMPORTED_MODULE_6__ = __webpack_require__(/*! ./components/OperatorDashboard */ "./resources/js/components/OperatorDashboard.vue");
-/* harmony import */ var _components_Home__WEBPACK_IMPORTED_MODULE_7__ = __webpack_require__(/*! ./components/Home */ "./resources/js/components/Home.vue");
-/* harmony import */ var _components_Bilty_Add__WEBPACK_IMPORTED_MODULE_8__ = __webpack_require__(/*! ./components/Bilty/Add */ "./resources/js/components/Bilty/Add.vue");
-/* harmony import */ var _components_Bilty_Manage__WEBPACK_IMPORTED_MODULE_9__ = __webpack_require__(/*! ./components/Bilty/Manage */ "./resources/js/components/Bilty/Manage.vue");
-/* harmony import */ var _components_Challan_Add__WEBPACK_IMPORTED_MODULE_10__ = __webpack_require__(/*! ./components/Challan/Add */ "./resources/js/components/Challan/Add.vue");
-/* harmony import */ var _components_Challan_Manage__WEBPACK_IMPORTED_MODULE_11__ = __webpack_require__(/*! ./components/Challan/Manage */ "./resources/js/components/Challan/Manage.vue");
-/* harmony import */ var _components_Customer_Add__WEBPACK_IMPORTED_MODULE_12__ = __webpack_require__(/*! ./components/Customer/Add */ "./resources/js/components/Customer/Add.vue");
-/* harmony import */ var _components_Customer_Manage__WEBPACK_IMPORTED_MODULE_13__ = __webpack_require__(/*! ./components/Customer/Manage */ "./resources/js/components/Customer/Manage.vue");
-/* harmony import */ var _components_Accounts_Customer__WEBPACK_IMPORTED_MODULE_14__ = __webpack_require__(/*! ./components/Accounts/Customer */ "./resources/js/components/Accounts/Customer.vue");
-/* harmony import */ var _components_Packages_Package__WEBPACK_IMPORTED_MODULE_15__ = __webpack_require__(/*! ./components/Packages/Package */ "./resources/js/components/Packages/Package.vue");
-/* harmony import */ var _components_Reports_Bilty__WEBPACK_IMPORTED_MODULE_16__ = __webpack_require__(/*! ./components/Reports/Bilty */ "./resources/js/components/Reports/Bilty.vue");
-/* harmony import */ var _components_Reports_Challan__WEBPACK_IMPORTED_MODULE_17__ = __webpack_require__(/*! ./components/Reports/Challan */ "./resources/js/components/Reports/Challan.vue");
-/* harmony import */ var _components_Errors_PageNotFound__WEBPACK_IMPORTED_MODULE_18__ = __webpack_require__(/*! ./components/Errors/PageNotFound */ "./resources/js/components/Errors/PageNotFound.vue");
-/* harmony import */ var _components_Errors_ForbiddenPage__WEBPACK_IMPORTED_MODULE_19__ = __webpack_require__(/*! ./components/Errors/ForbiddenPage */ "./resources/js/components/Errors/ForbiddenPage.vue");
+/* harmony import */ var _components_Operator_OperatorDashboardStats__WEBPACK_IMPORTED_MODULE_6__ = __webpack_require__(/*! ./components/Operator/OperatorDashboardStats */ "./resources/js/components/Operator/OperatorDashboardStats.vue");
+/* harmony import */ var _components_OperatorDashboard__WEBPACK_IMPORTED_MODULE_7__ = __webpack_require__(/*! ./components/OperatorDashboard */ "./resources/js/components/OperatorDashboard.vue");
+/* harmony import */ var _components_Home__WEBPACK_IMPORTED_MODULE_8__ = __webpack_require__(/*! ./components/Home */ "./resources/js/components/Home.vue");
+/* harmony import */ var _components_Bilty_Add__WEBPACK_IMPORTED_MODULE_9__ = __webpack_require__(/*! ./components/Bilty/Add */ "./resources/js/components/Bilty/Add.vue");
+/* harmony import */ var _components_Bilty_Manage__WEBPACK_IMPORTED_MODULE_10__ = __webpack_require__(/*! ./components/Bilty/Manage */ "./resources/js/components/Bilty/Manage.vue");
+/* harmony import */ var _components_Challan_Add__WEBPACK_IMPORTED_MODULE_11__ = __webpack_require__(/*! ./components/Challan/Add */ "./resources/js/components/Challan/Add.vue");
+/* harmony import */ var _components_Challan_Manage__WEBPACK_IMPORTED_MODULE_12__ = __webpack_require__(/*! ./components/Challan/Manage */ "./resources/js/components/Challan/Manage.vue");
+/* harmony import */ var _components_Customer_Add__WEBPACK_IMPORTED_MODULE_13__ = __webpack_require__(/*! ./components/Customer/Add */ "./resources/js/components/Customer/Add.vue");
+/* harmony import */ var _components_Customer_Manage__WEBPACK_IMPORTED_MODULE_14__ = __webpack_require__(/*! ./components/Customer/Manage */ "./resources/js/components/Customer/Manage.vue");
+/* harmony import */ var _components_Accounts_Customer__WEBPACK_IMPORTED_MODULE_15__ = __webpack_require__(/*! ./components/Accounts/Customer */ "./resources/js/components/Accounts/Customer.vue");
+/* harmony import */ var _components_Packages_Package__WEBPACK_IMPORTED_MODULE_16__ = __webpack_require__(/*! ./components/Packages/Package */ "./resources/js/components/Packages/Package.vue");
+/* harmony import */ var _components_Reports_Bilty__WEBPACK_IMPORTED_MODULE_17__ = __webpack_require__(/*! ./components/Reports/Bilty */ "./resources/js/components/Reports/Bilty.vue");
+/* harmony import */ var _components_Reports_Challan__WEBPACK_IMPORTED_MODULE_18__ = __webpack_require__(/*! ./components/Reports/Challan */ "./resources/js/components/Reports/Challan.vue");
+/* harmony import */ var _components_Errors_PageNotFound__WEBPACK_IMPORTED_MODULE_19__ = __webpack_require__(/*! ./components/Errors/PageNotFound */ "./resources/js/components/Errors/PageNotFound.vue");
+/* harmony import */ var _components_Errors_ForbiddenPage__WEBPACK_IMPORTED_MODULE_20__ = __webpack_require__(/*! ./components/Errors/ForbiddenPage */ "./resources/js/components/Errors/ForbiddenPage.vue");
+
 
 
 
@@ -72692,17 +73083,17 @@ __webpack_require__.r(__webpack_exports__);
 
 var routes = [{
   path: '*',
-  component: _components_Errors_PageNotFound__WEBPACK_IMPORTED_MODULE_18__["default"]
+  component: _components_Errors_PageNotFound__WEBPACK_IMPORTED_MODULE_19__["default"]
 }, {
   path: '/404',
-  component: _components_Errors_PageNotFound__WEBPACK_IMPORTED_MODULE_18__["default"]
+  component: _components_Errors_PageNotFound__WEBPACK_IMPORTED_MODULE_19__["default"]
 }, {
   path: '/403',
-  component: _components_Errors_ForbiddenPage__WEBPACK_IMPORTED_MODULE_19__["default"]
+  component: _components_Errors_ForbiddenPage__WEBPACK_IMPORTED_MODULE_20__["default"]
 }, {
   path: '/',
   name: 'home',
-  component: _components_Home__WEBPACK_IMPORTED_MODULE_7__["default"],
+  component: _components_Home__WEBPACK_IMPORTED_MODULE_8__["default"],
   meta: {
     auth: undefined
   }
@@ -72723,11 +73114,10 @@ var routes = [{
 }, //OPERATOR
 {
   path: '/dashboard',
-  name: 'dashboard',
-  component: _components_OperatorDashboard__WEBPACK_IMPORTED_MODULE_6__["default"],
+  component: _components_OperatorDashboard__WEBPACK_IMPORTED_MODULE_7__["default"],
   meta: {
     auth: {
-      roles: 1,
+      roles: [1, 3, 4],
       redirect: {
         name: 'login'
       },
@@ -72735,11 +73125,77 @@ var routes = [{
     }
   },
   children: [{
-    path: 'create',
-    children: [{
-      path: 'add',
-      component: _components_AdminDashboard__WEBPACK_IMPORTED_MODULE_4__["default"]
-    }]
+    path: '',
+    name: 'dashboard',
+    component: _components_Operator_OperatorDashboardStats__WEBPACK_IMPORTED_MODULE_6__["default"]
+  }, {
+    path: 'bilty/manage',
+    name: 'dashboard.bilty.manage',
+    component: _components_Bilty_Manage__WEBPACK_IMPORTED_MODULE_10__["default"]
+  }, {
+    path: 'bilty/create',
+    name: 'dashboard.bilty.create',
+    component: _components_Bilty_Add__WEBPACK_IMPORTED_MODULE_9__["default"],
+    meta: {
+      auth: {
+        roles: [1, 3],
+        redirect: {
+          name: 'login'
+        },
+        forbiddenRedirect: '/403'
+      }
+    }
+  }, //FURTHUR WORK ON AUTHENTICATION REQUIRED
+  {
+    path: 'account/customer',
+    name: 'dashboard.account.customer',
+    component: _components_Accounts_Customer__WEBPACK_IMPORTED_MODULE_15__["default"]
+  }, {
+    path: 'challan/create',
+    name: 'dashboard.challan.create',
+    component: _components_Challan_Add__WEBPACK_IMPORTED_MODULE_11__["default"],
+    meta: {
+      auth: {
+        roles: [1, 3],
+        redirect: {
+          name: 'login'
+        },
+        forbiddenRedirect: '/403'
+      }
+    }
+  }, {
+    path: 'challan/manage',
+    name: 'dashboard.challan.manage',
+    component: _components_Challan_Manage__WEBPACK_IMPORTED_MODULE_12__["default"]
+  }, {
+    path: 'customer/create',
+    name: 'dashboard.customer.create',
+    component: _components_Customer_Add__WEBPACK_IMPORTED_MODULE_13__["default"],
+    meta: {
+      auth: {
+        roles: [1, 3],
+        redirect: {
+          name: 'login'
+        },
+        forbiddenRedirect: '/403'
+      }
+    }
+  }, {
+    path: 'customer/manage',
+    name: 'dashboard.customer.manage',
+    component: _components_Customer_Manage__WEBPACK_IMPORTED_MODULE_14__["default"]
+  }, {
+    path: 'package',
+    name: 'dashboard.package',
+    component: _components_Packages_Package__WEBPACK_IMPORTED_MODULE_16__["default"]
+  }, {
+    path: 'report/bilty',
+    name: 'dashboard.report.bilty',
+    component: _components_Reports_Bilty__WEBPACK_IMPORTED_MODULE_17__["default"]
+  }, {
+    path: 'report/challan',
+    name: 'dashboard.report.challan',
+    component: _components_Reports_Challan__WEBPACK_IMPORTED_MODULE_18__["default"]
   }]
 }, //ADMIN
 {
@@ -72757,69 +73213,48 @@ var routes = [{
   children: [{
     path: '',
     name: 'admin.dashboard.stats',
-    component: _components_Admin_AdminDashboardStats__WEBPACK_IMPORTED_MODULE_5__["default"],
-    meta: {
-      auth: {
-        roles: 2,
-        redirect: {
-          name: 'login'
-        },
-        forbiddenRedirect: '/403'
-      }
-    }
+    component: _components_Admin_AdminDashboardStats__WEBPACK_IMPORTED_MODULE_5__["default"]
   }, {
     path: 'bilty/manage',
     name: 'admin.bilty.manage',
-    component: _components_Bilty_Manage__WEBPACK_IMPORTED_MODULE_9__["default"],
-    meta: {
-      auth: true
-    }
+    component: _components_Bilty_Manage__WEBPACK_IMPORTED_MODULE_10__["default"]
   }, {
     path: 'bilty/create',
     name: 'admin.bilty.create',
-    component: _components_Bilty_Add__WEBPACK_IMPORTED_MODULE_8__["default"],
-    meta: {
-      auth: {
-        roles: [1, 2, 3],
-        redirect: {
-          name: 'login'
-        },
-        forbiddenRedirect: '/403'
-      }
-    }
+    component: _components_Bilty_Add__WEBPACK_IMPORTED_MODULE_9__["default"]
   }, //FURTHUR WORK ON AUTHENTICATION REQUIRED
   {
     path: 'account/customer',
     name: 'admin.account.customer',
-    component: _components_Accounts_Customer__WEBPACK_IMPORTED_MODULE_14__["default"]
+    component: _components_Accounts_Customer__WEBPACK_IMPORTED_MODULE_15__["default"]
   }, {
     path: 'challan/create',
     name: 'admin.challan.create',
-    component: _components_Challan_Add__WEBPACK_IMPORTED_MODULE_10__["default"]
+    component: _components_Challan_Add__WEBPACK_IMPORTED_MODULE_11__["default"]
   }, {
     path: 'challan/manage',
     name: 'admin.challan.manage',
-    component: _components_Challan_Manage__WEBPACK_IMPORTED_MODULE_11__["default"]
+    component: _components_Challan_Manage__WEBPACK_IMPORTED_MODULE_12__["default"]
   }, {
     path: 'customer/create',
     name: 'admin.customer.create',
-    component: _components_Customer_Add__WEBPACK_IMPORTED_MODULE_12__["default"]
+    component: _components_Customer_Add__WEBPACK_IMPORTED_MODULE_13__["default"]
   }, {
     path: 'customer/manage',
     name: 'admin.customer.manage',
-    component: _components_Customer_Manage__WEBPACK_IMPORTED_MODULE_13__["default"]
+    component: _components_Customer_Manage__WEBPACK_IMPORTED_MODULE_14__["default"]
   }, {
     path: 'package',
     name: 'admin.package',
-    component: _components_Packages_Package__WEBPACK_IMPORTED_MODULE_15__["default"]
+    component: _components_Packages_Package__WEBPACK_IMPORTED_MODULE_16__["default"]
   }, {
     path: 'report/bilty',
     name: 'admin.report.bilty',
-    component: _components_Reports_Bilty__WEBPACK_IMPORTED_MODULE_16__["default"]
+    component: _components_Reports_Bilty__WEBPACK_IMPORTED_MODULE_17__["default"]
   }, {
     path: 'report/challan',
     name: 'admin.report.challan',
-    component: _components_Reports_Challan__WEBPACK_IMPORTED_MODULE_17__["default"]
+    component: _components_Reports_Challan__WEBPACK_IMPORTED_MODULE_18__["default"]
   }]
 }];
 var router = new vue_router__WEBPACK_IMPORTED_MODULE_1__["default"]({

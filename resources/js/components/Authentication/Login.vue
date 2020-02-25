@@ -1,22 +1,28 @@
 <template>
-  <v-app id="inspire">
+  <v-app id="inspire" dark>
     <Menu />
-    <v-content>
-      <v-container class="fill-height" fluid>
-        <v-row align="center" justify="center">
-          <v-col cols="12" sm="8" md="4">
-            <v-card class="elevation-12">
-              <v-toolbar color="primary" dark flat>
+    <v-content >
+      <v-container  class="fill-height" fluid>
+        <v-row align="center" justify="center" class="mx-auto"> 
+          <v-col cols="12" sm="8" md="4" class="mx-auto">
+            <v-card class="elevation-12 mx-auto">
+              <v-progress-linear
+              :active="loading"
+              :indeterminate="loading"
+              absolute
+              top></v-progress-linear>
+              <v-toolbar color="primary" dark flat max-height="150px">
                 <v-toolbar-title>Login form</v-toolbar-title>
                 <v-spacer/>
               </v-toolbar>
               <v-card-text>
-                <v-form>
+                <!-- <v-progress-linear value="15"></v-progress-linear> -->
+                <v-form @keyup.native.enter="login">
                   <v-text-field
                     label="Email"
                     name="email"
-                    prepend-icon="person"
                     v-model="email"
+                    prepend-icon="mdi-account"
                     type="text"
                   />
 
@@ -24,7 +30,7 @@
                     id="password"
                     label="Password"
                     name="password"
-                    prepend-icon="lock"
+                    prepend-icon="mdi-key"
                     type="password"
                     v-model="password"
                   />
@@ -32,35 +38,61 @@
               </v-card-text>
               <v-card-actions>
                 <v-spacer/>
-                <v-btn color="primary" @click="login">Login</v-btn>
+                <v-btn  class="mr-3 mb-3" color="primary" @click="login">Login</v-btn>
               </v-card-actions>
             </v-card>
           </v-col>
         </v-row>
       </v-container>
+      <Footer/>
     </v-content>
   </v-app>
 </template>
 
 <script>
 import Menu from '../MenuBar/Menu'
+import Footer from '../Footer/FooterPadless'
 export default {
   
   data() {
     return {
       email: null,
       password: null,
-      has_error: false
+      has_error: false,
+      loading : false
     };
   },
   mounted() {
     //
   },
   components:{
-    Menu
+    Menu,
+    Footer
   },
   methods: {
     login() {
+
+            // Add a request interceptor
+      this.axios.interceptors.request.use( (config) => {
+          this.loading = true;
+          return config;
+        },  (error) => {
+          // Do something with request error
+          return Promise.reject(error);
+        });
+
+      // Add a response interceptor
+      this.axios.interceptors.response.use( (response) => {
+          this.loading = false;
+          return response;
+        },  (error) => {
+          // Any status codes that falls outside the range of 2xx cause this function to trigger
+          // Do something with response error
+          return Promise.reject(error);
+        });
+
+        // axios.post('/api/login' , {'email': this.email , 'password' : this.password})
+
       console.log(this.email, " ", this.password);
       // get the redirect object
       var redirect = this.$auth.redirect();
@@ -77,7 +109,7 @@ export default {
           const redirectTo = redirect
             ? redirect.from.name
             : this.$auth.user().role === 2
-            ? "admin.dashboard"
+            ? "admin.dashboard.stats"
             : "dashboard";
           console.log(redirectTo, "HeLLO ROUTER");
           this.$router.push({ name: redirectTo });
@@ -90,6 +122,9 @@ export default {
         fetchUser: true
       });
     }
+  },
+  created() {
+    this.$vuetify.theme.dark = true;
   }
 };
 </script>
