@@ -11,14 +11,14 @@
       class="mx-auto">
       <v-col class="mx-auto text-center">
 <v-card
-light
+dark
 flat
     class=" mx-auto"
     max-width="800"
   >
     <v-card-text class="text-center font-weight-bold ">
       <p class="display-2 text--primary " >
-        <span class="  accent-2  green--text font-weight-black">Naseeb Goods and Transport</span>
+        <span class="light-blue--text lighten-5 font-weight-bold">Naseeb Goods and Transport</span>
       </p>
       <div class="title">
         Content Management Application for handling Fright Management
@@ -33,14 +33,7 @@ flat
   </v-row>
 </v-container>
 
-<v-footer padless>
-    <v-col
-      class="text-center"
-      cols="12"
-    >
-      {{ new Date().getFullYear() }} — <strong>Logical4IO</strong>
-    </v-col>
-  </v-footer>
+<Footer/>
 
 
 
@@ -52,9 +45,11 @@ flat
 
 <script>
 import Menu from './MenuBar/Menu'
+import Footer from './Footer/FooterPadless'
   export default {
   components:{
-    Menu
+    Menu,
+    Footer
   },
   methods:{
     
@@ -62,6 +57,9 @@ import Menu from './MenuBar/Menu'
       console.log('fsdfasd')
       this.$router.push('/login')
     }
+  },
+  created() {
+    this.$vuetify.theme.dark = true;
   }
   }
 </script>

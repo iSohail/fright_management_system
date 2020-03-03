@@ -11,7 +11,7 @@
                 <v-tooltip bottom>
                   <template v-slot:activator="{ on }">
                     <v-btn :href="source" icon large target="_blank" v-on="on">
-                      <v-icon>mdi-code-tags</v-icon>
+                      <!-- <v-icon>mdi-code-tags</v-icon> -->
                     </v-btn>
                   </template>
                   <span>Source</span>
