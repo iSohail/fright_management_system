@@ -4,27 +4,20 @@ namespace App\Http\Controllers;
 
 use App\User;
 use Illuminate\Http\Request;
+use App\Http\Resources\UserResource;
 
 class UserController extends Controller
 {
     public function index()
     {
-        $users = User::all();
-        
-        return response()->json(
-            [
-                'status' => 'success',
-                'users' => $users->toArray()
-            ], 200);
+        $users = User::with('_role')->get();
+        return UserResource::collection($users);
     }
+    
     public function show(Request $request, $id)
     {
-        $user = User::find($id);
-
-        return response()->json(
-            [
-                'status' => 'success',
-                'user' => $user->toArray()
-            ], 200);
+        $user = User::findOrFail($id);
+        UserResource::withoutWrapping();
+        return new UserResource($user);
     }
 }
