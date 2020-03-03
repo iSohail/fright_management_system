@@ -4,6 +4,7 @@ import Login from './components/Authentication/Login';
 import Register from './components/Authentication/Register';
 import AdminDashboard from './components/AdminDashboard';
 import AdminDashboardStats from './components/Admin/AdminDashboardStats';
+import OperatorDashboardStats from './components/Operator/OperatorDashboardStats';
 import OperatorDashboard from './components/OperatorDashboard';
 import Home from './components/Home';
 import AddBilty from './components/Bilty/Add';
@@ -51,22 +52,76 @@ const routes = [
     //OPERATOR
     {
         path: '/dashboard',
-        name: 'dashboard',
         component: OperatorDashboard,
         meta: {
-            auth: { roles: 1, redirect: { name: 'login' }, forbiddenRedirect: '/403' }
+            auth: { roles: [1,3,4], redirect: { name: 'login' }, forbiddenRedirect: '/403' }
         },
         children: [
             {
-                path: 'create',
-                children: [
-                    {
-                        path: 'add',
-                        component: AdminDashboard
-
-                    }
-                ]
-            }
+                path: '',
+                name: 'dashboard',
+                component: OperatorDashboardStats,
+            },
+            {
+                path: 'bilty/manage',
+                name: 'dashboard.bilty.manage',
+                component: ManageBilty,
+            },
+            {
+                path: 'bilty/create',
+                name: 'dashboard.bilty.create',
+                component: AddBilty,
+                meta: {
+                    auth: { roles: [1,3], redirect: { name: 'login' }, forbiddenRedirect: '/403' }
+                },
+            },
+            //FURTHUR WORK ON AUTHENTICATION REQUIRED
+            {
+                path: 'account/customer',
+                name: 'dashboard.account.customer',
+                component: CustomerAccount,
+            },
+            {
+                path: 'challan/create',
+                name: 'dashboard.challan.create',
+                component: AddChallan,
+                meta: {
+                    auth: { roles: [1,3], redirect: { name: 'login' }, forbiddenRedirect: '/403' }
+                },
+            },
+            {
+                path: 'challan/manage',
+                name: 'dashboard.challan.manage',
+                component: ManageChallan
+            },
+            {
+                path: 'customer/create',
+                name: 'dashboard.customer.create',
+                component: AddCustomer,
+                meta: {
+                    auth: { roles: [1,3], redirect: { name: 'login' }, forbiddenRedirect: '/403' }
+                },
+            },
+            {
+                path: 'customer/manage',
+                name: 'dashboard.customer.manage',
+                component: ManageCustomer
+            },
+            {
+                path: 'package',
+                name: 'dashboard.package',
+                component: Package
+            },
+            {
+                path: 'report/bilty',
+                name: 'dashboard.report.bilty',
+                component: BiltyReport
+            },
+            {
+                path: 'report/challan',
+                name: 'dashboard.report.challan',
+                component: ChallanReport
+            },
         ]
     },
     //ADMIN
@@ -81,25 +136,16 @@ const routes = [
                 path: '',
                 name: 'admin.dashboard.stats',
                 component: AdminDashboardStats,
-                meta: {
-                    auth: { roles: 2, redirect: { name: 'login' }, forbiddenRedirect: '/403' }
-                }
             },
             {
                 path: 'bilty/manage',
                 name: 'admin.bilty.manage',
                 component: ManageBilty,
-                meta: {
-                    auth: true
-                }
             },
             {
                 path: 'bilty/create',
                 name: 'admin.bilty.create',
                 component: AddBilty,
-                meta: {
-                    auth: { roles: [1, 2, 3], redirect: { name: 'login' }, forbiddenRedirect: '/403' }
-                }
             },
             //FURTHUR WORK ON AUTHENTICATION REQUIRED
             {

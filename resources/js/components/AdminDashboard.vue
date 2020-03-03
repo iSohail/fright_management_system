@@ -32,6 +32,22 @@
             <v-list-item-icon>
               <v-icon>mdi-home</v-icon>
             </v-list-item-icon>
+            <v-list-item-title>Challan</v-list-item-title>
+          </template>
+
+          <v-list-item v-for="(challan, i) in challan" :key="i" router :to="challan.link">
+            <v-list-item-title class="pl-4" v-text="challan.title"></v-list-item-title>
+            <v-list-item-icon>
+              <!-- <v-icon>mdi-home</v-icon> -->
+            </v-list-item-icon>
+          </v-list-item>
+        </v-list-group>
+
+        <v-list-group prepend-icon>
+          <template v-slot:activator>
+            <v-list-item-icon>
+              <v-icon>mdi-home</v-icon>
+            </v-list-item-icon>
             <v-list-item-title>Customer</v-list-item-title>
           </template>
 
@@ -109,6 +125,11 @@ export default {
       { title: "Add Bilty", link: "/admin/bilty/create" },
       { title: "Manage Bilty", link: "/admin/bilty/manage" },
       { title: "Manage Packages", link: "/admin/package" }
+    ],
+    challan: [
+      { title: "Add challan", link: "/admin/challan/create" },
+      { title: "Manage challan", link: "/admin/challan/manage" },
+      // ?{ title: "Manage Packages", link: "/admin/package" }
     ],
     customers: [
       { title: "Add Customer", link: "/admin/customer/create" },
