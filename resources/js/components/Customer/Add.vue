@@ -9,19 +9,22 @@
           <v-text-field v-model="customer.customerName" :rules="nameRules" label="Name" required></v-text-field>
         </v-col>
         <v-col cols="12" md="4">
-          <v-text-field v-model="customer.cellNo" :rules="nameRules" label="Cell No" required></v-text-field>
+          <v-text-field v-model="customer.company" :rules="nameRules" label="Company" required></v-text-field>
         </v-col>
       </v-row>
 
       <v-row>
-        <v-col cols="12" md="4">
+        <v-col cols="12" md="3">
           <v-text-field v-model="customer.perKg" :rules="nameRules" label="Per Kg" required></v-text-field>
         </v-col>
-        <v-col cols="12" md="4">
+        <v-col cols="12" md="3">
           <v-text-field v-model="customer.perCbm" :rules="nameRules" label="Per Cbm" required></v-text-field>
         </v-col>
-        <v-col cols="12" md="4">
+        <v-col cols="12" md="3">
           <v-text-field v-model="customer.perPckg" :rules="nameRules" label="Per Package" required></v-text-field>
+        </v-col>
+        <v-col cols="12" md="3">
+          <v-text-field v-model="customer.cellNo" :rules="nameRules" label="Cell No" required></v-text-field>
         </v-col>
       </v-row>
       <v-row>
@@ -47,7 +50,8 @@ export default {
         customerNo: "",
         perKg: "",
         perCbm: "",
-        perPckg: ""
+        perPckg: "",
+        company: ""
       }
     };
   },

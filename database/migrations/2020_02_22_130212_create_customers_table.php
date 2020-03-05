@@ -18,12 +18,15 @@ class CreateCustomersTable extends Migration
             $table->string('name');
             $table->string('cell_no');
             $table->string('customer_no');
-            $table->unsignedDecimal('per_kg_rate');
-            $table->unsignedDecimal('per_cbm_rate');
-            $table->unsignedDecimal('per_pck_rate');
+            $table->string('company')->nullable();
+            $table->unsignedDecimal('per_kg_rate')->nullable();
+            $table->unsignedDecimal('per_cbm_rate')->nullable();
+            $table->unsignedDecimal('per_pck_rate')->nullable();
             $table->timestamps();
 
             $table->primary('id');
+            $table->unique('customer_no');
+            $table->unique('cell_no');
         });
     }
 

@@ -5,8 +5,8 @@ namespace App\Http\Controllers;
 use App\Bilty;
 use App\Challan;
 use App\Customer;
-use App\Package;
 use App\Http\Resources\BiltyResource;
+use App\Package;
 use Illuminate\Http\Request;
 
 class BiltyController extends Controller
@@ -22,7 +22,7 @@ class BiltyController extends Controller
         //only senders can store the bilty
         $this->middleware('isSender')->only('store');
         //only admin can delete bilty
-        $this->middleware('CheckIsAdmin')->only('destroy');
+        $this->middleware('isAdmin')->only('destroy');
     }
 
     public function index()
@@ -55,44 +55,44 @@ class BiltyController extends Controller
         // converting JSON object into PHP code
         $data = json_decode($request->getContent(), true);
 
-        // return $data[0]['id'];
-        if (Bilty::find($data[0]['id'])){
-            return response()->json([
-                'status' => 'error',
-                'message' => 'error saving bilty, already exists',
-            ], 500); 
-
-        }
-
         $bilty = new Bilty;
-        $customer = Customer::findOrFail($data[0]['customer_id']);
-        $challan = Challan::findOrFail($data[0]['challan_id']);
-
-        $bilty->id = $data[0]['id'];
-        $bilty->bilty_no = $data[0]['bilty_no'];
-        $bilty->lg_bl_no = $data[0]['lg_bl_no'];
-        $bilty->from = $data[0]['from'];
-        $bilty->to = $data[0]['to'];
-        $bilty->sender = $data[0]['sender'];
-        $bilty->receiver = $data[0]['receiver'];
-        $bilty->receiver_address = $data[0]['receiver_address'];
-        $bilty->status = $data[0]['status'];
-        $bilty->payment_status = $data[0]['payment_status'];
-        $bilty->bilty_charges = $data[0]['bilty_charges'];
-        $bilty->local_charges = $data[0]['local_charges'];
+        if ($data['customer_id']){
+            $customer = Customer::findOrFail($data['customer_id']);
+        }
+        // $challan = Challan::findOrFail($data['challan_id']);
+        // return $customer;
+        $bilty->bilty_no = $data['bilty_no'];
+        $bilty->lg_bl_no = $data['lc_bl_no'];
+        $bilty->from = $data['from'];
+        $bilty->to = $data['to'];
+        $bilty->sender = $data['sender'];
+        $bilty->receiver = $data['receiver'];
+        $bilty->receiver_address = $data['receiver_address'];
+        $bilty->status = $data['status_item_value'];
+        $bilty->payment_status = $data['payment_status_item_value'];
+        $bilty->bilty_charges = $data['bilty_charges'];
+        $bilty->local_charges = $data['local_charges'];
+        $bilty->manual = $data['manual'];
 
         // $packages=['1','2','3'];
-
+        // return $bilty;
         if ($bilty->save()) {
-            $bilty = Bilty::find($data[0]['id']);
+            $bilty = Bilty::find($bilty->id);
+            // return $bilty;
             $bilty->customer()->associate($customer);
-            $bilty->challan()->associate($challan);
+            // $bilty->challan()->associate($challan);
 
-            foreach ($data[0]['packages'] as $val) {
-                $package = new Package(['id' => $val["id"], 'package_no' => $val["package_no"], 'description' => $val['description'], 'unit' => $val['unit'], 'quantity' => $val['quantity'], 'total_weight' => $val['total_weight'], 'rent' => $val['rent'], 'labour' => $val['labour']]);
+            foreach ($data['packages'] as $val) {
+                $package = Package::orderby('package_no', 'desc')->first();
+                $package_no = 1000;
+                if ($package) {
+                    $package_no = $package['package_no'] + 1;
+                }
+                $package = new Package(['package_no' => $package_no, 'description' => $val['description'], 'unit' => $val['unit'], 'quantity' => $val['quantity'], 'total_weight' => $val['total_weight'], 'rent' => $val['rent'], 'labour' => $val['labour']]);
                 $bilty->packages()->save($package);
             }
-
+            $bilty->save();
+            
             BiltyResource::withoutWrapping();
             return new BiltyResource($bilty);
         } else {
@@ -209,5 +209,16 @@ class BiltyController extends Controller
                 'message' => 'resource not found',
             ], 404);
         }
+    }
+
+    public function last()
+    {
+        $bilty = Bilty::orderby('bilty_no', 'desc')->first();
+        if ($bilty) {
+            return $bilty['bilty_no'] + 1;
+        }
+
+        // default value for starting customer number
+        return 1000;
     }
 }

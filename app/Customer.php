@@ -11,7 +11,7 @@ class Customer extends Model
     public $incrementing = false;
     
     protected $fillable = [
-        'name', 'cell_no', 'customer_no', 'per_kg_rate', 'per_cbm_rate', 'per_pck_rate'
+        'name', 'cell_no', 'customer_no', 'company', 'per_kg_rate', 'per_cbm_rate', 'per_pck_rate'
     ];
 
     public function bilties()
