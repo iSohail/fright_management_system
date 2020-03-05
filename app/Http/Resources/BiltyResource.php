@@ -20,6 +20,7 @@ class BiltyResource extends JsonResource
             'attributes' => [
                 'bilty_no' => (string)$this->bilty_no,
                 'lg_bl_no' => (string)$this->lg_bl_no,
+                'manual' => (string)$this->manual,
                 'from' => (string)$this->from,
                 'to' => (string)$this->to,
                 'sender' => (string)$this->sender,

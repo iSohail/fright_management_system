@@ -86,6 +86,18 @@
 /************************************************************************/
 /******/ ({
 
+/***/ "./node_modules/@babel/runtime/regenerator/index.js":
+/*!**********************************************************!*\
+  !*** ./node_modules/@babel/runtime/regenerator/index.js ***!
+  \**********************************************************/
+/*! no static exports found */
+/***/ (function(module, exports, __webpack_require__) {
+
+module.exports = __webpack_require__(/*! regenerator-runtime */ "./node_modules/regenerator-runtime/runtime.js");
+
+
+/***/ }),
+
 /***/ "./node_modules/@websanova/vue-auth/drivers/auth/bearer.js":
 /*!*****************************************************************!*\
   !*** ./node_modules/@websanova/vue-auth/drivers/auth/bearer.js ***!
@@ -11877,10 +11889,6 @@ __webpack_require__.r(__webpack_exports__);
 
 "use strict";
 __webpack_require__.r(__webpack_exports__);
-var _data$computed$watch$;
-
-function _defineProperty(obj, key, value) { if (key in obj) { Object.defineProperty(obj, key, { value: value, enumerable: true, configurable: true, writable: true }); } else { obj[key] = value; } return obj; }
-
 //
 //
 //
@@ -12097,96 +12105,66 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
 //
 //
 //
-/* harmony default export */ __webpack_exports__["default"] = (_data$computed$watch$ = {
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+/* harmony default export */ __webpack_exports__["default"] = ({
   data: function data() {
-    var _ref;
-
-    return _ref = {
-      biltyNo: "",
-      Lc_No: "",
-      biltyCharges: "",
-      localCharges: "",
-      row: "",
+    return {
+      from_city_items: ["Karachi", "Lahore", "Sheikhupura", "Islamabad"],
+      to_city_items: ["Lahore", "Sheikhupura", "Karachi", "Islamabad"],
+      from_city_value: "Karachi",
+      to_city_value: "Lahore",
+      manual: false,
+      bilty_no: "",
+      lc_bl_no: "",
+      bilty_charges: "",
+      local_charges: "",
       sender: "",
-      reciever: "",
-      outlined: "",
-      autoUpdate: true,
-      friends: [],
+      receiver: "",
+      receiver_address: "",
+      customer: [],
       isUpdating: false,
-      name: 'Midnight Crew',
-      customers: [// { header: 'Group 1' },
-      {
-        no: '1',
-        name: 'Sandra Adams',
-        company: 'Group 1'
-      }, {
-        no: '1',
-        name: 'Ali Connors',
-        company: 'Group 1'
-      }, {
-        no: '1',
-        name: 'Trevor Hansen',
-        company: 'Group 1'
-      }, {
-        no: '1',
-        name: 'Tucker Smith',
-        company: 'Group 1'
-      }, // { divider: true },
-      // { header: 'Group 2' },
-      {
-        no: '1',
-        name: 'Britta Holt',
-        company: 'Group 2'
-      }, {
-        no: '1',
-        name: 'Jane Smith ',
-        company: 'Group 2'
-      }, {
-        no: '1',
-        name: 'John Smith',
-        company: 'Group 2'
-      }, {
-        no: '1',
-        name: 'Sandra Williams',
-        company: 'Group 2'
-      }],
-      title: 'The summer breeze',
+      name: "",
+      customers: [],
       dialog: false,
-      enabled: false,
       headers: [{
-        text: "Package No",
-        align: "left",
-        sortable: false,
-        value: "packages"
-      }, {
         text: "Description",
-        value: ""
+        align: "left",
+        value: "description"
       }, {
         text: "Unit",
-        value: ""
+        value: "unit"
       }, {
         text: "Quantity",
-        value: ""
+        value: "quantity"
       }, {
         text: "Total weight",
-        value: ""
+        value: "total_weight"
       }, {
         text: "Labour",
-        value: "carbs"
+        value: "labour"
       }, {
         text: "Rent",
-        value: "fat"
-      }, // { text: "Builty", value: "protein" },
-      {
+        value: "rent"
+      }, {
         text: "Action",
         value: "action",
         sortable: false
       }],
-      desserts: [],
+      packages: [],
       editedIndex: -1,
       editedItem: {
-        packages: "",
-        desription: "",
+        description: "",
         quantity: "",
         unit: "",
         total_weight: "",
@@ -12194,143 +12172,204 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
         labour: ""
       },
       defaultItem: {
-        packages: "",
-        desription: "",
+        description: "",
         quantity: "",
         unit: "",
         total_weight: "",
         rent: "",
         labour: ""
       },
-      items3: ["Registered", "Dispatched", "Delivered"],
-      items4: ["Paid", "Unpaid", "Monthly"],
-      valid: true
-    }, _defineProperty(_ref, "name", ""), _defineProperty(_ref, "nameRules", [function (v) {
-      return !!v || "Name is required";
-    }, function (v) {
-      return v && v.length <= 10 || "Name must be less than 10 characters";
-    }]), _defineProperty(_ref, "descriptionRule", [// v => v.length = null || "Description is required",
-    function (v) {
-      return !!v || "Description is required";
-    }, function (v) {
-      return v && v.length <= 1000 || "Descriptipn must be less than 100 characters";
-    }]), _defineProperty(_ref, "packageNoRule", [function (v) {
-      if (!v.trim()) return true;
-      if (!isNaN(parseFloat(v)) && v >= 0 && v <= 99999) return true;
-      return 'Number has to be between 0 and 99999';
-    }, function (v) {
-      return !!v || "No of Packages is required";
-    }]), _defineProperty(_ref, "AddressRule", [function (v) {
-      return !!v || "Address is required";
-    }, function (v) {
-      return v && v.length <= 100 || "Address must be less than 100 characters";
-    }]), _defineProperty(_ref, "chargesRule", [function (v) {
-      if (!v.trim()) return true;
-      if (!isNaN(parseFloat(v)) && v >= 0 && v <= 99999) return true;
-      return 'Number has to be between 0 and 99999';
-    }, function (v) {
-      return !!v || "Field can not be empty";
-    }]), _defineProperty(_ref, "Lc_no_Rules", [function (v) {
-      return !!v || "L/C number is required";
-    }, function (v) {
-      return v && v.length <= 10 || "Number must be less than 10 characters";
-    }]), _defineProperty(_ref, "biltyNoRule", [function (v) {
-      if (!v.trim()) return true;
-      if (!isNaN(parseFloat(v)) && v >= 0 && v <= 99999) return true;
-      return 'Number has to be between 0 and 99999';
-    }]), _defineProperty(_ref, "customerRules", [function (v) {
-      return v != null || "Select one";
-    }]), _defineProperty(_ref, "email", ""), _defineProperty(_ref, "emailRules", [function (v) {
-      return !!v || "E-mail is required";
-    }, function (v) {
-      return /.+@.+\..+/.test(v) || "E-mail must be valid";
-    }]), _defineProperty(_ref, "select", "Karachi"), _defineProperty(_ref, "items", ["Item 1", "Item 2", "Item 3", "Item 4"]), _defineProperty(_ref, "checkbox", false), _defineProperty(_ref, "lazy", false), _ref;
+      status_items: ["Registered", "Dispatched", "Delivered"],
+      payment_status_items: ["Paid", "Unpaid", "Monthly"],
+      status_item_value: "",
+      payment_status_item_value: "",
+      unit_items: ["kg", "cbm", "pck"],
+      valid: true,
+      nameRule: [function (v) {
+        return !!v || "Name is required";
+      }, function (v) {
+        return v && v.length <= 10 || "Name must be less than 10 characters";
+      }],
+      selectRule: [function (v) {
+        return !!v || "Field is required";
+      }],
+      descriptionRule: [function (v) {
+        return !!v || "Description is required";
+      }, function (v) {
+        return v && v.length <= 1000 || "Descriptipn must be less than 1000 characters";
+      }],
+      numberRule: [function (v) {
+        return !!v || "Field is required";
+      }, function (v) {
+        if (!v.trim) return true;
+        if (!isNaN(parseFloat(v)) && v >= 0 && v <= 99999) return true;
+        return "Number has to be between 0 and 99999";
+      }]
+    };
   },
   computed: {
     formTitle: function formTitle() {
       return this.editedIndex === -1 ? "New Item" : "Edit Item";
     }
   },
+  created: function created() {
+    this.getLastBiltyNo();
+    this.getCustomers();
+  },
   watch: {
     dialog: function dialog(val) {
       val || this.close();
-    }
-  },
-  created: function created() {
-    this.initialize();
-  }
-}, _defineProperty(_data$computed$watch$, "watch", {
-  isUpdating: function isUpdating(val) {
-    var _this = this;
+    },
+    isUpdating: function isUpdating(val) {
+      var _this = this;
 
-    if (val) {
-      setTimeout(function () {
-        return _this.isUpdating = false;
-      }, 3000);
-    } // return this.mySelectDataValue == 0 || null // some comparison to determine its been selected
-
-  }
-}), _defineProperty(_data$computed$watch$, "methods", {
-  remove: function remove(item) {
-    var index = this.friends.indexOf(item.name);
-    if (index >= 0) this.friends.splice(index, 1);
-  },
-  validate: function validate() {
-    if (this.$refs.form.validate()) {
-      this.snackbar = true;
-    }
-  },
-  reset: function reset() {
-    this.$refs.form.reset();
-  },
-  resetValidation: function resetValidation() {
-    this.$refs.form.resetValidation();
-  },
-  initialize: function initialize() {
-    this.desserts = [{
-      packages: "Frozen Yogurt",
-      calories: 159,
-      fat: 6.0,
-      carbs: 24,
-      protein: 4.0
-    }];
-  },
-  editItem: function editItem(item) {
-    this.editedIndex = this.desserts.indexOf(item);
-    this.editedItem = Object.assign({}, item);
-    this.dialog = true;
-  },
-  deleteItem: function deleteItem(item) {
-    var index = this.desserts.indexOf(item);
-    confirm("Are you sure you want to delete this item?") && this.desserts.splice(index, 1);
-  },
-  close: function close() {
-    var _this2 = this;
-
-    this.dialog = false;
-    this.resetValidation();
-    setTimeout(function () {
-      _this2.editedItem = Object.assign({}, _this2.defaultItem);
-      _this2.editedIndex = -1;
-    }, 300);
-  },
-  save: function save() {
-    if (this.$refs.form.validate()) {
-      if (this.editedIndex > -1) {
-        Object.assign(this.desserts[this.editedIndex], this.editedItem);
-      } else {
-        this.desserts.push(this.editedItem);
+      if (val) {
+        setTimeout(function () {
+          return _this.isUpdating = false;
+        }, 3000);
       }
-
-      this.close();
     }
   },
-  submit_bilty: function submit_bilty() {
-    if (this.$refs.form_1.validate()) {
-      console.log("submit bilty");
+  methods: {
+    getLastBiltyNo: function getLastBiltyNo() {
+      var _this2 = this;
+
+      this.$http({
+        url: "bilties/last",
+        method: "GET"
+      }).then(function (res) {
+        _this2.bilty_no = parseInt(res.data);
+      }, function () {
+        console.log("error occured"); // this.has_error = true
+      });
+    },
+    getCustomers: function getCustomers() {
+      var _this3 = this;
+
+      this.$http({
+        url: "customer",
+        method: "GET"
+      }).then(function (res) {
+        var customers = [];
+        var _iteratorNormalCompletion = true;
+        var _didIteratorError = false;
+        var _iteratorError = undefined;
+
+        try {
+          for (var _iterator = res.data[Symbol.iterator](), _step; !(_iteratorNormalCompletion = (_step = _iterator.next()).done); _iteratorNormalCompletion = true) {
+            var customer = _step.value;
+            customers.push({
+              id: customer.id,
+              no: customer.attributes.customer_no,
+              name: customer.attributes.name,
+              company: customer.attributes.company,
+              cellNo: customer.attributes.cell_no,
+              perKg: customer.attributes.per_kg_rate,
+              perCbm: customer.attributes.per_cbm_rate,
+              perPackage: customer.attributes.per_pck_rate
+            });
+          }
+        } catch (err) {
+          _didIteratorError = true;
+          _iteratorError = err;
+        } finally {
+          try {
+            if (!_iteratorNormalCompletion && _iterator["return"] != null) {
+              _iterator["return"]();
+            }
+          } finally {
+            if (_didIteratorError) {
+              throw _iteratorError;
+            }
+          }
+        }
+
+        _this3.customers = customers;
+      }, function () {
+        console.log("error occured"); // this.has_error = true
+      });
+    },
+    checkForBiltyNo: function checkForBiltyNo() {
+      if (!this.manual) {
+        this.getLastBiltyNo();
+      }
+    },
+    remove: function remove(item) {
+      var index = this.customer.indexOf(item.name);
+      if (index >= 0) this.customer.splice(index, 1);
+    },
+    validate: function validate() {
+      if (this.$refs.form.validate()) {
+        this.snackbar = true;
+      }
+    },
+    resetValidation: function resetValidation() {
+      this.$refs.form.resetValidation();
+    },
+    editItem: function editItem(item) {
+      this.editedIndex = this.packages.indexOf(item);
+      this.editedItem = Object.assign({}, item);
+      this.dialog = true;
+    },
+    deleteItem: function deleteItem(item) {
+      var index = this.packages.indexOf(item);
+      confirm("Are you sure you want to delete this item?") && this.packages.splice(index, 1);
+    },
+    close: function close() {
+      var _this4 = this;
+
+      this.dialog = false;
+      this.resetValidation();
+      setTimeout(function () {
+        _this4.editedItem = Object.assign({}, _this4.defaultItem);
+        _this4.editedIndex = -1;
+      }, 300);
+    },
+    save: function save() {
+      if (this.$refs.form.validate()) {
+        if (this.editedIndex > -1) {
+          Object.assign(this.packages[this.editedIndex], this.editedItem);
+        } else {
+          this.packages.push(this.editedItem);
+        }
+
+        this.close();
+      }
+    },
+    submit_bilty: function submit_bilty() {
+      if (this.$refs.bilty_form.validate()) {
+        var that = this;
+        var bilty = {
+          from: that.from_city_value,
+          to: that.to_city_value,
+          manual: that.manual.toString(),
+          bilty_no: that.bilty_no,
+          lc_bl_no: that.lc_bl_no,
+          bilty_charges: that.bilty_charges,
+          local_charges: that.local_charges,
+          sender: that.sender,
+          receiver: that.receiver,
+          receiver_address: that.receiver_address,
+          status_item_value: that.status_item_value,
+          payment_status_item_value: that.payment_status_item_value,
+          customer_id: that.customer,
+          packages: that.packages
+        };
+        console.log(bilty);
+        this.$http({
+          url: "bilty/create",
+          data: bilty,
+          method: "POST"
+        }).then(function (res) {
+          console.log(res);
+        }, function (err) {
+          console.log("error status", err.response.status);
+          console.log("error status text", err.response.statusText); // this.has_error = true
+        });
+      }
     }
   }
-}), _data$computed$watch$);
+});
 
 /***/ }),
 
@@ -12343,6 +12382,154 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
 
 "use strict";
 __webpack_require__.r(__webpack_exports__);
+/* harmony import */ var _babel_runtime_regenerator__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! @babel/runtime/regenerator */ "./node_modules/@babel/runtime/regenerator/index.js");
+/* harmony import */ var _babel_runtime_regenerator__WEBPACK_IMPORTED_MODULE_0___default = /*#__PURE__*/__webpack_require__.n(_babel_runtime_regenerator__WEBPACK_IMPORTED_MODULE_0__);
+
+
+function asyncGeneratorStep(gen, resolve, reject, _next, _throw, key, arg) { try { var info = gen[key](arg); var value = info.value; } catch (error) { reject(error); return; } if (info.done) { resolve(value); } else { Promise.resolve(value).then(_next, _throw); } }
+
+function _asyncToGenerator(fn) { return function () { var self = this, args = arguments; return new Promise(function (resolve, reject) { var gen = fn.apply(self, args); function _next(value) { asyncGeneratorStep(gen, resolve, reject, _next, _throw, "next", value); } function _throw(err) { asyncGeneratorStep(gen, resolve, reject, _next, _throw, "throw", err); } _next(undefined); }); }; }
+
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
 //
 //
 //
@@ -12371,88 +12558,659 @@ __webpack_require__.r(__webpack_exports__);
   data: function data() {
     return {
       search: "",
+      expanded: [],
+      singleExpand: false,
+      headers_packages: [{
+        text: "Description",
+        align: "left",
+        value: "description"
+      }, {
+        text: "Unit",
+        value: "unit"
+      }, {
+        text: "Quantity",
+        value: "quantity"
+      }, {
+        text: "Total weight",
+        value: "total_weight"
+      }, {
+        text: "Labour",
+        value: "labour"
+      }, {
+        text: "Rent",
+        value: "rent"
+      }],
       headers: [{
         text: "Builty No",
         align: "left",
         sortable: false,
-        value: "name"
+        value: "no"
+      }, {
+        text: "Manual",
+        value: "manual"
+      }, {
+        text: "Lc/bl-no",
+        value: "lc_bl_no"
       }, {
         text: "Sender",
-        value: "Sender"
+        value: "sender"
       }, {
-        text: "Quantity",
-        value: "Quantity"
-      }, {
-        text: "Description",
-        value: "Description"
-      }, {
-        text: "Weight",
-        value: "Weight"
-      }, {
-        text: "Amount",
-        value: "Amount"
+        text: "Receiver",
+        value: "receiver"
       }, {
         text: "Status",
-        value: "Status"
+        value: "status"
+      }, {
+        text: "Payment",
+        value: "payment_status"
+      }, {
+        text: "Action",
+        value: "action",
+        sortable: false
+      }, {
+        text: "",
+        value: "data-table-expand"
       }],
-      desserts: [{
-        name: 123,
-        Sender: 159,
-        Quantity: 6.0,
-        Description: 24,
-        Weight: 4.0,
-        Amount: "1%",
-        Status: true
+      bilties: [],
+      packages: []
+    };
+  },
+  created: function created() {
+    this.getBilties();
+  },
+  methods: {
+    getBilties: function getBilties() {
+      var _this = this;
+
+      this.$http({
+        url: "bilty",
+        method: "GET"
+      }).then(function (res) {
+        console.log(res.data);
+        var bilties = [];
+        var _iteratorNormalCompletion = true;
+        var _didIteratorError = false;
+        var _iteratorError = undefined;
+
+        try {
+          var _loop = function _loop() {
+            var bilty = _step.value;
+            var bilty_data = {
+              id: bilty.id,
+              no: bilty.attributes.bilty_no,
+              lc_bl_no: bilty.attributes.lg_bl_no,
+              manual: bilty.attributes.manual,
+              from: bilty.attributes.from,
+              to: bilty.attributes.to,
+              sender: bilty.attributes.sender,
+              receiver: bilty.attributes.receiver,
+              receiver_address: bilty.attributes.receiver_address,
+              status: bilty.attributes.status,
+              payment_status: bilty.attributes.payment_status,
+              bilty_charges: bilty.attributes.bilty_charges,
+              local_charges: bilty.attributes.local_charges,
+              packages: [],
+              package_total: 0,
+              total_amount: 0
+            };
+            bilty_data.total_amount = parseFloat(bilty_data.bilty_charges) + parseFloat(bilty_data.local_charges);
+
+            _this.getCustomer(bilty.relationships.customer.data.id).then(function (res) {
+              bilty_data.customer = res;
+            });
+
+            var _iteratorNormalCompletion2 = true;
+            var _didIteratorError2 = false;
+            var _iteratorError2 = undefined;
+
+            try {
+              for (var _iterator2 = bilty.relationships.packages.data[Symbol.iterator](), _step2; !(_iteratorNormalCompletion2 = (_step2 = _iterator2.next()).done); _iteratorNormalCompletion2 = true) {
+                var pck = _step2.value;
+                console.log(pck.id);
+
+                _this.getPackage(pck.id).then(function (res) {
+                  bilty_data.package_total += parseFloat(res.labour) + parseFloat(res.rent);
+                  bilty_data.total_amount += parseFloat(res.labour) + parseFloat(res.rent);
+                  bilty_data.packages.push(res);
+                });
+              }
+            } catch (err) {
+              _didIteratorError2 = true;
+              _iteratorError2 = err;
+            } finally {
+              try {
+                if (!_iteratorNormalCompletion2 && _iterator2["return"] != null) {
+                  _iterator2["return"]();
+                }
+              } finally {
+                if (_didIteratorError2) {
+                  throw _iteratorError2;
+                }
+              }
+            }
+
+            bilties.push(bilty_data);
+          };
+
+          for (var _iterator = res.data[Symbol.iterator](), _step; !(_iteratorNormalCompletion = (_step = _iterator.next()).done); _iteratorNormalCompletion = true) {
+            _loop();
+          }
+        } catch (err) {
+          _didIteratorError = true;
+          _iteratorError = err;
+        } finally {
+          try {
+            if (!_iteratorNormalCompletion && _iterator["return"] != null) {
+              _iterator["return"]();
+            }
+          } finally {
+            if (_didIteratorError) {
+              throw _iteratorError;
+            }
+          }
+        }
+
+        _this.bilties = bilties; // console.log(bilties);
+      }, function () {
+        console.log("error occured"); // this.has_error = true
+      });
+    },
+    getCustomer: function getCustomer(id) {
+      var _this2 = this;
+
+      return _asyncToGenerator(
+      /*#__PURE__*/
+      _babel_runtime_regenerator__WEBPACK_IMPORTED_MODULE_0___default.a.mark(function _callee() {
+        var customer;
+        return _babel_runtime_regenerator__WEBPACK_IMPORTED_MODULE_0___default.a.wrap(function _callee$(_context) {
+          while (1) {
+            switch (_context.prev = _context.next) {
+              case 0:
+                customer = {};
+                _context.next = 3;
+                return _this2.$http({
+                  url: "customer/".concat(id),
+                  method: "GET"
+                }).then(function (res) {
+                  customer = {
+                    customer_no: res.data.attributes.customer_no,
+                    name: res.data.attributes.name,
+                    company: res.data.attributes.company
+                  };
+                }, function () {
+                  console.log("error occured"); // this.has_error = true
+                });
+
+              case 3:
+                return _context.abrupt("return", customer);
+
+              case 4:
+              case "end":
+                return _context.stop();
+            }
+          }
+        }, _callee);
+      }))();
+    },
+    getPackage: function getPackage(id) {
+      var _this3 = this;
+
+      return _asyncToGenerator(
+      /*#__PURE__*/
+      _babel_runtime_regenerator__WEBPACK_IMPORTED_MODULE_0___default.a.mark(function _callee2() {
+        var pck;
+        return _babel_runtime_regenerator__WEBPACK_IMPORTED_MODULE_0___default.a.wrap(function _callee2$(_context2) {
+          while (1) {
+            switch (_context2.prev = _context2.next) {
+              case 0:
+                pck = {};
+                _context2.next = 3;
+                return _this3.$http({
+                  url: "package/".concat(id),
+                  method: "GET"
+                }).then(function (res) {
+                  pck = {
+                    description: res.data.attributes.description,
+                    unit: res.data.attributes.unit,
+                    quantity: res.data.attributes.quantity,
+                    total_weight: res.data.attributes.total_weight,
+                    labour: res.data.attributes.labour,
+                    rent: res.data.attributes.rent
+                  };
+                  console.log(pck);
+                }, function () {
+                  console.log("error occured"); // this.has_error = true
+                });
+
+              case 3:
+                return _context2.abrupt("return", pck);
+
+              case 4:
+              case "end":
+                return _context2.stop();
+            }
+          }
+        }, _callee2);
+      }))();
+    }
+  }
+});
+
+/***/ }),
+
+/***/ "./node_modules/babel-loader/lib/index.js?!./node_modules/vue-loader/lib/index.js?!./resources/js/components/Challan/Add.vue?vue&type=script&lang=js&":
+/*!**********************************************************************************************************************************************************************!*\
+  !*** ./node_modules/babel-loader/lib??ref--4-0!./node_modules/vue-loader/lib??vue-loader-options!./resources/js/components/Challan/Add.vue?vue&type=script&lang=js& ***!
+  \**********************************************************************************************************************************************************************/
+/*! exports provided: default */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony import */ var _babel_runtime_regenerator__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! @babel/runtime/regenerator */ "./node_modules/@babel/runtime/regenerator/index.js");
+/* harmony import */ var _babel_runtime_regenerator__WEBPACK_IMPORTED_MODULE_0___default = /*#__PURE__*/__webpack_require__.n(_babel_runtime_regenerator__WEBPACK_IMPORTED_MODULE_0__);
+
+
+function asyncGeneratorStep(gen, resolve, reject, _next, _throw, key, arg) { try { var info = gen[key](arg); var value = info.value; } catch (error) { reject(error); return; } if (info.done) { resolve(value); } else { Promise.resolve(value).then(_next, _throw); } }
+
+function _asyncToGenerator(fn) { return function () { var self = this, args = arguments; return new Promise(function (resolve, reject) { var gen = fn.apply(self, args); function _next(value) { asyncGeneratorStep(gen, resolve, reject, _next, _throw, "next", value); } function _throw(err) { asyncGeneratorStep(gen, resolve, reject, _next, _throw, "throw", err); } _next(undefined); }); }; }
+
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+/* harmony default export */ __webpack_exports__["default"] = ({
+  data: function data() {
+    return {
+      challan_no: "",
+      truck_no: "",
+      permit_no: "",
+      driver_name: "",
+      agent_name: "",
+      cnic: "",
+      transport: "",
+      total_amount: "",
+      expenses: "",
+      grand_total: "",
+      search: "",
+      loading: true,
+      from_city_items: ["Karachi", "Lahore", "Sheikhupura", "Islamabad"],
+      to_city_items: ["Lahore", "Sheikhupura", "Karachi", "Islamabad"],
+      from_city_value: "Karachi",
+      to_city_value: "Lahore",
+      manual: false,
+      selected: [],
+      headers: [{
+        text: "Builty No",
+        align: "left",
+        sortable: false,
+        value: "no"
       }, {
-        name: "hammad",
-        Sender: 159,
-        Quantity: 6.0,
-        Description: 24,
-        Weight: 4.0,
-        Amount: "1%",
-        Status: false
+        text: "Manual",
+        value: "manual"
       }, {
-        name: 123,
-        Sender: 159,
-        Quantity: 6.0,
-        Description: 24,
-        Weight: 4.0,
-        Amount: "1%",
-        Status: false
+        text: "Lc/bl-no",
+        value: "lc_bl_no"
       }, {
-        name: 123,
-        Sender: 159,
-        Quantity: 6.0,
-        Description: 24,
-        Weight: 4.0,
-        Amount: "1%",
-        Status: false
+        text: "Sender",
+        value: "sender"
       }, {
-        name: 123,
-        Sender: 159,
-        Quantity: 6.0,
-        Description: 24,
-        Weight: 4.0,
-        Amount: "1%",
-        Status: false
+        text: "Receiver",
+        value: "receiver"
       }, {
-        name: 123,
-        Sender: 159,
-        Quantity: 6.0,
-        Description: 24,
-        Weight: 4.0,
-        Amount: "1%",
-        Status: false
+        text: "Customer",
+        value: "customer_name"
       }, {
-        name: 123,
-        Sender: 159,
-        Quantity: 6.0,
-        Description: 24,
-        Weight: 4.0,
-        Amount: "1%",
-        Status: false
+        text: "Payment",
+        value: "payment_status"
+      }],
+      bilties: [],
+      valid: true,
+      nameRule: [function (v) {
+        return !!v || "Name is required";
+      }, function (v) {
+        return v && v.length <= 10 || "Name must be less than 10 characters";
+      }],
+      selectRule: [function (v) {
+        return !!v || "Field is required";
+      }],
+      descriptionRule: [function (v) {
+        return !!v || "Description is required";
+      }, function (v) {
+        return v && v.length <= 1000 || "Descriptipn must be less than 1000 characters";
+      }],
+      numberRule: [function (v) {
+        return !!v || "Field is required";
+      }, function (v) {
+        if (!v.trim) return true;
+        if (!isNaN(parseFloat(v)) && v >= 0 && v <= 99999) return true;
+        return "Number has to be between 0 and 99999";
       }]
     };
+  },
+  created: function created() {
+    var _this = this;
+
+    return _asyncToGenerator(
+    /*#__PURE__*/
+    _babel_runtime_regenerator__WEBPACK_IMPORTED_MODULE_0___default.a.mark(function _callee() {
+      return _babel_runtime_regenerator__WEBPACK_IMPORTED_MODULE_0___default.a.wrap(function _callee$(_context) {
+        while (1) {
+          switch (_context.prev = _context.next) {
+            case 0:
+              _this.getLastChallanNo();
+
+              _context.next = 3;
+              return _this.getBilties();
+
+            case 3:
+              console.log(_this.bilties);
+
+            case 4:
+            case "end":
+              return _context.stop();
+          }
+        }
+      }, _callee);
+    }))();
+  },
+  methods: {
+    getLastChallanNo: function getLastChallanNo() {
+      var _this2 = this;
+
+      this.$http({
+        url: "challan/last",
+        method: "GET"
+      }).then(function (res) {
+        _this2.challan_no = parseInt(res.data);
+      }, function () {
+        console.log("error occured"); // this.has_error = true
+      });
+    },
+    checkForBiltyNo: function checkForBiltyNo() {
+      if (!this.manual) {
+        this.getLastChallanNo();
+      }
+    },
+    getBilties: function getBilties() {
+      var _this3 = this;
+
+      this.loading = true;
+      var bilties = [];
+      this.$http({
+        url: "bilty",
+        method: "GET"
+      }).then(function (res) {
+        console.log(res.data);
+        var _iteratorNormalCompletion = true;
+        var _didIteratorError = false;
+        var _iteratorError = undefined;
+
+        try {
+          var _loop = function _loop() {
+            var bilty = _step.value;
+            var bilty_data = {
+              id: bilty.id,
+              no: bilty.attributes.bilty_no,
+              lc_bl_no: bilty.attributes.lg_bl_no,
+              manual: bilty.attributes.manual,
+              from: bilty.attributes.from,
+              to: bilty.attributes.to,
+              sender: bilty.attributes.sender,
+              receiver: bilty.attributes.receiver,
+              receiver_address: bilty.attributes.receiver_address,
+              status: bilty.attributes.status,
+              payment_status: bilty.attributes.payment_status,
+              bilty_charges: bilty.attributes.bilty_charges,
+              local_charges: bilty.attributes.local_charges,
+              package_total: 0,
+              total_amount: 0,
+              customer_name: ""
+            };
+
+            _this3.getCustomer(bilty.relationships.customer.data.id).then(function (res) {
+              // bilty_data.customer = res;
+              bilty_data.customer_name = res.name;
+              console.log(bilty_data.customer_name);
+            }).then(bilties.push(bilty_data));
+          };
+
+          for (var _iterator = res.data[Symbol.iterator](), _step; !(_iteratorNormalCompletion = (_step = _iterator.next()).done); _iteratorNormalCompletion = true) {
+            _loop();
+          }
+        } catch (err) {
+          _didIteratorError = true;
+          _iteratorError = err;
+        } finally {
+          try {
+            if (!_iteratorNormalCompletion && _iterator["return"] != null) {
+              _iterator["return"]();
+            }
+          } finally {
+            if (_didIteratorError) {
+              throw _iteratorError;
+            }
+          }
+        }
+
+        _this3.bilties = bilties;
+        console.log(bilties);
+      }, function () {
+        console.log("error occured"); // this.has_error = true
+      });
+    },
+    getCustomer: function getCustomer(id) {
+      var _this4 = this;
+
+      return _asyncToGenerator(
+      /*#__PURE__*/
+      _babel_runtime_regenerator__WEBPACK_IMPORTED_MODULE_0___default.a.mark(function _callee2() {
+        var customer;
+        return _babel_runtime_regenerator__WEBPACK_IMPORTED_MODULE_0___default.a.wrap(function _callee2$(_context2) {
+          while (1) {
+            switch (_context2.prev = _context2.next) {
+              case 0:
+                customer = {};
+                _context2.next = 3;
+                return _this4.$http({
+                  url: "customer/".concat(id),
+                  method: "GET"
+                }).then(function (res) {
+                  customer = {
+                    customer_no: res.data.attributes.customer_no,
+                    name: res.data.attributes.name,
+                    company: res.data.attributes.company
+                  };
+                  _this4.loading = false;
+                }, function () {
+                  console.log("error occured"); // this.has_error = true
+                });
+
+              case 3:
+                return _context2.abrupt("return", customer);
+
+              case 4:
+              case "end":
+                return _context2.stop();
+            }
+          }
+        }, _callee2);
+      }))();
+    },
+    validate: function validate() {
+      if (this.$refs.form.validate()) {
+        this.snackbar = true;
+      }
+    },
+    resetValidation: function resetValidation() {
+      this.$refs.form.resetValidation();
+    },
+    submit_challan: function submit_challan() {
+      if (true) {
+        var that = this;
+        var challan = {
+          challan_no: that.challan_no,
+          from: that.from_city_value,
+          to: that.to_city_value,
+          manual: that.manual.toString(),
+          truck_no: that.truck_no,
+          permit_no: that.permit_no,
+          driver_name: that.driver_name,
+          agent_name: that.agent_name,
+          cnic: that.cnic,
+          transport: that.transport,
+          total_amount: that.total_amount,
+          expenses: that.expenses,
+          grand_total: that.grand_total,
+          bilties: []
+        };
+        var _iteratorNormalCompletion2 = true;
+        var _didIteratorError2 = false;
+        var _iteratorError2 = undefined;
+
+        try {
+          for (var _iterator2 = this.selected[Symbol.iterator](), _step2; !(_iteratorNormalCompletion2 = (_step2 = _iterator2.next()).done); _iteratorNormalCompletion2 = true) {
+            var bilty = _step2.value;
+            challan.bilties.push(bilty.id);
+          }
+        } catch (err) {
+          _didIteratorError2 = true;
+          _iteratorError2 = err;
+        } finally {
+          try {
+            if (!_iteratorNormalCompletion2 && _iterator2["return"] != null) {
+              _iterator2["return"]();
+            }
+          } finally {
+            if (_didIteratorError2) {
+              throw _iteratorError2;
+            }
+          }
+        }
+
+        console.log(challan);
+        this.$http({
+          url: "challan/create",
+          data: challan,
+          method: "POST"
+        }).then(function (res) {
+          console.log(res);
+        }, function (err) {
+          console.log("error status", err.response.status);
+          console.log("error status text", err.response.statusText); // this.has_error = true
+        });
+      }
+    }
   }
 });
 
@@ -12506,6 +13264,9 @@ __webpack_require__.r(__webpack_exports__);
 //
 //
 //
+//
+//
+//
 /* harmony default export */ __webpack_exports__["default"] = ({
   data: function data() {
     return {
@@ -12515,7 +13276,8 @@ __webpack_require__.r(__webpack_exports__);
         customerNo: "",
         perKg: "",
         perCbm: "",
-        perPckg: ""
+        perPckg: "",
+        company: ""
       }
     };
   },
@@ -14536,6 +15298,743 @@ process.umask = function() { return 0; };
 
 /***/ }),
 
+/***/ "./node_modules/regenerator-runtime/runtime.js":
+/*!*****************************************************!*\
+  !*** ./node_modules/regenerator-runtime/runtime.js ***!
+  \*****************************************************/
+/*! no static exports found */
+/***/ (function(module, exports, __webpack_require__) {
+
+/**
+ * Copyright (c) 2014-present, Facebook, Inc.
+ *
+ * This source code is licensed under the MIT license found in the
+ * LICENSE file in the root directory of this source tree.
+ */
+
+var runtime = (function (exports) {
+  "use strict";
+
+  var Op = Object.prototype;
+  var hasOwn = Op.hasOwnProperty;
+  var undefined; // More compressible than void 0.
+  var $Symbol = typeof Symbol === "function" ? Symbol : {};
+  var iteratorSymbol = $Symbol.iterator || "@@iterator";
+  var asyncIteratorSymbol = $Symbol.asyncIterator || "@@asyncIterator";
+  var toStringTagSymbol = $Symbol.toStringTag || "@@toStringTag";
+
+  function wrap(innerFn, outerFn, self, tryLocsList) {
+    // If outerFn provided and outerFn.prototype is a Generator, then outerFn.prototype instanceof Generator.
+    var protoGenerator = outerFn && outerFn.prototype instanceof Generator ? outerFn : Generator;
+    var generator = Object.create(protoGenerator.prototype);
+    var context = new Context(tryLocsList || []);
+
+    // The ._invoke method unifies the implementations of the .next,
+    // .throw, and .return methods.
+    generator._invoke = makeInvokeMethod(innerFn, self, context);
+
+    return generator;
+  }
+  exports.wrap = wrap;
+
+  // Try/catch helper to minimize deoptimizations. Returns a completion
+  // record like context.tryEntries[i].completion. This interface could
+  // have been (and was previously) designed to take a closure to be
+  // invoked without arguments, but in all the cases we care about we
+  // already have an existing method we want to call, so there's no need
+  // to create a new function object. We can even get away with assuming
+  // the method takes exactly one argument, since that happens to be true
+  // in every case, so we don't have to touch the arguments object. The
+  // only additional allocation required is the completion record, which
+  // has a stable shape and so hopefully should be cheap to allocate.
+  function tryCatch(fn, obj, arg) {
+    try {
+      return { type: "normal", arg: fn.call(obj, arg) };
+    } catch (err) {
+      return { type: "throw", arg: err };
+    }
+  }
+
+  var GenStateSuspendedStart = "suspendedStart";
+  var GenStateSuspendedYield = "suspendedYield";
+  var GenStateExecuting = "executing";
+  var GenStateCompleted = "completed";
+
+  // Returning this object from the innerFn has the same effect as
+  // breaking out of the dispatch switch statement.
+  var ContinueSentinel = {};
+
+  // Dummy constructor functions that we use as the .constructor and
+  // .constructor.prototype properties for functions that return Generator
+  // objects. For full spec compliance, you may wish to configure your
+  // minifier not to mangle the names of these two functions.
+  function Generator() {}
+  function GeneratorFunction() {}
+  function GeneratorFunctionPrototype() {}
+
+  // This is a polyfill for %IteratorPrototype% for environments that
+  // don't natively support it.
+  var IteratorPrototype = {};
+  IteratorPrototype[iteratorSymbol] = function () {
+    return this;
+  };
+
+  var getProto = Object.getPrototypeOf;
+  var NativeIteratorPrototype = getProto && getProto(getProto(values([])));
+  if (NativeIteratorPrototype &&
+      NativeIteratorPrototype !== Op &&
+      hasOwn.call(NativeIteratorPrototype, iteratorSymbol)) {
+    // This environment has a native %IteratorPrototype%; use it instead
+    // of the polyfill.
+    IteratorPrototype = NativeIteratorPrototype;
+  }
+
+  var Gp = GeneratorFunctionPrototype.prototype =
+    Generator.prototype = Object.create(IteratorPrototype);
+  GeneratorFunction.prototype = Gp.constructor = GeneratorFunctionPrototype;
+  GeneratorFunctionPrototype.constructor = GeneratorFunction;
+  GeneratorFunctionPrototype[toStringTagSymbol] =
+    GeneratorFunction.displayName = "GeneratorFunction";
+
+  // Helper for defining the .next, .throw, and .return methods of the
+  // Iterator interface in terms of a single ._invoke method.
+  function defineIteratorMethods(prototype) {
+    ["next", "throw", "return"].forEach(function(method) {
+      prototype[method] = function(arg) {
+        return this._invoke(method, arg);
+      };
+    });
+  }
+
+  exports.isGeneratorFunction = function(genFun) {
+    var ctor = typeof genFun === "function" && genFun.constructor;
+    return ctor
+      ? ctor === GeneratorFunction ||
+        // For the native GeneratorFunction constructor, the best we can
+        // do is to check its .name property.
+        (ctor.displayName || ctor.name) === "GeneratorFunction"
+      : false;
+  };
+
+  exports.mark = function(genFun) {
+    if (Object.setPrototypeOf) {
+      Object.setPrototypeOf(genFun, GeneratorFunctionPrototype);
+    } else {
+      genFun.__proto__ = GeneratorFunctionPrototype;
+      if (!(toStringTagSymbol in genFun)) {
+        genFun[toStringTagSymbol] = "GeneratorFunction";
+      }
+    }
+    genFun.prototype = Object.create(Gp);
+    return genFun;
+  };
+
+  // Within the body of any async function, `await x` is transformed to
+  // `yield regeneratorRuntime.awrap(x)`, so that the runtime can test
+  // `hasOwn.call(value, "__await")` to determine if the yielded value is
+  // meant to be awaited.
+  exports.awrap = function(arg) {
+    return { __await: arg };
+  };
+
+  function AsyncIterator(generator) {
+    function invoke(method, arg, resolve, reject) {
+      var record = tryCatch(generator[method], generator, arg);
+      if (record.type === "throw") {
+        reject(record.arg);
+      } else {
+        var result = record.arg;
+        var value = result.value;
+        if (value &&
+            typeof value === "object" &&
+            hasOwn.call(value, "__await")) {
+          return Promise.resolve(value.__await).then(function(value) {
+            invoke("next", value, resolve, reject);
+          }, function(err) {
+            invoke("throw", err, resolve, reject);
+          });
+        }
+
+        return Promise.resolve(value).then(function(unwrapped) {
+          // When a yielded Promise is resolved, its final value becomes
+          // the .value of the Promise<{value,done}> result for the
+          // current iteration.
+          result.value = unwrapped;
+          resolve(result);
+        }, function(error) {
+          // If a rejected Promise was yielded, throw the rejection back
+          // into the async generator function so it can be handled there.
+          return invoke("throw", error, resolve, reject);
+        });
+      }
+    }
+
+    var previousPromise;
+
+    function enqueue(method, arg) {
+      function callInvokeWithMethodAndArg() {
+        return new Promise(function(resolve, reject) {
+          invoke(method, arg, resolve, reject);
+        });
+      }
+
+      return previousPromise =
+        // If enqueue has been called before, then we want to wait until
+        // all previous Promises have been resolved before calling invoke,
+        // so that results are always delivered in the correct order. If
+        // enqueue has not been called before, then it is important to
+        // call invoke immediately, without waiting on a callback to fire,
+        // so that the async generator function has the opportunity to do
+        // any necessary setup in a predictable way. This predictability
+        // is why the Promise constructor synchronously invokes its
+        // executor callback, and why async functions synchronously
+        // execute code before the first await. Since we implement simple
+        // async functions in terms of async generators, it is especially
+        // important to get this right, even though it requires care.
+        previousPromise ? previousPromise.then(
+          callInvokeWithMethodAndArg,
+          // Avoid propagating failures to Promises returned by later
+          // invocations of the iterator.
+          callInvokeWithMethodAndArg
+        ) : callInvokeWithMethodAndArg();
+    }
+
+    // Define the unified helper method that is used to implement .next,
+    // .throw, and .return (see defineIteratorMethods).
+    this._invoke = enqueue;
+  }
+
+  defineIteratorMethods(AsyncIterator.prototype);
+  AsyncIterator.prototype[asyncIteratorSymbol] = function () {
+    return this;
+  };
+  exports.AsyncIterator = AsyncIterator;
+
+  // Note that simple async functions are implemented on top of
+  // AsyncIterator objects; they just return a Promise for the value of
+  // the final result produced by the iterator.
+  exports.async = function(innerFn, outerFn, self, tryLocsList) {
+    var iter = new AsyncIterator(
+      wrap(innerFn, outerFn, self, tryLocsList)
+    );
+
+    return exports.isGeneratorFunction(outerFn)
+      ? iter // If outerFn is a generator, return the full iterator.
+      : iter.next().then(function(result) {
+          return result.done ? result.value : iter.next();
+        });
+  };
+
+  function makeInvokeMethod(innerFn, self, context) {
+    var state = GenStateSuspendedStart;
+
+    return function invoke(method, arg) {
+      if (state === GenStateExecuting) {
+        throw new Error("Generator is already running");
+      }
+
+      if (state === GenStateCompleted) {
+        if (method === "throw") {
+          throw arg;
+        }
+
+        // Be forgiving, per 25.3.3.3.3 of the spec:
+        // https://people.mozilla.org/~jorendorff/es6-draft.html#sec-generatorresume
+        return doneResult();
+      }
+
+      context.method = method;
+      context.arg = arg;
+
+      while (true) {
+        var delegate = context.delegate;
+        if (delegate) {
+          var delegateResult = maybeInvokeDelegate(delegate, context);
+          if (delegateResult) {
+            if (delegateResult === ContinueSentinel) continue;
+            return delegateResult;
+          }
+        }
+
+        if (context.method === "next") {
+          // Setting context._sent for legacy support of Babel's
+          // function.sent implementation.
+          context.sent = context._sent = context.arg;
+
+        } else if (context.method === "throw") {
+          if (state === GenStateSuspendedStart) {
+            state = GenStateCompleted;
+            throw context.arg;
+          }
+
+          context.dispatchException(context.arg);
+
+        } else if (context.method === "return") {
+          context.abrupt("return", context.arg);
+        }
+
+        state = GenStateExecuting;
+
+        var record = tryCatch(innerFn, self, context);
+        if (record.type === "normal") {
+          // If an exception is thrown from innerFn, we leave state ===
+          // GenStateExecuting and loop back for another invocation.
+          state = context.done
+            ? GenStateCompleted
+            : GenStateSuspendedYield;
+
+          if (record.arg === ContinueSentinel) {
+            continue;
+          }
+
+          return {
+            value: record.arg,
+            done: context.done
+          };
+
+        } else if (record.type === "throw") {
+          state = GenStateCompleted;
+          // Dispatch the exception by looping back around to the
+          // context.dispatchException(context.arg) call above.
+          context.method = "throw";
+          context.arg = record.arg;
+        }
+      }
+    };
+  }
+
+  // Call delegate.iterator[context.method](context.arg) and handle the
+  // result, either by returning a { value, done } result from the
+  // delegate iterator, or by modifying context.method and context.arg,
+  // setting context.delegate to null, and returning the ContinueSentinel.
+  function maybeInvokeDelegate(delegate, context) {
+    var method = delegate.iterator[context.method];
+    if (method === undefined) {
+      // A .throw or .return when the delegate iterator has no .throw
+      // method always terminates the yield* loop.
+      context.delegate = null;
+
+      if (context.method === "throw") {
+        // Note: ["return"] must be used for ES3 parsing compatibility.
+        if (delegate.iterator["return"]) {
+          // If the delegate iterator has a return method, give it a
+          // chance to clean up.
+          context.method = "return";
+          context.arg = undefined;
+          maybeInvokeDelegate(delegate, context);
+
+          if (context.method === "throw") {
+            // If maybeInvokeDelegate(context) changed context.method from
+            // "return" to "throw", let that override the TypeError below.
+            return ContinueSentinel;
+          }
+        }
+
+        context.method = "throw";
+        context.arg = new TypeError(
+          "The iterator does not provide a 'throw' method");
+      }
+
+      return ContinueSentinel;
+    }
+
+    var record = tryCatch(method, delegate.iterator, context.arg);
+
+    if (record.type === "throw") {
+      context.method = "throw";
+      context.arg = record.arg;
+      context.delegate = null;
+      return ContinueSentinel;
+    }
+
+    var info = record.arg;
+
+    if (! info) {
+      context.method = "throw";
+      context.arg = new TypeError("iterator result is not an object");
+      context.delegate = null;
+      return ContinueSentinel;
+    }
+
+    if (info.done) {
+      // Assign the result of the finished delegate to the temporary
+      // variable specified by delegate.resultName (see delegateYield).
+      context[delegate.resultName] = info.value;
+
+      // Resume execution at the desired location (see delegateYield).
+      context.next = delegate.nextLoc;
+
+      // If context.method was "throw" but the delegate handled the
+      // exception, let the outer generator proceed normally. If
+      // context.method was "next", forget context.arg since it has been
+      // "consumed" by the delegate iterator. If context.method was
+      // "return", allow the original .return call to continue in the
+      // outer generator.
+      if (context.method !== "return") {
+        context.method = "next";
+        context.arg = undefined;
+      }
+
+    } else {
+      // Re-yield the result returned by the delegate method.
+      return info;
+    }
+
+    // The delegate iterator is finished, so forget it and continue with
+    // the outer generator.
+    context.delegate = null;
+    return ContinueSentinel;
+  }
+
+  // Define Generator.prototype.{next,throw,return} in terms of the
+  // unified ._invoke helper method.
+  defineIteratorMethods(Gp);
+
+  Gp[toStringTagSymbol] = "Generator";
+
+  // A Generator should always return itself as the iterator object when the
+  // @@iterator function is called on it. Some browsers' implementations of the
+  // iterator prototype chain incorrectly implement this, causing the Generator
+  // object to not be returned from this call. This ensures that doesn't happen.
+  // See https://github.com/facebook/regenerator/issues/274 for more details.
+  Gp[iteratorSymbol] = function() {
+    return this;
+  };
+
+  Gp.toString = function() {
+    return "[object Generator]";
+  };
+
+  function pushTryEntry(locs) {
+    var entry = { tryLoc: locs[0] };
+
+    if (1 in locs) {
+      entry.catchLoc = locs[1];
+    }
+
+    if (2 in locs) {
+      entry.finallyLoc = locs[2];
+      entry.afterLoc = locs[3];
+    }
+
+    this.tryEntries.push(entry);
+  }
+
+  function resetTryEntry(entry) {
+    var record = entry.completion || {};
+    record.type = "normal";
+    delete record.arg;
+    entry.completion = record;
+  }
+
+  function Context(tryLocsList) {
+    // The root entry object (effectively a try statement without a catch
+    // or a finally block) gives us a place to store values thrown from
+    // locations where there is no enclosing try statement.
+    this.tryEntries = [{ tryLoc: "root" }];
+    tryLocsList.forEach(pushTryEntry, this);
+    this.reset(true);
+  }
+
+  exports.keys = function(object) {
+    var keys = [];
+    for (var key in object) {
+      keys.push(key);
+    }
+    keys.reverse();
+
+    // Rather than returning an object with a next method, we keep
+    // things simple and return the next function itself.
+    return function next() {
+      while (keys.length) {
+        var key = keys.pop();
+        if (key in object) {
+          next.value = key;
+          next.done = false;
+          return next;
+        }
+      }
+
+      // To avoid creating an additional object, we just hang the .value
+      // and .done properties off the next function object itself. This
+      // also ensures that the minifier will not anonymize the function.
+      next.done = true;
+      return next;
+    };
+  };
+
+  function values(iterable) {
+    if (iterable) {
+      var iteratorMethod = iterable[iteratorSymbol];
+      if (iteratorMethod) {
+        return iteratorMethod.call(iterable);
+      }
+
+      if (typeof iterable.next === "function") {
+        return iterable;
+      }
+
+      if (!isNaN(iterable.length)) {
+        var i = -1, next = function next() {
+          while (++i < iterable.length) {
+            if (hasOwn.call(iterable, i)) {
+              next.value = iterable[i];
+              next.done = false;
+              return next;
+            }
+          }
+
+          next.value = undefined;
+          next.done = true;
+
+          return next;
+        };
+
+        return next.next = next;
+      }
+    }
+
+    // Return an iterator with no values.
+    return { next: doneResult };
+  }
+  exports.values = values;
+
+  function doneResult() {
+    return { value: undefined, done: true };
+  }
+
+  Context.prototype = {
+    constructor: Context,
+
+    reset: function(skipTempReset) {
+      this.prev = 0;
+      this.next = 0;
+      // Resetting context._sent for legacy support of Babel's
+      // function.sent implementation.
+      this.sent = this._sent = undefined;
+      this.done = false;
+      this.delegate = null;
+
+      this.method = "next";
+      this.arg = undefined;
+
+      this.tryEntries.forEach(resetTryEntry);
+
+      if (!skipTempReset) {
+        for (var name in this) {
+          // Not sure about the optimal order of these conditions:
+          if (name.charAt(0) === "t" &&
+              hasOwn.call(this, name) &&
+              !isNaN(+name.slice(1))) {
+            this[name] = undefined;
+          }
+        }
+      }
+    },
+
+    stop: function() {
+      this.done = true;
+
+      var rootEntry = this.tryEntries[0];
+      var rootRecord = rootEntry.completion;
+      if (rootRecord.type === "throw") {
+        throw rootRecord.arg;
+      }
+
+      return this.rval;
+    },
+
+    dispatchException: function(exception) {
+      if (this.done) {
+        throw exception;
+      }
+
+      var context = this;
+      function handle(loc, caught) {
+        record.type = "throw";
+        record.arg = exception;
+        context.next = loc;
+
+        if (caught) {
+          // If the dispatched exception was caught by a catch block,
+          // then let that catch block handle the exception normally.
+          context.method = "next";
+          context.arg = undefined;
+        }
+
+        return !! caught;
+      }
+
+      for (var i = this.tryEntries.length - 1; i >= 0; --i) {
+        var entry = this.tryEntries[i];
+        var record = entry.completion;
+
+        if (entry.tryLoc === "root") {
+          // Exception thrown outside of any try block that could handle
+          // it, so set the completion value of the entire function to
+          // throw the exception.
+          return handle("end");
+        }
+
+        if (entry.tryLoc <= this.prev) {
+          var hasCatch = hasOwn.call(entry, "catchLoc");
+          var hasFinally = hasOwn.call(entry, "finallyLoc");
+
+          if (hasCatch && hasFinally) {
+            if (this.prev < entry.catchLoc) {
+              return handle(entry.catchLoc, true);
+            } else if (this.prev < entry.finallyLoc) {
+              return handle(entry.finallyLoc);
+            }
+
+          } else if (hasCatch) {
+            if (this.prev < entry.catchLoc) {
+              return handle(entry.catchLoc, true);
+            }
+
+          } else if (hasFinally) {
+            if (this.prev < entry.finallyLoc) {
+              return handle(entry.finallyLoc);
+            }
+
+          } else {
+            throw new Error("try statement without catch or finally");
+          }
+        }
+      }
+    },
+
+    abrupt: function(type, arg) {
+      for (var i = this.tryEntries.length - 1; i >= 0; --i) {
+        var entry = this.tryEntries[i];
+        if (entry.tryLoc <= this.prev &&
+            hasOwn.call(entry, "finallyLoc") &&
+            this.prev < entry.finallyLoc) {
+          var finallyEntry = entry;
+          break;
+        }
+      }
+
+      if (finallyEntry &&
+          (type === "break" ||
+           type === "continue") &&
+          finallyEntry.tryLoc <= arg &&
+          arg <= finallyEntry.finallyLoc) {
+        // Ignore the finally entry if control is not jumping to a
+        // location outside the try/catch block.
+        finallyEntry = null;
+      }
+
+      var record = finallyEntry ? finallyEntry.completion : {};
+      record.type = type;
+      record.arg = arg;
+
+      if (finallyEntry) {
+        this.method = "next";
+        this.next = finallyEntry.finallyLoc;
+        return ContinueSentinel;
+      }
+
+      return this.complete(record);
+    },
+
+    complete: function(record, afterLoc) {
+      if (record.type === "throw") {
+        throw record.arg;
+      }
+
+      if (record.type === "break" ||
+          record.type === "continue") {
+        this.next = record.arg;
+      } else if (record.type === "return") {
+        this.rval = this.arg = record.arg;
+        this.method = "return";
+        this.next = "end";
+      } else if (record.type === "normal" && afterLoc) {
+        this.next = afterLoc;
+      }
+
+      return ContinueSentinel;
+    },
+
+    finish: function(finallyLoc) {
+      for (var i = this.tryEntries.length - 1; i >= 0; --i) {
+        var entry = this.tryEntries[i];
+        if (entry.finallyLoc === finallyLoc) {
+          this.complete(entry.completion, entry.afterLoc);
+          resetTryEntry(entry);
+          return ContinueSentinel;
+        }
+      }
+    },
+
+    "catch": function(tryLoc) {
+      for (var i = this.tryEntries.length - 1; i >= 0; --i) {
+        var entry = this.tryEntries[i];
+        if (entry.tryLoc === tryLoc) {
+          var record = entry.completion;
+          if (record.type === "throw") {
+            var thrown = record.arg;
+            resetTryEntry(entry);
+          }
+          return thrown;
+        }
+      }
+
+      // The context.catch method must only be called with a location
+      // argument that corresponds to a known catch block.
+      throw new Error("illegal catch attempt");
+    },
+
+    delegateYield: function(iterable, resultName, nextLoc) {
+      this.delegate = {
+        iterator: values(iterable),
+        resultName: resultName,
+        nextLoc: nextLoc
+      };
+
+      if (this.method === "next") {
+        // Deliberately forget the last sent value so that we don't
+        // accidentally pass it on to the delegate.
+        this.arg = undefined;
+      }
+
+      return ContinueSentinel;
+    }
+  };
+
+  // Regardless of whether this script is executing as a CommonJS module
+  // or not, return the runtime object so that we can declare the variable
+  // regeneratorRuntime in the outer scope, which allows this module to be
+  // injected easily by `bin/regenerator --include-runtime script.js`.
+  return exports;
+
+}(
+  // If this script is executing as a CommonJS module, use module.exports
+  // as the regeneratorRuntime namespace. Otherwise create a new empty
+  // object. Either way, the resulting object will be used to initialize
+  // the regeneratorRuntime variable at the top of this file.
+   true ? module.exports : undefined
+));
+
+try {
+  regeneratorRuntime = runtime;
+} catch (accidentalStrictMode) {
+  // This module should not be running in strict mode, so the above
+  // assignment should always work unless something is misconfigured. Just
+  // in case runtime.js accidentally runs in strict mode, we can escape
+  // strict mode using a global Function call. This could conceivably fail
+  // if a Content Security Policy forbids using Function, but in that case
+  // the proper solution is to fix the accidental strict mode problem. If
+  // you've misconfigured your bundler to force strict mode and applied a
+  // CSP to forbid Function, and you're not willing to fix either of those
+  // problems, please detail your unique predicament in a GitHub issue.
+  Function("r", "regeneratorRuntime = r")(runtime);
+}
+
+
+/***/ }),
+
 /***/ "./node_modules/setimmediate/setImmediate.js":
 /*!***************************************************!*\
   !*** ./node_modules/setimmediate/setImmediate.js ***!
@@ -15493,7 +16992,7 @@ var render = function() {
   return _c(
     "v-form",
     {
-      ref: "form_1",
+      ref: "bilty_form",
       model: {
         value: _vm.valid,
         callback: function($$v) {
@@ -15516,17 +17015,16 @@ var render = function() {
                 [
                   _c("v-text-field", {
                     attrs: {
-                      disabled: !_vm.enabled,
-                      rules: _vm.biltyNoRule,
-                      label: "Builty Number",
-                      required: ""
+                      disabled: !_vm.manual,
+                      rules: _vm.numberRule,
+                      label: "Builty Number"
                     },
                     model: {
-                      value: _vm.biltyNo,
+                      value: _vm.bilty_no,
                       callback: function($$v) {
-                        _vm.biltyNo = $$v
+                        _vm.bilty_no = $$v
                       },
-                      expression: "biltyNo"
+                      expression: "bilty_no"
                     }
                   })
                 ],
@@ -15540,12 +17038,17 @@ var render = function() {
                   _c("v-checkbox", {
                     staticClass: "shrink",
                     attrs: { "hide-details": "", label: "Manual" },
+                    on: {
+                      change: function($event) {
+                        return _vm.checkForBiltyNo()
+                      }
+                    },
                     model: {
-                      value: _vm.enabled,
+                      value: _vm.manual,
                       callback: function($$v) {
-                        _vm.enabled = $$v
+                        _vm.manual = $$v
                       },
-                      expression: "enabled"
+                      expression: "manual"
                     }
                   })
                 ],
@@ -15556,31 +17059,21 @@ var render = function() {
                 "v-col",
                 { attrs: { cols: "12", md: "7" } },
                 [
-                  _c("v-row"),
-                  _vm._v(" "),
                   _c("v-autocomplete", {
                     attrs: {
                       disabled: _vm.isUpdating,
                       items: _vm.customers,
                       chips: "",
                       "item-text": "name",
-                      "item-value": "name",
-                      label: "Customer",
-                      rules: _vm.customerRules,
-                      required: ""
+                      "item-value": "id",
+                      label: "Customer"
                     },
                     scopedSlots: _vm._u([
                       {
                         key: "selection",
                         fn: function(data) {
                           return [
-                            _c("v-chip", [
-                              _vm._v(
-                                "\n                  " +
-                                  _vm._s(data.item.name) +
-                                  "\n                "
-                              )
-                            ])
+                            _c("v-chip", [_vm._v(_vm._s(data.item.name))])
                           ]
                         }
                       },
@@ -15624,11 +17117,11 @@ var render = function() {
                       }
                     ]),
                     model: {
-                      value: _vm.friends,
+                      value: _vm.customer,
                       callback: function($$v) {
-                        _vm.friends = $$v
+                        _vm.customer = $$v
                       },
-                      expression: "friends"
+                      expression: "customer"
                     }
                   })
                 ],
@@ -15646,17 +17139,13 @@ var render = function() {
                 { attrs: { cols: "12", md: "4" } },
                 [
                   _c("v-text-field", {
-                    attrs: {
-                      rules: _vm.Lc_no_Rules,
-                      label: "L/C - B/L No.",
-                      required: ""
-                    },
+                    attrs: { rules: _vm.numberRule, label: "L/C - B/L No" },
                     model: {
-                      value: _vm.Lc_No,
+                      value: _vm.lc_bl_no,
                       callback: function($$v) {
-                        _vm.Lc_No = $$v
+                        _vm.lc_bl_no = $$v
                       },
-                      expression: "Lc_No"
+                      expression: "lc_bl_no"
                     }
                   })
                 ],
@@ -15668,17 +17157,13 @@ var render = function() {
                 { attrs: { cols: "12", md: "4" } },
                 [
                   _c("v-text-field", {
-                    attrs: {
-                      rules: _vm.chargesRule,
-                      label: "Bilty Charges",
-                      required: ""
-                    },
+                    attrs: { rules: _vm.numberRule, label: "Bilty Charges" },
                     model: {
-                      value: _vm.biltyCharges,
+                      value: _vm.bilty_charges,
                       callback: function($$v) {
-                        _vm.biltyCharges = $$v
+                        _vm.bilty_charges = $$v
                       },
-                      expression: "biltyCharges"
+                      expression: "bilty_charges"
                     }
                   })
                 ],
@@ -15690,17 +17175,13 @@ var render = function() {
                 { attrs: { cols: "12", md: "4" } },
                 [
                   _c("v-text-field", {
-                    attrs: {
-                      rules: _vm.chargesRule,
-                      label: "Local Charges",
-                      required: ""
-                    },
+                    attrs: { rules: _vm.numberRule, label: "Local Charges" },
                     model: {
-                      value: _vm.localCharges,
+                      value: _vm.local_charges,
                       callback: function($$v) {
-                        _vm.localCharges = $$v
+                        _vm.local_charges = $$v
                       },
-                      expression: "localCharges"
+                      expression: "local_charges"
                     }
                   })
                 ],
@@ -15717,31 +17198,22 @@ var render = function() {
                 "v-col",
                 { attrs: { cols: "12", md: "6" } },
                 [
-                  _c(
-                    "v-radio-group",
-                    {
-                      attrs: { row: "" },
-                      model: {
-                        value: _vm.row,
-                        callback: function($$v) {
-                          _vm.row = $$v
-                        },
-                        expression: "row"
-                      }
+                  _c("v-autocomplete", {
+                    attrs: {
+                      items: _vm.from_city_items,
+                      rules: _vm.selectRule,
+                      dense: "",
+                      filled: "",
+                      label: "From"
                     },
-                    [
-                      _c("span", { staticClass: "mr-4" }, [_vm._v("From")]),
-                      _vm._v(" "),
-                      _c("v-radio", {
-                        attrs: { label: "Karachi", value: "karachi" }
-                      }),
-                      _vm._v(" "),
-                      _c("v-radio", {
-                        attrs: { label: "Others", value: "others" }
-                      })
-                    ],
-                    1
-                  )
+                    model: {
+                      value: _vm.from_city_value,
+                      callback: function($$v) {
+                        _vm.from_city_value = $$v
+                      },
+                      expression: "from_city_value"
+                    }
+                  })
                 ],
                 1
               ),
@@ -15750,35 +17222,22 @@ var render = function() {
                 "v-col",
                 { attrs: { cols: "12", md: "6" } },
                 [
-                  _c(
-                    "v-radio-group",
-                    {
-                      attrs: { row: "" },
-                      model: {
-                        value: _vm.row,
-                        callback: function($$v) {
-                          _vm.row = $$v
-                        },
-                        expression: "row"
-                      }
+                  _c("v-autocomplete", {
+                    attrs: {
+                      rules: _vm.selectRule,
+                      items: _vm.to_city_items,
+                      dense: "",
+                      filled: "",
+                      label: "To"
                     },
-                    [
-                      _c("span", { staticClass: "mr-4" }, [_vm._v("To")]),
-                      _vm._v(" "),
-                      _c("v-radio", {
-                        attrs: { label: "Lahore", value: "lahoree" }
-                      }),
-                      _vm._v(" "),
-                      _c("v-radio", {
-                        attrs: { label: "Sheikhupura", value: "sheikhupura" }
-                      }),
-                      _vm._v(" "),
-                      _c("v-radio", {
-                        attrs: { label: "Others", value: "others" }
-                      })
-                    ],
-                    1
-                  )
+                    model: {
+                      value: _vm.to_city_value,
+                      callback: function($$v) {
+                        _vm.to_city_value = $$v
+                      },
+                      expression: "to_city_value"
+                    }
+                  })
                 ],
                 1
               )
@@ -15794,11 +17253,7 @@ var render = function() {
                 { attrs: { cols: "12", md: "6" } },
                 [
                   _c("v-text-field", {
-                    attrs: {
-                      rules: _vm.nameRules,
-                      label: "Sender Name",
-                      required: ""
-                    },
+                    attrs: { rules: _vm.nameRule, label: "Sender Name" },
                     model: {
                       value: _vm.sender,
                       callback: function($$v) {
@@ -15816,17 +17271,13 @@ var render = function() {
                 { attrs: { cols: "12", md: "6" } },
                 [
                   _c("v-text-field", {
-                    attrs: {
-                      rules: _vm.nameRules,
-                      label: "Reciever Name",
-                      required: ""
-                    },
+                    attrs: { rules: _vm.nameRule, label: "Reciever Name" },
                     model: {
-                      value: _vm.reciever,
+                      value: _vm.receiver,
                       callback: function($$v) {
-                        _vm.reciever = $$v
+                        _vm.receiver = $$v
                       },
-                      expression: "reciever"
+                      expression: "receiver"
                     }
                   })
                 ],
@@ -15849,15 +17300,14 @@ var render = function() {
                       label: "Reciever Address",
                       rows: "2",
                       "row-height": "20",
-                      rules: _vm.AddressRule,
-                      required: ""
+                      rules: _vm.descriptionRule
                     },
                     model: {
-                      value: _vm.outlined,
+                      value: _vm.receiver_address,
                       callback: function($$v) {
-                        _vm.outlined = $$v
+                        _vm.receiver_address = $$v
                       },
-                      expression: "outlined"
+                      expression: "receiver_address"
                     }
                   })
                 ],
@@ -15876,10 +17326,16 @@ var render = function() {
                 [
                   _c("v-select", {
                     attrs: {
-                      items: _vm.items3,
-                      rules: _vm.customerRules,
-                      label: "Status",
-                      required: ""
+                      items: _vm.status_items,
+                      rules: _vm.selectRule,
+                      label: "Status"
+                    },
+                    model: {
+                      value: _vm.status_item_value,
+                      callback: function($$v) {
+                        _vm.status_item_value = $$v
+                      },
+                      expression: "status_item_value"
                     }
                   })
                 ],
@@ -15892,10 +17348,16 @@ var render = function() {
                 [
                   _c("v-select", {
                     attrs: {
-                      items: _vm.items4,
-                      rules: _vm.customerRules,
-                      label: "Payment Status",
-                      required: ""
+                      items: _vm.payment_status_items,
+                      rules: _vm.selectRule,
+                      label: "Payment Status"
+                    },
+                    model: {
+                      value: _vm.payment_status_item_value,
+                      callback: function($$v) {
+                        _vm.payment_status_item_value = $$v
+                      },
+                      expression: "payment_status_item_value"
                     }
                   })
                 ],
@@ -15909,7 +17371,7 @@ var render = function() {
             staticClass: "elevation-1",
             attrs: {
               headers: _vm.headers,
-              items: _vm.desserts,
+              items: _vm.packages,
               "sort-by": "calories",
               dark: ""
             },
@@ -15934,7 +17396,7 @@ var render = function() {
                         _c(
                           "v-dialog",
                           {
-                            attrs: { "max-width": "800px" },
+                            attrs: { "max-width": "1000px" },
                             scopedSlots: _vm._u([
                               {
                                 key: "activator",
@@ -15999,77 +17461,33 @@ var render = function() {
                                                     attrs: {
                                                       cols: "12",
                                                       sm: "12",
-                                                      md: "6"
-                                                    }
-                                                  },
-                                                  [
-                                                    _c("v-text-field", {
-                                                      attrs: {
-                                                        disabled: "",
-                                                        rules:
-                                                          _vm.packageNoRule,
-                                                        required: "",
-                                                        label: "No. of Packages"
-                                                      },
-                                                      model: {
-                                                        value:
-                                                          _vm.editedItem
-                                                            .packages,
-                                                        callback: function(
-                                                          $$v
-                                                        ) {
-                                                          _vm.$set(
-                                                            _vm.editedItem,
-                                                            "packages",
-                                                            $$v
-                                                          )
-                                                        },
-                                                        expression:
-                                                          "editedItem.packages"
-                                                      }
-                                                    })
-                                                  ],
-                                                  1
-                                                )
-                                              ],
-                                              1
-                                            ),
-                                            _vm._v(" "),
-                                            _c(
-                                              "v-row",
-                                              [
-                                                _c(
-                                                  "v-col",
-                                                  {
-                                                    attrs: {
-                                                      cols: "12",
-                                                      sm: "12",
-                                                      md: "10"
+                                                      md: "12"
                                                     }
                                                   },
                                                   [
                                                     _c("v-textarea", {
                                                       attrs: {
                                                         label: "Description",
+                                                        rows: "2",
+                                                        "row-height": "20",
                                                         rules:
-                                                          _vm.descriptionRule,
-                                                        required: ""
+                                                          _vm.descriptionRule
                                                       },
                                                       model: {
                                                         value:
                                                           _vm.editedItem
-                                                            .desription,
+                                                            .description,
                                                         callback: function(
                                                           $$v
                                                         ) {
                                                           _vm.$set(
                                                             _vm.editedItem,
-                                                            "desription",
+                                                            "description",
                                                             $$v
                                                           )
                                                         },
                                                         expression:
-                                                          "editedItem.desription"
+                                                          "editedItem.description"
                                                       }
                                                     })
                                                   ],
@@ -16094,8 +17512,7 @@ var render = function() {
                                                   [
                                                     _c("v-text-field", {
                                                       attrs: {
-                                                        rules: _vm.chargesRule,
-                                                        required: "",
+                                                        rules: _vm.numberRule,
                                                         label: "Quantity"
                                                       },
                                                       model: {
@@ -16129,10 +17546,10 @@ var render = function() {
                                                     }
                                                   },
                                                   [
-                                                    _c("v-text-field", {
+                                                    _c("v-select", {
                                                       attrs: {
-                                                        rules: _vm.chargesRule,
-                                                        required: "",
+                                                        items: _vm.unit_items,
+                                                        rules: _vm.selectRule,
                                                         label: "Unit"
                                                       },
                                                       model: {
@@ -16167,8 +17584,7 @@ var render = function() {
                                                   [
                                                     _c("v-text-field", {
                                                       attrs: {
-                                                        rules: _vm.chargesRule,
-                                                        required: "",
+                                                        rules: _vm.numberRule,
                                                         label: "Total Weight"
                                                       },
                                                       model: {
@@ -16204,8 +17620,7 @@ var render = function() {
                                                   [
                                                     _c("v-text-field", {
                                                       attrs: {
-                                                        rules: _vm.chargesRule,
-                                                        required: "",
+                                                        rules: _vm.numberRule,
                                                         label: "Rent"
                                                       },
                                                       model: {
@@ -16240,8 +17655,7 @@ var render = function() {
                                                   [
                                                     _c("v-text-field", {
                                                       attrs: {
-                                                        rules: _vm.chargesRule,
-                                                        required: "",
+                                                        rules: _vm.numberRule,
                                                         label: "Labour"
                                                       },
                                                       model: {
@@ -16356,22 +17770,6 @@ var render = function() {
                     )
                   ]
                 }
-              },
-              {
-                key: "no-data",
-                fn: function() {
-                  return [
-                    _c(
-                      "v-btn",
-                      {
-                        attrs: { color: "primary" },
-                        on: { click: _vm.initialize }
-                      },
-                      [_vm._v("Reset")]
-                    )
-                  ]
-                },
-                proxy: true
               }
             ])
           }),
@@ -16424,7 +17822,7 @@ var render = function() {
           _c(
             "v-card-title",
             [
-              _vm._v("\n      Receiver Details\n      "),
+              _vm._v("\n      Manage Bilty\n      "),
               _c("v-spacer"),
               _vm._v(" "),
               _c("v-text-field", {
@@ -16449,21 +17847,382 @@ var render = function() {
           _c("v-data-table", {
             attrs: {
               headers: _vm.headers,
-              items: _vm.desserts,
-              search: _vm.search
+              items: _vm.bilties,
+              search: _vm.search,
+              "show-expand": "",
+              "item-key": "id",
+              "single-expand": _vm.singleExpand,
+              expanded: _vm.expanded
+            },
+            on: {
+              "update:expanded": function($event) {
+                _vm.expanded = $event
+              }
             },
             scopedSlots: _vm._u([
               {
-                key: "item.calories",
+                key: "item.action",
                 fn: function(ref) {
                   var item = ref.item
                   return [
                     _c(
-                      "v-chip",
+                      "v-btn",
                       {
-                        attrs: { color: _vm.getColor(item.calories), dark: "" }
+                        staticClass: "primary mr-2",
+                        attrs: { small: "" },
+                        on: {
+                          click: function($event) {
+                            return _vm.editItem(item)
+                          }
+                        }
                       },
-                      [_vm._v(_vm._s(item.calories))]
+                      [_c("v-icon", [_vm._v("mdi-pencil")])],
+                      1
+                    )
+                  ]
+                }
+              },
+              {
+                key: "expanded-item",
+                fn: function(ref) {
+                  var headers = ref.headers
+                  var item = ref.item
+                  return [
+                    _c(
+                      "td",
+                      {
+                        staticClass: "black",
+                        attrs: { colspan: headers.length }
+                      },
+                      [
+                        _c(
+                          "v-row",
+                          [_c("v-subheader", [_vm._v("Customer Details")])],
+                          1
+                        ),
+                        _vm._v(" "),
+                        item.customer
+                          ? _c(
+                              "v-row",
+                              [
+                                _c(
+                                  "v-col",
+                                  { attrs: { cols: "12", md: "4" } },
+                                  [
+                                    _c("v-text-field", {
+                                      attrs: {
+                                        label: "Number",
+                                        placeholder: "Number",
+                                        readonly: "",
+                                        outlined: "",
+                                        dense: ""
+                                      },
+                                      model: {
+                                        value: item.customer.customer_no,
+                                        callback: function($$v) {
+                                          _vm.$set(
+                                            item.customer,
+                                            "customer_no",
+                                            $$v
+                                          )
+                                        },
+                                        expression: "item.customer.customer_no"
+                                      }
+                                    })
+                                  ],
+                                  1
+                                ),
+                                _vm._v(" "),
+                                _c(
+                                  "v-col",
+                                  { attrs: { cols: "12", md: "4" } },
+                                  [
+                                    _c("v-text-field", {
+                                      attrs: {
+                                        label: "Name",
+                                        placeholder: "Name",
+                                        readonly: "",
+                                        outlined: "",
+                                        dense: ""
+                                      },
+                                      model: {
+                                        value: item.customer.name,
+                                        callback: function($$v) {
+                                          _vm.$set(item.customer, "name", $$v)
+                                        },
+                                        expression: "item.customer.name"
+                                      }
+                                    })
+                                  ],
+                                  1
+                                ),
+                                _vm._v(" "),
+                                _c(
+                                  "v-col",
+                                  { attrs: { cols: "12", md: "4" } },
+                                  [
+                                    _c("v-text-field", {
+                                      attrs: {
+                                        label: "Company",
+                                        placeholder: "Company",
+                                        readonly: "",
+                                        outlined: "",
+                                        dense: ""
+                                      },
+                                      model: {
+                                        value: item.customer.company,
+                                        callback: function($$v) {
+                                          _vm.$set(
+                                            item.customer,
+                                            "company",
+                                            $$v
+                                          )
+                                        },
+                                        expression: "item.customer.company"
+                                      }
+                                    })
+                                  ],
+                                  1
+                                )
+                              ],
+                              1
+                            )
+                          : _vm._e(),
+                        _vm._v(" "),
+                        _c("v-divider"),
+                        _vm._v(" "),
+                        _c(
+                          "v-row",
+                          [_c("v-subheader", [_vm._v("Bilty Details")])],
+                          1
+                        ),
+                        _vm._v(" "),
+                        _c(
+                          "v-row",
+                          [
+                            _c(
+                              "v-col",
+                              { attrs: { cols: "12", md: "6" } },
+                              [
+                                _c("v-text-field", {
+                                  attrs: {
+                                    label: "From",
+                                    placeholder: "From",
+                                    readonly: "",
+                                    outlined: "",
+                                    dense: ""
+                                  },
+                                  model: {
+                                    value: item.from,
+                                    callback: function($$v) {
+                                      _vm.$set(item, "from", $$v)
+                                    },
+                                    expression: "item.from"
+                                  }
+                                })
+                              ],
+                              1
+                            ),
+                            _vm._v(" "),
+                            _c(
+                              "v-col",
+                              { attrs: { cols: "12", md: "6" } },
+                              [
+                                _c("v-text-field", {
+                                  attrs: {
+                                    label: "To",
+                                    placeholder: "To",
+                                    readonly: "",
+                                    outlined: "",
+                                    dense: ""
+                                  },
+                                  model: {
+                                    value: item.to,
+                                    callback: function($$v) {
+                                      _vm.$set(item, "to", $$v)
+                                    },
+                                    expression: "item.to"
+                                  }
+                                })
+                              ],
+                              1
+                            )
+                          ],
+                          1
+                        ),
+                        _vm._v(" "),
+                        _c(
+                          "v-row",
+                          { staticClass: "mt-0" },
+                          [
+                            _c(
+                              "v-col",
+                              { staticClass: "pt-sm-0", attrs: { cols: "12" } },
+                              [
+                                _c("v-textarea", {
+                                  attrs: {
+                                    label: "Receiver Address",
+                                    "auto-grow": "",
+                                    outlined: "",
+                                    readonly: "",
+                                    rows: "1",
+                                    "row-height": "10"
+                                  },
+                                  model: {
+                                    value: item.receiver_address,
+                                    callback: function($$v) {
+                                      _vm.$set(item, "receiver_address", $$v)
+                                    },
+                                    expression: "item.receiver_address"
+                                  }
+                                })
+                              ],
+                              1
+                            )
+                          ],
+                          1
+                        ),
+                        _vm._v(" "),
+                        _c("v-divider"),
+                        _vm._v(" "),
+                        _c(
+                          "v-row",
+                          [_c("v-subheader", [_vm._v("Package Details")])],
+                          1
+                        ),
+                        _vm._v(" "),
+                        _c(
+                          "v-row",
+                          [
+                            _c(
+                              "v-col",
+                              { attrs: { cols: "12" } },
+                              [
+                                _c("v-data-table", {
+                                  attrs: {
+                                    headers: _vm.headers_packages,
+                                    items: item.packages,
+                                    "items-per-page": 5
+                                  }
+                                })
+                              ],
+                              1
+                            )
+                          ],
+                          1
+                        ),
+                        _vm._v(" "),
+                        _c("v-divider"),
+                        _vm._v(" "),
+                        _c(
+                          "v-row",
+                          [_c("v-subheader", [_vm._v("Account Receivable")])],
+                          1
+                        ),
+                        _vm._v(" "),
+                        _c(
+                          "v-row",
+                          [
+                            _c(
+                              "v-col",
+                              { attrs: { cols: "12", md: "3" } },
+                              [
+                                _c("v-text-field", {
+                                  attrs: {
+                                    label: "Bilty Charges",
+                                    placeholder: "Bilty Charges",
+                                    readonly: "",
+                                    outlined: "",
+                                    dense: ""
+                                  },
+                                  model: {
+                                    value: item.bilty_charges,
+                                    callback: function($$v) {
+                                      _vm.$set(item, "bilty_charges", $$v)
+                                    },
+                                    expression: "item.bilty_charges"
+                                  }
+                                })
+                              ],
+                              1
+                            ),
+                            _vm._v(" "),
+                            _c(
+                              "v-col",
+                              { attrs: { cols: "12", md: "3" } },
+                              [
+                                _c("v-text-field", {
+                                  attrs: {
+                                    label: "Local Charges",
+                                    placeholder: "Local Charges",
+                                    readonly: "",
+                                    outlined: "",
+                                    dense: ""
+                                  },
+                                  model: {
+                                    value: item.local_charges,
+                                    callback: function($$v) {
+                                      _vm.$set(item, "local_charges", $$v)
+                                    },
+                                    expression: "item.local_charges"
+                                  }
+                                })
+                              ],
+                              1
+                            ),
+                            _vm._v(" "),
+                            _c(
+                              "v-col",
+                              { attrs: { cols: "12", md: "3" } },
+                              [
+                                _c("v-text-field", {
+                                  attrs: {
+                                    label: "Packages Total",
+                                    placeholder: "Packages Total",
+                                    readonly: "",
+                                    outlined: "",
+                                    dense: ""
+                                  },
+                                  model: {
+                                    value: item.package_total,
+                                    callback: function($$v) {
+                                      _vm.$set(item, "package_total", $$v)
+                                    },
+                                    expression: "item.package_total"
+                                  }
+                                })
+                              ],
+                              1
+                            ),
+                            _vm._v(" "),
+                            _c(
+                              "v-col",
+                              { attrs: { cols: "12", md: "3" } },
+                              [
+                                _c("v-text-field", {
+                                  attrs: {
+                                    label: "Total Amount",
+                                    placeholder: "Total Amount",
+                                    readonly: "",
+                                    outlined: "",
+                                    dense: ""
+                                  },
+                                  model: {
+                                    value: item.total_amount,
+                                    callback: function($$v) {
+                                      _vm.$set(item, "total_amount", $$v)
+                                    },
+                                    expression: "item.total_amount"
+                                  }
+                                })
+                              ],
+                              1
+                            )
+                          ],
+                          1
+                        )
+                      ],
+                      1
                     )
                   ]
                 }
@@ -16499,7 +18258,370 @@ var render = function() {
   var _vm = this
   var _h = _vm.$createElement
   var _c = _vm._self._c || _h
-  return _c("h1", [_vm._v("I am Add Chalan")])
+  return _c(
+    "v-form",
+    {
+      ref: "challan_form",
+      model: {
+        value: _vm.valid,
+        callback: function($$v) {
+          _vm.valid = $$v
+        },
+        expression: "valid"
+      }
+    },
+    [
+      _c(
+        "v-container",
+        { staticClass: "px-8 py-2" },
+        [
+          _c(
+            "v-row",
+            [
+              _c(
+                "v-col",
+                { attrs: { cols: "12", md: "2" } },
+                [
+                  _c("v-text-field", {
+                    attrs: {
+                      disabled: !_vm.manual,
+                      rules: _vm.numberRule,
+                      label: "Challan Number"
+                    },
+                    model: {
+                      value: _vm.challan_no,
+                      callback: function($$v) {
+                        _vm.challan_no = $$v
+                      },
+                      expression: "challan_no"
+                    }
+                  })
+                ],
+                1
+              ),
+              _vm._v(" "),
+              _c(
+                "v-col",
+                { attrs: { cols: "12", md: "2" } },
+                [
+                  _c("v-checkbox", {
+                    staticClass: "shrink",
+                    attrs: { "hide-details": "", label: "Manual" },
+                    on: {
+                      change: function($event) {
+                        return _vm.checkForBiltyNo()
+                      }
+                    },
+                    model: {
+                      value: _vm.manual,
+                      callback: function($$v) {
+                        _vm.manual = $$v
+                      },
+                      expression: "manual"
+                    }
+                  })
+                ],
+                1
+              ),
+              _vm._v(" "),
+              _c(
+                "v-col",
+                { attrs: { cols: "12", md: "4" } },
+                [
+                  _c("v-text-field", {
+                    attrs: { label: "Truck No" },
+                    model: {
+                      value: _vm.truck_no,
+                      callback: function($$v) {
+                        _vm.truck_no = $$v
+                      },
+                      expression: "truck_no"
+                    }
+                  })
+                ],
+                1
+              ),
+              _vm._v(" "),
+              _c(
+                "v-col",
+                { attrs: { cols: "12", md: "4" } },
+                [
+                  _c("v-text-field", {
+                    attrs: { label: "Permit No" },
+                    model: {
+                      value: _vm.permit_no,
+                      callback: function($$v) {
+                        _vm.permit_no = $$v
+                      },
+                      expression: "permit_no"
+                    }
+                  })
+                ],
+                1
+              )
+            ],
+            1
+          ),
+          _vm._v(" "),
+          _c(
+            "v-row",
+            [
+              _c(
+                "v-col",
+                { attrs: { cols: "12", md: "4" } },
+                [
+                  _c("v-text-field", {
+                    attrs: { label: "Driver Name" },
+                    model: {
+                      value: _vm.driver_name,
+                      callback: function($$v) {
+                        _vm.driver_name = $$v
+                      },
+                      expression: "driver_name"
+                    }
+                  })
+                ],
+                1
+              ),
+              _vm._v(" "),
+              _c(
+                "v-col",
+                { attrs: { cols: "12", md: "4" } },
+                [
+                  _c("v-text-field", {
+                    attrs: { label: "Agent Name" },
+                    model: {
+                      value: _vm.agent_name,
+                      callback: function($$v) {
+                        _vm.agent_name = $$v
+                      },
+                      expression: "agent_name"
+                    }
+                  })
+                ],
+                1
+              ),
+              _vm._v(" "),
+              _c(
+                "v-col",
+                { attrs: { cols: "12", md: "4" } },
+                [
+                  _c("v-text-field", {
+                    attrs: { label: "Cnic" },
+                    model: {
+                      value: _vm.cnic,
+                      callback: function($$v) {
+                        _vm.cnic = $$v
+                      },
+                      expression: "cnic"
+                    }
+                  })
+                ],
+                1
+              )
+            ],
+            1
+          ),
+          _vm._v(" "),
+          _c(
+            "v-row",
+            [
+              _c(
+                "v-col",
+                { attrs: { cols: "12", md: "4" } },
+                [
+                  _c("v-autocomplete", {
+                    attrs: {
+                      items: _vm.from_city_items,
+                      rules: _vm.selectRule,
+                      dense: "",
+                      filled: "",
+                      label: "From"
+                    },
+                    model: {
+                      value: _vm.from_city_value,
+                      callback: function($$v) {
+                        _vm.from_city_value = $$v
+                      },
+                      expression: "from_city_value"
+                    }
+                  })
+                ],
+                1
+              ),
+              _vm._v(" "),
+              _c(
+                "v-col",
+                { attrs: { cols: "12", md: "4" } },
+                [
+                  _c("v-autocomplete", {
+                    attrs: {
+                      rules: _vm.selectRule,
+                      items: _vm.to_city_items,
+                      dense: "",
+                      filled: "",
+                      label: "To"
+                    },
+                    model: {
+                      value: _vm.to_city_value,
+                      callback: function($$v) {
+                        _vm.to_city_value = $$v
+                      },
+                      expression: "to_city_value"
+                    }
+                  })
+                ],
+                1
+              ),
+              _vm._v(" "),
+              _c(
+                "v-col",
+                { attrs: { cols: "12", md: "4" } },
+                [
+                  _c("v-text-field", {
+                    attrs: { label: "Transport" },
+                    model: {
+                      value: _vm.transport,
+                      callback: function($$v) {
+                        _vm.transport = $$v
+                      },
+                      expression: "transport"
+                    }
+                  })
+                ],
+                1
+              )
+            ],
+            1
+          ),
+          _vm._v(" "),
+          _c(
+            "v-row",
+            [
+              _c(
+                "v-col",
+                { attrs: { cols: "12", md: "4" } },
+                [
+                  _c("v-text-field", {
+                    attrs: { label: "Total Amount" },
+                    model: {
+                      value: _vm.total_amount,
+                      callback: function($$v) {
+                        _vm.total_amount = $$v
+                      },
+                      expression: "total_amount"
+                    }
+                  })
+                ],
+                1
+              ),
+              _vm._v(" "),
+              _c(
+                "v-col",
+                { attrs: { cols: "12", md: "4" } },
+                [
+                  _c("v-text-field", {
+                    attrs: { label: "Expenses" },
+                    model: {
+                      value: _vm.expenses,
+                      callback: function($$v) {
+                        _vm.expenses = $$v
+                      },
+                      expression: "expenses"
+                    }
+                  })
+                ],
+                1
+              ),
+              _vm._v(" "),
+              _c(
+                "v-col",
+                { attrs: { cols: "12", md: "4" } },
+                [
+                  _c("v-text-field", {
+                    attrs: { label: "Grand Total" },
+                    model: {
+                      value: _vm.grand_total,
+                      callback: function($$v) {
+                        _vm.grand_total = $$v
+                      },
+                      expression: "grand_total"
+                    }
+                  })
+                ],
+                1
+              )
+            ],
+            1
+          ),
+          _vm._v(" "),
+          _c("v-spacer"),
+          _vm._v(" "),
+          _c(
+            "v-card",
+            [
+              _c(
+                "v-card-title",
+                [
+                  _vm._v("\n        Bilties\n        "),
+                  _c("v-spacer"),
+                  _vm._v(" "),
+                  _c("v-text-field", {
+                    attrs: {
+                      "append-icon": "mdi-magnify",
+                      label: "Search",
+                      "single-line": "",
+                      "hide-details": ""
+                    },
+                    model: {
+                      value: _vm.search,
+                      callback: function($$v) {
+                        _vm.search = $$v
+                      },
+                      expression: "search"
+                    }
+                  })
+                ],
+                1
+              ),
+              _vm._v(" "),
+              _c("v-data-table", {
+                staticClass: "elevation-1",
+                attrs: {
+                  headers: _vm.headers,
+                  items: _vm.bilties,
+                  search: _vm.search,
+                  "item-key": "id",
+                  "show-select": "",
+                  loading: _vm.loading,
+                  "loading-text": "Loading... Please wait"
+                },
+                model: {
+                  value: _vm.selected,
+                  callback: function($$v) {
+                    _vm.selected = $$v
+                  },
+                  expression: "selected"
+                }
+              })
+            ],
+            1
+          ),
+          _vm._v(" "),
+          _c(
+            "v-btn",
+            {
+              staticClass: "my-4 float-right",
+              on: { click: _vm.submit_challan }
+            },
+            [_vm._v("Submit")]
+          )
+        ],
+        1
+      )
+    ],
+    1
+  )
 }
 var staticRenderFns = []
 render._withStripped = true
@@ -16612,15 +18734,15 @@ var render = function() {
                   _c("v-text-field", {
                     attrs: {
                       rules: _vm.nameRules,
-                      label: "Cell No",
+                      label: "Company",
                       required: ""
                     },
                     model: {
-                      value: _vm.customer.cellNo,
+                      value: _vm.customer.company,
                       callback: function($$v) {
-                        _vm.$set(_vm.customer, "cellNo", $$v)
+                        _vm.$set(_vm.customer, "company", $$v)
                       },
-                      expression: "customer.cellNo"
+                      expression: "customer.company"
                     }
                   })
                 ],
@@ -16635,7 +18757,7 @@ var render = function() {
             [
               _c(
                 "v-col",
-                { attrs: { cols: "12", md: "4" } },
+                { attrs: { cols: "12", md: "3" } },
                 [
                   _c("v-text-field", {
                     attrs: {
@@ -16657,7 +18779,7 @@ var render = function() {
               _vm._v(" "),
               _c(
                 "v-col",
-                { attrs: { cols: "12", md: "4" } },
+                { attrs: { cols: "12", md: "3" } },
                 [
                   _c("v-text-field", {
                     attrs: {
@@ -16679,7 +18801,7 @@ var render = function() {
               _vm._v(" "),
               _c(
                 "v-col",
-                { attrs: { cols: "12", md: "4" } },
+                { attrs: { cols: "12", md: "3" } },
                 [
                   _c("v-text-field", {
                     attrs: {
@@ -16693,6 +18815,28 @@ var render = function() {
                         _vm.$set(_vm.customer, "perPckg", $$v)
                       },
                       expression: "customer.perPckg"
+                    }
+                  })
+                ],
+                1
+              ),
+              _vm._v(" "),
+              _c(
+                "v-col",
+                { attrs: { cols: "12", md: "3" } },
+                [
+                  _c("v-text-field", {
+                    attrs: {
+                      rules: _vm.nameRules,
+                      label: "Cell No",
+                      required: ""
+                    },
+                    model: {
+                      value: _vm.customer.cellNo,
+                      callback: function($$v) {
+                        _vm.$set(_vm.customer, "cellNo", $$v)
+                      },
+                      expression: "customer.cellNo"
                     }
                   })
                 ],
@@ -74776,15 +76920,17 @@ __webpack_require__.r(__webpack_exports__);
 "use strict";
 __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var _Add_vue_vue_type_template_id_51f74320___WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./Add.vue?vue&type=template&id=51f74320& */ "./resources/js/components/Challan/Add.vue?vue&type=template&id=51f74320&");
-/* harmony import */ var _node_modules_vue_loader_lib_runtime_componentNormalizer_js__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ../../../../node_modules/vue-loader/lib/runtime/componentNormalizer.js */ "./node_modules/vue-loader/lib/runtime/componentNormalizer.js");
+/* harmony import */ var _Add_vue_vue_type_script_lang_js___WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./Add.vue?vue&type=script&lang=js& */ "./resources/js/components/Challan/Add.vue?vue&type=script&lang=js&");
+/* empty/unused harmony star reexport *//* harmony import */ var _node_modules_vue_loader_lib_runtime_componentNormalizer_js__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ../../../../node_modules/vue-loader/lib/runtime/componentNormalizer.js */ "./node_modules/vue-loader/lib/runtime/componentNormalizer.js");
 
-var script = {}
+
+
 
 
 /* normalize component */
 
-var component = Object(_node_modules_vue_loader_lib_runtime_componentNormalizer_js__WEBPACK_IMPORTED_MODULE_1__["default"])(
-  script,
+var component = Object(_node_modules_vue_loader_lib_runtime_componentNormalizer_js__WEBPACK_IMPORTED_MODULE_2__["default"])(
+  _Add_vue_vue_type_script_lang_js___WEBPACK_IMPORTED_MODULE_1__["default"],
   _Add_vue_vue_type_template_id_51f74320___WEBPACK_IMPORTED_MODULE_0__["render"],
   _Add_vue_vue_type_template_id_51f74320___WEBPACK_IMPORTED_MODULE_0__["staticRenderFns"],
   false,
@@ -74798,6 +76944,20 @@ var component = Object(_node_modules_vue_loader_lib_runtime_componentNormalizer_
 if (false) { var api; }
 component.options.__file = "resources/js/components/Challan/Add.vue"
 /* harmony default export */ __webpack_exports__["default"] = (component.exports);
+
+/***/ }),
+
+/***/ "./resources/js/components/Challan/Add.vue?vue&type=script&lang=js&":
+/*!**************************************************************************!*\
+  !*** ./resources/js/components/Challan/Add.vue?vue&type=script&lang=js& ***!
+  \**************************************************************************/
+/*! exports provided: default */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony import */ var _node_modules_babel_loader_lib_index_js_ref_4_0_node_modules_vue_loader_lib_index_js_vue_loader_options_Add_vue_vue_type_script_lang_js___WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! -!../../../../node_modules/babel-loader/lib??ref--4-0!../../../../node_modules/vue-loader/lib??vue-loader-options!./Add.vue?vue&type=script&lang=js& */ "./node_modules/babel-loader/lib/index.js?!./node_modules/vue-loader/lib/index.js?!./resources/js/components/Challan/Add.vue?vue&type=script&lang=js&");
+/* empty/unused harmony star reexport */ /* harmony default export */ __webpack_exports__["default"] = (_node_modules_babel_loader_lib_index_js_ref_4_0_node_modules_vue_loader_lib_index_js_vue_loader_options_Add_vue_vue_type_script_lang_js___WEBPACK_IMPORTED_MODULE_0__["default"]); 
 
 /***/ }),
 
