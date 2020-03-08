@@ -2,10 +2,10 @@
 
 namespace App\Http\Controllers;
 
-use App\Challan;
 use App\Bilty;
-use Illuminate\Http\Request;
+use App\Challan;
 use App\Http\Resources\ChallanResource;
+use Illuminate\Http\Request;
 
 class ChallanController extends Controller
 {
@@ -24,7 +24,9 @@ class ChallanController extends Controller
 
     public function index()
     {
-        //
+        $challan = Challan::with('bilties')->get();
+        ChallanResource::withoutWrapping();
+        return ChallanResource::collection($challan);
     }
 
     /**
@@ -87,7 +89,9 @@ class ChallanController extends Controller
      */
     public function show($id)
     {
-        //
+        $challan = Challan::findOrFail($id);
+        ChallanResource::withoutWrapping();
+        return new ChallanResource($challan);
     }
 
     /**
@@ -110,7 +114,43 @@ class ChallanController extends Controller
      */
     public function update(Request $request, $id)
     {
-        //
+        $data = json_decode($request->getContent(), true);
+        // return $data;
+        $challan = Challan::findOrFail($id);
+
+        $challan->from = $data['from'];
+        $challan->to = $data['to'];
+        $challan->truck_no = $data['truck_no'];
+        $challan->permit_no = $data['permit_no'];
+        $challan->transport = $data['transport'];
+        $challan->driver_name = $data['driver_name'];
+        $challan->agent_name = $data['agent_name'];
+        $challan->cnic = $data['cnic'];
+        $challan->total_amount = $data['total_amount'];
+        $challan->expenses = $data['expenses'];
+        $challan->grand_total = $data['grand_total'];
+
+        // return $challan;
+        if ($challan->save()) {
+            $challan = Challan::find($challan->id);
+            $bilties_challan = Bilty::where('challan_id', $challan->id)->get();
+            foreach ($bilties_challan as $bilty) {
+                $bilty->challan_id = null;
+                $bilty->save();
+            }
+            foreach ($data['bilties'] as $id) {
+                $bilty = Bilty::find($id);
+                $challan->bilties()->save($bilty);
+            }
+            $challan->save();
+            ChallanResource::withoutWrapping();
+            return new ChallanResource($challan);
+        } else {
+            return response()->json([
+                'status' => 'error',
+                'message' => 'error saving bilty',
+            ], 500);
+        }
     }
 
     /**
