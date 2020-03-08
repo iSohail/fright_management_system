@@ -79,9 +79,9 @@ class BiltyController extends Controller
         if ($bilty->save()) {
             $bilty = Bilty::find($bilty->id);
             // return $bilty;
-            $bilty->customer()->associate($customer);
-            // $bilty->challan()->associate($challan);
-
+            if($customer){
+                $bilty->customer()->associate($customer);
+            } 
             foreach ($data['packages'] as $val) {
                 $package = Package::orderby('package_no', 'desc')->first();
                 $package_no = 1000;
@@ -142,48 +142,69 @@ class BiltyController extends Controller
      * @return \Illuminate\Http\Response
      */
     public function update(Request $request, $id)
-    {
+    {// converting JSON object into PHP code
+        $data = json_decode($request->getContent(), true);
+
+        // return $data;
         $bilty = Bilty::findOrFail($id);
-        if ($bilty) {
-            $customer = Customer::findOrFail($request->get('customer_id'));
-            $challan = Challan::findOrFail($request->get('challan_id'));
+        $customer = -1;
+        if ($data['customer_id'] != -1){
+            $customer = Customer::findOrFail($data['customer_id']);
+        }
+        // $challan = Challan::findOrFail($data['challan_id']);
+        // return $customer;
+        $bilty->lg_bl_no = $data['lc_bl_no'];
+        $bilty->from = $data['from'];
+        $bilty->to = $data['to'];
+        $bilty->sender = $data['sender'];
+        $bilty->receiver = $data['receiver'];
+        $bilty->receiver_address = $data['receiver_address'];
+        $bilty->status = $data['status_item_value'];
+        $bilty->payment_status = $data['payment_status_item_value'];
+        $bilty->bilty_charges = $data['bilty_charges'];
+        $bilty->local_charges = $data['local_charges'];
 
-            $bilty->id = $request->get('id');
-            $bilty->bilty_no = $request->get('bilty_no');
-            $bilty->lg_bl_no = $request->get('lg_bl_no');
-            $bilty->from = $request->get('from');
-            $bilty->to = $request->get('to');
-            $bilty->sender = $request->get('sender');
-            $bilty->receiver = $request->get('receiver');
-            $bilty->receiver_address = $request->get('receiver_address');
-            $bilty->status = $request->get('status');
-            $bilty->payment_status = $request->get('payment_status');
-            $bilty->bilty_charges = $request->get('bilty_charges');
-            $bilty->local_charges = $request->get('local_charges');
+        // $packages=['1','2','3'];
+        // return $bilty;
+        if ($bilty->save()) {
+            
 
-            if ($bilty->save()) {
-                $bilty = Bilty::find($id);
+            $bilty = Bilty::find($bilty->id);
+            // return $bilty;
+            if($customer != -1){
                 $bilty->customer()->associate($customer);
-                $bilty->challan()->associate($challan);
-
-                foreach (['1', '2'] as $val) {
-                    $package = new Package(['id' => $val, 'package_no' => $val, 'description' => 'dfa', 'unit' => 'cbm', 'quantity' => 2, 'total_weight' => 24, 'rent' => 23, 'labour' => 32]);
-                    $bilty->packages()->save($package);
-                }
-
-                BiltyResource::withoutWrapping();
-                return new BiltyResource($bilty);
-            } else {
-                return response()->json([
-                    'status' => 'error',
-                    'message' => 'error saving bilty',
-                ], 500);
+            } else{
+                // return 'dafad';
+                // return $bilty->id;
+                $bilty->customer_id = null;
+                // $bilty->save();
             }
+            // $bilty->challan()->associate($challan);
+            $packages_bilty = Package::where('bilty_id', $bilty->id)->get();
+            foreach ($packages_bilty as $package) {
+                $package->delete();
+            }
+            
+            foreach ($data['packages'] as $val) {
+                $package = Package::orderby('package_no', 'desc')->first();
+                $package_no = 1000;
+                if ($package) {
+                    $package_no = $package['package_no'] + 1;
+                }
+                $package = new Package(['package_no' => $package_no, 'description' => $val['description'], 'unit' => $val['unit'], 'quantity' => $val['quantity'], 'total_weight' => $val['total_weight'], 'rent' => $val['rent'], 'labour' => $val['labour']]);
+                $bilty->packages()->save($package);
+            }
+            $bilty->save();
+            // return $bilty->id;
+
+            // $bilty = Bilty::find($bilty->id);
+            BiltyResource::withoutWrapping();
+            return new BiltyResource($bilty);
         } else {
             return response()->json([
                 'status' => 'error',
-                'message' => 'resource not found',
-            ], 404);
+                'message' => 'error saving bilty',
+            ], 500);
         }
 
     }

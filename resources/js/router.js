@@ -9,8 +9,10 @@ import OperatorDashboard from './components/OperatorDashboard';
 import Home from './components/Home';
 import AddBilty from './components/Bilty/Add';
 import ManageBilty from './components/Bilty/Manage';
+import EditBilty from './components/Bilty/Edit';
 import AddChallan from './components/Challan/Add';
 import ManageChallan from './components/Challan/Manage';
+import EditChallan from './components/Challan/Edit';
 import AddCustomer from './components/Customer/Add';
 import ManageCustomer from './components/Customer/Manage';
 import CustomerAccount from './components/Accounts/Customer';
@@ -54,7 +56,7 @@ const routes = [
         path: '/dashboard',
         component: OperatorDashboard,
         meta: {
-            auth: { roles: [1,3,4], redirect: { name: 'login' }, forbiddenRedirect: '/403' }
+            auth: { roles: [1, 3, 4], redirect: { name: 'login' }, forbiddenRedirect: '/403' }
         },
         children: [
             {
@@ -72,7 +74,7 @@ const routes = [
                 name: 'dashboard.bilty.create',
                 component: AddBilty,
                 meta: {
-                    auth: { roles: [1,3], redirect: { name: 'login' }, forbiddenRedirect: '/403' }
+                    auth: { roles: [1, 3], redirect: { name: 'login' }, forbiddenRedirect: '/403' }
                 },
             },
             //FURTHUR WORK ON AUTHENTICATION REQUIRED
@@ -86,7 +88,7 @@ const routes = [
                 name: 'dashboard.challan.create',
                 component: AddChallan,
                 meta: {
-                    auth: { roles: [1,3], redirect: { name: 'login' }, forbiddenRedirect: '/403' }
+                    auth: { roles: [1, 3], redirect: { name: 'login' }, forbiddenRedirect: '/403' }
                 },
             },
             {
@@ -99,7 +101,7 @@ const routes = [
                 name: 'dashboard.customer.create',
                 component: AddCustomer,
                 meta: {
-                    auth: { roles: [1,3], redirect: { name: 'login' }, forbiddenRedirect: '/403' }
+                    auth: { roles: [1, 3], redirect: { name: 'login' }, forbiddenRedirect: '/403' }
                 },
             },
             {
@@ -147,6 +149,11 @@ const routes = [
                 name: 'admin.bilty.create',
                 component: AddBilty,
             },
+            {
+                path: 'bilty/edit/:id',
+                name: 'admin.bilty.edit',
+                component: EditBilty,
+            },
             //FURTHUR WORK ON AUTHENTICATION REQUIRED
             {
                 path: 'account/customer',
@@ -162,6 +169,11 @@ const routes = [
                 path: 'challan/manage',
                 name: 'admin.challan.manage',
                 component: ManageChallan
+            },
+            {
+                path: 'challan/edit/:id',
+                name: 'admin.challan.edit',
+                component: EditChallan
             },
             {
                 path: 'customer/create',

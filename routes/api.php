@@ -37,16 +37,19 @@ Route::group(['middleware' => 'auth:api'], function () {
     Route::post('bilty/create', 'BiltyController@store');
     Route::post('bilty/{id}', 'BiltyController@destroy');
     Route::get('bilties/last', 'BiltyController@last');
-    
+
     Route::get('customer', 'CustomerController@index');
     Route::get('customer/last', 'CustomerController@last');
     Route::get('customer/{id}', 'CustomerController@show');
     Route::post('customer/create', 'CustomerController@store');
     Route::put('customer/{id}', 'CustomerController@update');
     Route::delete('customer/{id}', 'CustomerController@destroy');
-    
+
     Route::get('package/{id}', 'PackageController@show');
 
     Route::get('challan/last', 'ChallanController@last');
+    Route::get('challan', 'ChallanController@index');
     Route::post('challan/create', 'ChallanController@store');
+    Route::get('challan/{id}', 'ChallanController@show');
+    Route::put('challan/{id}', 'ChallanController@update');
 });

@@ -300,6 +300,14 @@ export default {
       );
       // console.log(customer);
       return pck;
+    },
+    editItem(item) {
+      let user = this.$auth.user();
+      if (user.role == 2) {
+        this.$router.push({ path: `/admin/bilty/edit/${item.id}` });
+      } else {
+        this.$router.push({ path: `/operator/bilty/edit/${item.id}` });
+      }
     }
   }
 };
