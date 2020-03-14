@@ -173,15 +173,16 @@ export default {
         { text: "Description", align: "left", value: "description" },
         { text: "Unit", value: "unit" },
         { text: "Quantity", value: "quantity" },
-        { text: "Total weight", value: "total_weight" },
+        { text: "Weight", value: "total_weight" },
+        { text: "Volume", value: "total_volume" },
         { text: "Labour", value: "labour" },
+        { text: "Rate", value: "rate" },
         { text: "Rent", value: "rent" }
       ],
       headers: [
         {
           text: "Builty No",
           align: "left",
-          sortable: false,
           value: "no"
         },
         { text: "Manual", value: "manual" },
@@ -190,6 +191,7 @@ export default {
         { text: "Receiver", value: "receiver" },
         { text: "Status", value: "status" },
         { text: "Payment", value: "payment_status" },
+        { text: "Created", value: "created_at" },
         { text: "Action", value: "action", sortable: false },
         { text: "", value: "data-table-expand" }
       ],
@@ -222,25 +224,23 @@ export default {
               receiver_address: bilty.attributes.receiver_address,
               status: bilty.attributes.status,
               payment_status: bilty.attributes.payment_status,
+              created_at: bilty.attributes.created_at,
               bilty_charges: bilty.attributes.bilty_charges,
               local_charges: bilty.attributes.local_charges,
               packages: [],
-              package_total: 0,
-              total_amount: 0
+              package_total: bilty.attributes.packages_total,
+              total_amount: bilty.attributes.bilty_total
             };
-            bilty_data.total_amount =
-              parseFloat(bilty_data.bilty_charges) +
-              parseFloat(bilty_data.local_charges);
-            this.getCustomer(bilty.relationships.customer.data.id).then(res => {
-              bilty_data.customer = res;
-            });
+            if (bilty.relationships.customer.data) {
+              this.getCustomer(bilty.relationships.customer.data.id).then(
+                res => {
+                  bilty_data.customer = res;
+                }
+              );
+            }
             for (let pck of bilty.relationships.packages.data) {
               console.log(pck.id);
               this.getPackage(pck.id).then(res => {
-                bilty_data.package_total +=
-                  parseFloat(res.labour) + parseFloat(res.rent);
-                bilty_data.total_amount +=
-                  parseFloat(res.labour) + parseFloat(res.rent);
                 bilty_data.packages.push(res);
               });
             }
@@ -288,6 +288,9 @@ export default {
             unit: res.data.attributes.unit,
             quantity: res.data.attributes.quantity,
             total_weight: res.data.attributes.total_weight,
+            total_volume: res.data.attributes.total_volume,
+            labour: res.data.attributes.labour,
+            rate: res.data.attributes.rate,
             labour: res.data.attributes.labour,
             rent: res.data.attributes.rent
           };

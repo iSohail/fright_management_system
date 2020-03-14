@@ -3,7 +3,10 @@
 namespace App\Http\Controllers;
 
 use App\Customer;
+use App\Events\CustomerAdded;
 use App\Http\Resources\CustomerResource;
+use App\Receiver;
+use App\Sender;
 use Illuminate\Http\Request;
 
 class CustomerController extends Controller
@@ -59,6 +62,25 @@ class CustomerController extends Controller
         $customer->company = $data['company'];
 
         if ($customer->save()) {
+            $customer = Customer::findOrFail($customer->id);
+            // return $customer;
+            $sender = new Sender;
+            $sender->name = $data['sender'];
+            $sender->address = $data['sender_address'];
+            $sender->customer()->associate($customer);
+
+            $sender->save();
+
+            $receiver = new Receiver;
+            $receiver->name = $data['receiver'];
+            $receiver->address = $data['receiver_address'];
+            $receiver->customer()->associate($customer);
+
+            $receiver->save();
+            // return 'sdfasdfas';
+
+            event(new CustomerAdded());
+
             CustomerResource::withoutWrapping();
             return new CustomerResource($customer);
         } else {

@@ -5,8 +5,9 @@ namespace App\Http\Controllers;
 use App\Bilty;
 use App\Challan;
 use App\Customer;
-use App\Http\Resources\BiltyResource;
 use App\Package;
+use App\Http\Resources\BiltyResource;
+use Illuminate\Support\Facades\Validator;
 use Illuminate\Http\Request;
 
 class BiltyController extends Controller
@@ -55,12 +56,16 @@ class BiltyController extends Controller
         // converting JSON object into PHP code
         $data = json_decode($request->getContent(), true);
 
+        $customer = NULL;
+
         $bilty = new Bilty;
-        if ($data['customer_id']){
-            $customer = Customer::findOrFail($data['customer_id']);
+        
+        if (isset($data['customer_id'])){
+            if (gettype($data['customer_id']) == "string"){
+                $customer = Customer::findOrFail($data['customer_id']);
+            }
         }
-        // $challan = Challan::findOrFail($data['challan_id']);
-        // return $customer;
+        
         $bilty->bilty_no = $data['bilty_no'];
         $bilty->lg_bl_no = $data['lc_bl_no'];
         $bilty->from = $data['from'];
@@ -72,23 +77,23 @@ class BiltyController extends Controller
         $bilty->payment_status = $data['payment_status_item_value'];
         $bilty->bilty_charges = $data['bilty_charges'];
         $bilty->local_charges = $data['local_charges'];
+        $bilty->bilty_total = $data['bilty_total'];
+        $bilty->packages_total = $data['packages_total'];
         $bilty->manual = $data['manual'];
 
-        // $packages=['1','2','3'];
-        // return $bilty;
         if ($bilty->save()) {
             $bilty = Bilty::find($bilty->id);
-            // return $bilty;
             if($customer){
                 $bilty->customer()->associate($customer);
             } 
+
             foreach ($data['packages'] as $val) {
                 $package = Package::orderby('package_no', 'desc')->first();
                 $package_no = 1000;
                 if ($package) {
                     $package_no = $package['package_no'] + 1;
                 }
-                $package = new Package(['package_no' => $package_no, 'description' => $val['description'], 'unit' => $val['unit'], 'quantity' => $val['quantity'], 'total_weight' => $val['total_weight'], 'rent' => $val['rent'], 'labour' => $val['labour']]);
+                $package = new Package(['package_no' => $package_no, 'description' => $val['description'], 'total_volume' => $val['total_volume'], 'rate' => $val['rate'], 'unit' => $val['unit'], 'quantity' => $val['quantity'], 'total_weight' => $val['total_weight'], 'rent' => $val['rent'], 'labour' => $val['labour']]);
                 $bilty->packages()->save($package);
             }
             $bilty->save();
@@ -191,7 +196,7 @@ class BiltyController extends Controller
                 if ($package) {
                     $package_no = $package['package_no'] + 1;
                 }
-                $package = new Package(['package_no' => $package_no, 'description' => $val['description'], 'unit' => $val['unit'], 'quantity' => $val['quantity'], 'total_weight' => $val['total_weight'], 'rent' => $val['rent'], 'labour' => $val['labour']]);
+                $package = new Package(['package_no' => $package_no, 'description' => $val['description'], 'total_volume' => $val['total_volume'], 'rate' => $val['rate'], 'unit' => $val['unit'], 'quantity' => $val['quantity'], 'total_weight' => $val['total_weight'], 'rent' => $val['rent'], 'labour' => $val['labour']]);
                 $bilty->packages()->save($package);
             }
             $bilty->save();

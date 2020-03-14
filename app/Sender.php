@@ -5,28 +5,18 @@ namespace App;
 use Illuminate\Database\Eloquent\Model;
 use Webpatser\Uuid\Uuid;
 
-class Customer extends Model
+class Sender extends Model
 {
     public $timestamps = true;
     public $incrementing = false;
 
     protected $fillable = [
-        'name', 'cell_no', 'customer_no', 'company', 'per_kg_rate', 'per_cbm_rate', 'per_pck_rate',
+        'name', 'address', 'customer_id',
     ];
 
-    public function bilties()
+    public function customer()
     {
-        return $this->hasMany('App\Bilty');
-    }
-
-    public function sender()
-    {
-        return $this->hasOne('App\Sender');
-    }
-
-    public function receiver()
-    {
-        return $this->hasOne('App\Receiver');
+        return $this->belongsTo('App\Customer');
     }
 
     public static function boot()

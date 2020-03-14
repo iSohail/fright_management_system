@@ -11,7 +11,7 @@ class Package extends Model
     public $incrementing = false;
 
     protected $fillable = [
-        'bilty_id', 'package_no', 'description', 'unit', 'quantity', 'total_weight', 'rent', 'labour'
+        'bilty_id', 'package_no', 'total_volume', 'rate', 'description', 'unit', 'quantity', 'total_weight', 'rent', 'labour'
     ];
 
     public function bilty()

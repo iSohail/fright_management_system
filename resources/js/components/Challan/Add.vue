@@ -69,7 +69,7 @@
 
       <v-row>
         <v-col cols="12" md="4">
-          <v-text-field v-model="total_amount" label="Total Amount"></v-text-field>
+          <v-text-field v-model="total_amount" readonly label="Total Amount"></v-text-field>
         </v-col>
 
         <v-col cols="12" md="4">
@@ -77,7 +77,7 @@
         </v-col>
 
         <v-col cols="12" md="4">
-          <v-text-field v-model="grand_total" label="Grand Total"></v-text-field>
+          <v-text-field v-model="grand_total" readonly label="Grand Total"></v-text-field>
         </v-col>
       </v-row>
 
@@ -122,9 +122,7 @@ export default {
     agent_name: "",
     cnic: "",
     transport: "",
-    total_amount: "",
-    expenses: "",
-    grand_total: "",
+    expenses: "0",
     search: "",
     loading: true,
     from_city_items: ["Karachi", "Lahore", "Sheikhupura", "Islamabad"],
@@ -137,7 +135,6 @@ export default {
       {
         text: "Builty No",
         align: "left",
-        sortable: false,
         value: "no"
       },
       { text: "Manual", value: "manual" },
@@ -145,13 +142,19 @@ export default {
       { text: "Sender", value: "sender" },
       { text: "Receiver", value: "receiver" },
       { text: "Customer", value: "customer_name" },
-      { text: "Payment", value: "payment_status" }
+      { text: "Payment", value: "payment_status" },
+      { text: "Amount", value: "bilty_total" }
     ],
     bilties: [],
     valid: true,
+
     nameRule: [
-      v => !!v || "Name is required",
-      v => (v && v.length <= 10) || "Name must be less than 10 characters"
+      v => !!v || "Field is required",
+      v => (v && v.length <= 30) || "Field must be less than 30 characters",
+      v =>
+        /(?=.*[A-Z])/.test(v) ||
+        /(?=.*[a-z])/.test(v) ||
+        "Only characters allowed"
     ],
     selectRule: [v => !!v || "Field is required"],
     descriptionRule: [
@@ -163,12 +166,25 @@ export default {
     numberRule: [
       v => !!v || "Field is required",
       v => {
-        if (!v.trim) return true;
-        if (!isNaN(parseFloat(v)) && v >= 0 && v <= 99999) return true;
-        return "Number has to be between 0 and 99999";
+        if (!isNaN(parseFloat(v)) && v >= 0 && v <= 9999999) return true;
+        return "Only numbers allowed";
       }
     ]
   }),
+  computed: {
+    total_amount() {
+      let total_amount = 0;
+      for (let bilty of this.bilties) {
+        if (bilty.payment_status == "unpaid") {
+          total_amount += parseFloat(bilty.bilty_total);
+        }
+      }
+      return total_amount;
+    },
+    grand_total() {
+      return parseFloat(this.total_amount) - parseFloat(this.expenses);
+    }
+  },
   async created() {
     this.getLastChallanNo();
     await this.getBilties();
@@ -220,19 +236,22 @@ export default {
               payment_status: bilty.attributes.payment_status,
               bilty_charges: bilty.attributes.bilty_charges,
               local_charges: bilty.attributes.local_charges,
-              package_total: 0,
-              total_amount: 0,
+              bilty_total: bilty.attributes.bilty_total,
               customer_name: ""
             };
-            this.getCustomer(bilty.relationships.customer.data.id)
-              .then(res => {
-                // bilty_data.customer = res;
-                bilty_data.customer_name = res.name;
-                console.log(bilty_data.customer_name);
-              })
-              .then(bilties.push(bilty_data));
+            if (bilty.relationships.customer.data) {
+              this.getCustomer(bilty.relationships.customer.data.id).then(
+                res => {
+                  // bilty_data.customer = res;
+                  bilty_data.customer_name = res.name;
+                  console.log(bilty_data.customer_name);
+                }
+              );
+            }
+            bilties.push(bilty_data);
           }
           this.bilties = bilties;
+          this.loading = false;
           console.log(bilties);
         },
         () => {
