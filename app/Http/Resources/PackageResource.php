@@ -23,6 +23,8 @@ class PackageResource extends JsonResource
                 'unit' => (string)$this->unit,
                 'quantity' => (string)$this->quantity,
                 'total_weight' => (string)$this->total_weight,
+                'total_volume' => (string)$this->total_volume,
+                'rate' => (string)$this->rate,
                 'rent' => (string)$this->rent,
                 'labour' => (string)$this->labour,
             ],

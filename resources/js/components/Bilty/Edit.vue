@@ -343,7 +343,9 @@ export default {
             console.log(pck);
             this.getPackage(pck.id);
           }
-          this.customer = res.data.relationships.customer.data.id;
+          if (res.data.relationships.customer.data) {
+            this.customer = res.data.relationships.customer.data.id;
+          }
         },
         () => {
           console.log("error occured");

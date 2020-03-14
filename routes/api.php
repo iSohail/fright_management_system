@@ -52,4 +52,7 @@ Route::group(['middleware' => 'auth:api'], function () {
     Route::post('challan/create', 'ChallanController@store');
     Route::get('challan/{id}', 'ChallanController@show');
     Route::put('challan/{id}', 'ChallanController@update');
+
+    Route::get('sender/{id}', 'SenderController@show');
+    Route::get('receiver/{id}', 'ReceiverController@show');
 });
