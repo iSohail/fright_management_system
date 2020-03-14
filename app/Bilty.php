@@ -9,9 +9,10 @@ use Webpatser\Uuid\Uuid;
 class Bilty extends Model
 {
     public $timestamps = true;
+    public $incrementing = false;
 
     protected $fillable = [
-        'bilty_no', 'lg_bl_no', 'from', 'to', 'sender', 'receiver', 'receiver_address', 'status', 'payment_status', 'bilty_charges', 'local_charges', 'customer_id', 'challan_id',
+        'bilty_no', 'lg_bl_no', 'from', 'to', 'manual', 'sender', 'receiver', 'receiver_address', 'status', 'payment_status', 'bilty_charges', 'local_charges', 'bilty_total', 'packages_total', 'customer_id', 'challan_id',
     ];
 
     public function customer()

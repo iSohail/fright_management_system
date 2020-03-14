@@ -24,14 +24,18 @@ class CreateBiltiesTable extends Migration
             $table->string('receiver_address');
             $table->enum('status', ['registered', 'dispatched', 'delivered']);
             $table->enum('payment_status', ['paid', 'unpaid', 'monthly']);
+            $table->enum('manual', ['true', 'false'])->default('false');
             $table->unsignedDecimal('bilty_charges');
             $table->unsignedDecimal('local_charges');
+            $table->unsignedDecimal('bilty_total');
+            $table->unsignedDecimal('packages_total');
             $table->string('customer_id')->nullable();
             $table->string('challan_id')->nullable();
             $table->timestamps();
 
             $table->primary('id');
-            $table->unique('bilty_no');
+            $table->unique(['bilty_no', 'manual']);
+            $table->unique('lg_bl_no');
             $table->foreign('customer_id')->references('id')->on('customers');
             $table->foreign('challan_id')->references('id')->on('challans');
         });

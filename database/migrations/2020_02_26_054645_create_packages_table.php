@@ -21,6 +21,8 @@ class CreatePackagesTable extends Migration
             $table->enum('unit', ['kg', 'cbm', 'pck']);
             $table->unsignedDecimal('quantity');
             $table->unsignedDecimal('total_weight')->nullable();
+            $table->unsignedDecimal('total_volume')->nullable();
+            $table->unsignedDecimal('rate');
             $table->unsignedDecimal('rent');
             $table->unsignedDecimal('labour');
             $table->timestamps();

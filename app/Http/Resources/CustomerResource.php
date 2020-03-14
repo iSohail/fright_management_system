@@ -16,16 +16,17 @@ class CustomerResource extends JsonResource
     {
         return [
             'type' => 'Customer',
-            'id' => (string)$this->id,
+            'id' => (string) $this->id,
             'attributes' => [
-                'name' => (string)$this->name,
-                'cell_no' => (string)$this->cell_no,
-                'customer_no' => (string)$this->customer_no,
-                'per_kg_rate' => (string)$this->per_kg_rate,
-                'per_cbm_rate' => (string)$this->per_cbm_rate,
-                'per_pck_rate' => (string)$this->per_pck_rate
+                'name' => (string) $this->name,
+                'cell_no' => (string) $this->cell_no,
+                'company' => (string) $this->company,
+                'customer_no' => (string) $this->customer_no,
+                'per_kg_rate' => (string) $this->per_kg_rate,
+                'per_cbm_rate' => (string) $this->per_cbm_rate,
+                'per_pck_rate' => (string) $this->per_pck_rate,
             ],
-            'relationships' => new CustomerRelationshipResource($this)
+            'relationships' => new CustomerRelationshipResource($this),
         ];
     }
 }

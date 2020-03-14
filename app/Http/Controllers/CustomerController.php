@@ -3,9 +3,11 @@
 namespace App\Http\Controllers;
 
 use App\Customer;
+use App\Events\CustomerAdded;
 use App\Http\Resources\CustomerResource;
+use App\Receiver;
+use App\Sender;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\DB;
 
 class CustomerController extends Controller
 {
@@ -49,15 +51,6 @@ class CustomerController extends Controller
     {
         $data = json_decode($request->getContent(), true);
 
-        // return $data;
-        // return $data['id'];
-        // if (Customer::find($data['id'])) {
-        //     return response()->json([
-        //         'status' => 'error',
-        //         'message' => 'error saving customer, already exists',
-        //     ], 500);
-        // }
-
         $customer = new Customer;
 
         $customer->name = $data['customerName'];
@@ -66,9 +59,28 @@ class CustomerController extends Controller
         $customer->per_kg_rate = $data['perKg'];
         $customer->per_cbm_rate = $data['perCbm'];
         $customer->per_pck_rate = $data['perPckg'];
+        $customer->company = $data['company'];
 
-        // return $customer;
         if ($customer->save()) {
+            $customer = Customer::findOrFail($customer->id);
+            // return $customer;
+            $sender = new Sender;
+            $sender->name = $data['sender'];
+            $sender->address = $data['sender_address'];
+            $sender->customer()->associate($customer);
+
+            $sender->save();
+
+            $receiver = new Receiver;
+            $receiver->name = $data['receiver'];
+            $receiver->address = $data['receiver_address'];
+            $receiver->customer()->associate($customer);
+
+            $receiver->save();
+            // return 'sdfasdfas';
+
+            event(new CustomerAdded());
+
             CustomerResource::withoutWrapping();
             return new CustomerResource($customer);
         } else {
@@ -87,7 +99,9 @@ class CustomerController extends Controller
      */
     public function show($id)
     {
-        //
+        $customer = Customer::findOrFail($id);
+        CustomerResource::withoutWrapping();
+        return new CustomerResource($customer);
     }
 
     /**
@@ -162,7 +176,7 @@ class CustomerController extends Controller
     public function last()
     {
         $customer = Customer::orderby('customer_no', 'desc')->first();
-        if ($customer){
+        if ($customer) {
             return $customer['customer_no'] + 1;
         }
 

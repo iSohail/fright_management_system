@@ -24,6 +24,8 @@
     "dependencies": {
         "@websanova/vue-auth": "^2.21.16-beta",
         "es6-promise": "^4.2.8",
+        "laravel-echo": "^1.6.1",
+        "pusher-js": "^5.1.1",
         "vue-axios": "^2.1.5",
         "vue-router": "^3.1.5",
         "vuetify": "^2.2.13"

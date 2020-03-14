@@ -16,8 +16,14 @@ class CustomerRelationshipResource extends JsonResource
     {
         return [
             'bilties' => [
-                'data' => BiltyIdentifierResource::collection($this->bilties)
-            ]
+                'data' => BiltyIdentifierResource::collection($this->bilties),
+            ],
+            'sender' => [
+                'data' => new SenderIdentifierResource($this->sender),
+            ],
+            'receiver' => [
+                'data' => new ReceiverIdentifierResource($this->receiver),
+            ],
         ];
     }
 }
