@@ -21,6 +21,12 @@ class BiltyRelationshipResource extends JsonResource
             'customer' => [
                 'data' => new CustomerIdentifierResource($this->customer)
             ],
+            'user' => [
+                'data' => new UserIdentifierResource($this->user)
+            ],
+            'ledger' => [
+                'data' => new GeneralLedgerIdentifierResource($this->generalLedger)
+            ],
             'challan' => [
                 'data' => new ChallanIdentifierResource($this->challan)
             ]

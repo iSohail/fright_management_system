@@ -17,6 +17,7 @@ class UserIdentifierResource extends JsonResource
         return [
             'type'       => 'user',
             'id'         => (string)$this->id,
+            'user_name'         => (string)$this->user_name,
         ];
     }
 }

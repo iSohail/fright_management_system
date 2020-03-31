@@ -11,12 +11,17 @@ class Challan extends Model
     public $incrementing = false;
 
     protected $fillable = [
-        'challan_no', 'from', 'to', 'truck_no', 'permit_no', 'transport', 'driver_name', 'agent_name', 'cnic', 'total_amount', 'expenses', 'grand_total',
+        'challan_no', 'from', 'to', 'truck_no', 'permit_no', 'transport', 'driver_name', 'agent_name', 'cnic', 'total_amount', 'expenses', 'grand_total', 'user_id',
     ];
 
     public function bilties()
     {
         return $this->hasMany('App\Bilty');
+    }
+
+    public function user()
+    {
+        return $this->belongsTo('App\User');
     }
 
     public static function boot()

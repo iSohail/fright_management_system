@@ -15,6 +15,12 @@ import auth from './auth'
 import router from './router'
 import App from './components/App'
 import Echo from 'laravel-echo';
+import html2canvas from 'html2canvas';
+import jspdf from 'jspdf';
+import { store } from './store/store';
+
+window.html2canvas = html2canvas;
+window.jsPDF = jspdf
 
 window.Pusher = require('pusher-js');
 
@@ -57,6 +63,7 @@ new Vue({
     el: '#app',
     router,
     vuetify,
+    store,
     components: {
         'app': App
     }

@@ -1,127 +1,245 @@
 <template>
-  <v-form v-model="valid" ref="challan_form">
-    <v-container class="px-8 py-2">
-      <v-row>
-        <v-col cols="12" md="2">
-          <v-text-field
-            :disabled="!manual"
-            :rules="numberRule"
-            v-model="challan_no"
-            label="Challan Number"
-          ></v-text-field>
-        </v-col>
-        <v-col cols="12" md="2">
-          <v-checkbox
-            v-model="manual"
-            hide-details
-            class="shrink"
-            label="Manual"
-            @change="checkForBiltyNo()"
-          ></v-checkbox>
-        </v-col>
+  <div>
+    <v-alert color="light-blue darken-3 mb-0" dark dense tile flat>
+      <v-breadcrumbs class="py-3" dark :items="bread_crumb_items">
+        <template v-slot:item="{ item }">
+          <v-breadcrumbs-item>{{ item.text.toUpperCase() }}</v-breadcrumbs-item>
+        </template>
+      </v-breadcrumbs>
+    </v-alert>
 
-        <v-col cols="12" md="4">
-          <v-text-field v-model="truck_no" label="Truck No"></v-text-field>
-        </v-col>
-        <v-col cols="12" md="4">
-          <v-text-field v-model="permit_no" label="Permit No"></v-text-field>
-        </v-col>
-      </v-row>
+    <v-card
+      style="height: 100%; min-height: 100vh"
+      :loading="isUpdating"
+      dark
+      flat
+      tile
+      :disabled="isUpdating"
+    >
+      <template v-slot:progress>
+        <v-progress-linear absolute color="blue lighten-3" height="4" indeterminate></v-progress-linear>
+      </template>
+      <v-card-title class="px-8 pt-8 headline">ADD CHALLAN FORM</v-card-title>
+      <v-card-text>
+        <v-form v-model="valid" ref="challan_form">
+          <v-container class="px-4 py-2">
+            <v-row>
+              <v-col cols="12" md="3">
+                <v-text-field
+                  disabled
+                  dense
+                  filled
+                  :rules="numberRule"
+                  v-model="challan_no"
+                  label="Challan Number"
+                ></v-text-field>
+              </v-col>
 
-      <v-row>
-        <v-col cols="12" md="4">
-          <v-text-field v-model="driver_name" label="Driver Name"></v-text-field>
-        </v-col>
-        <v-col cols="12" md="4">
-          <v-text-field v-model="agent_name" label="Agent Name"></v-text-field>
-        </v-col>
-        <v-col cols="12" md="4">
-          <v-text-field v-model="cnic" label="Cnic"></v-text-field>
-        </v-col>
-      </v-row>
+              <v-col cols="12" md="3">
+                <v-text-field
+                  dense
+                  filled
+                  clearable
+                  :rules="selectRule"
+                  v-model="truck_no"
+                  label="Truck No"
+                ></v-text-field>
+              </v-col>
+              <v-col cols="12" md="3">
+                <v-text-field
+                  dense
+                  filled
+                  clearable
+                  :rules="selectRule"
+                  v-model="permit_no"
+                  label="Permit No"
+                ></v-text-field>
+              </v-col>
+              <v-col cols="12" sm="3">
+                <v-menu
+                  ref="menu"
+                  v-model="menu"
+                  :close-on-content-click="false"
+                  :return-value.sync="date"
+                  transition="scale-transition"
+                  offset-y
+                  min-width="290px"
+                >
+                  <template v-slot:activator="{ on }">
+                    <v-text-field v-model="date" label="Date" readonly dense filled v-on="on"></v-text-field>
+                  </template>
+                  <v-date-picker v-model="date" no-title scrollable>
+                    <v-spacer></v-spacer>
+                    <v-btn text color="primary" @click="menu = false">Cancel</v-btn>
+                    <v-btn text color="primary" @click="$refs.menu.save(date)">OK</v-btn>
+                  </v-date-picker>
+                </v-menu>
+              </v-col>
+            </v-row>
 
-      <v-row>
-        <v-col cols="12" md="4">
-          <v-autocomplete
-            v-model="from_city_value"
-            :items="from_city_items"
-            :rules="selectRule"
-            dense
-            filled
-            label="From"
-          ></v-autocomplete>
-        </v-col>
+            <v-row>
+              <v-col cols="12" md="4">
+                <v-text-field
+                  dense
+                  filled
+                  clearable
+                  :rules="nameRule"
+                  v-model="driver_name"
+                  label="Driver Name"
+                ></v-text-field>
+              </v-col>
+              <v-col cols="12" md="4">
+                <v-text-field
+                  dense
+                  filled
+                  clearable
+                  :rules="nameRule"
+                  v-model="agent_name"
+                  label="Agent Name"
+                ></v-text-field>
+              </v-col>
+              <v-col cols="12" md="4">
+                <v-text-field
+                  dense
+                  filled
+                  clearable
+                  :rules="selectRule"
+                  v-model="cnic"
+                  label="Cnic"
+                ></v-text-field>
+              </v-col>
+            </v-row>
 
-        <v-col cols="12" md="4">
-          <v-autocomplete
-            v-model="to_city_value"
-            :rules="selectRule"
-            :items="to_city_items"
-            dense
-            filled
-            label="To"
-          ></v-autocomplete>
-        </v-col>
-        <v-col cols="12" md="4">
-          <v-text-field v-model="transport" label="Transport"></v-text-field>
-        </v-col>
-      </v-row>
+            <v-row>
+              <v-col cols="12" md="4">
+                <v-autocomplete
+                  v-model="from_city_value"
+                  :items="from_city_items"
+                  :rules="selectRule"
+                  dense
+                  filled
+                  label="From"
+                ></v-autocomplete>
+              </v-col>
 
-      <v-row>
-        <v-col cols="12" md="4">
-          <v-text-field v-model="total_amount" readonly label="Total Amount"></v-text-field>
-        </v-col>
+              <v-col cols="12" md="4">
+                <v-autocomplete
+                  v-model="to_city_value"
+                  :rules="selectRule"
+                  :items="to_city_items"
+                  dense
+                  filled
+                  label="To"
+                ></v-autocomplete>
+              </v-col>
+              <v-col cols="12" md="4">
+                <v-text-field
+                  dense
+                  filled
+                  clearable
+                  :rules="selectRule"
+                  v-model="transport"
+                  label="Transport"
+                ></v-text-field>
+              </v-col>
+            </v-row>
 
-        <v-col cols="12" md="4">
-          <v-text-field v-model="expenses" label="Expenses"></v-text-field>
-        </v-col>
+            <v-row>
+              <v-col cols="12" md="4">
+                <v-text-field
+                  dense
+                  filled
+                  :rules="selectRule"
+                  v-model="total_amount"
+                  readonly
+                  label="Total Amount"
+                ></v-text-field>
+              </v-col>
 
-        <v-col cols="12" md="4">
-          <v-text-field v-model="grand_total" readonly label="Grand Total"></v-text-field>
-        </v-col>
-      </v-row>
+              <v-col cols="12" md="4">
+                <v-text-field dense filled :rules="selectRule" v-model="expenses" label="Expenses"></v-text-field>
+              </v-col>
 
-      <v-spacer></v-spacer>
-      <v-card>
-        <v-card-title>
-          Bilties
-          <v-spacer></v-spacer>
-          <v-text-field
-            v-model="search"
-            append-icon="mdi-magnify"
-            label="Search"
-            single-line
-            hide-details
-          ></v-text-field>
-        </v-card-title>
-        <v-data-table
-          v-model="selected"
-          :headers="headers"
-          :items="bilties"
-          :search="search"
-          item-key="id"
-          show-select
-          :loading="loading"
-          loading-text="Loading... Please wait"
-          class="elevation-1"
-        ></v-data-table>
-      </v-card>
-      <v-btn class="my-4 float-right" @click="submit_challan">Submit</v-btn>
-    </v-container>
-  </v-form>
+              <v-col cols="12" md="4">
+                <v-text-field
+                  dense
+                  filled
+                  :rules="selectRule"
+                  v-model="grand_total"
+                  readonly
+                  label="Grand Total"
+                ></v-text-field>
+              </v-col>
+            </v-row>
+
+            <v-spacer></v-spacer>
+            <v-card>
+              <v-card-title>
+                Bilties
+                <v-spacer></v-spacer>
+                <v-text-field
+                  v-model="search"
+                  append-icon="mdi-magnify"
+                  label="Search"
+                  single-line
+                  hide-details
+                ></v-text-field>
+              </v-card-title>
+              <v-data-table
+                v-model="selected"
+                :headers="headers"
+                :items="bilties"
+                :search="search"
+                item-key="id"
+                show-select
+                :loading="loading"
+                loading-text="Loading... Please wait"
+                class="elevation-1"
+              ></v-data-table>
+            </v-card>
+            <v-row justify="end">
+              <v-btn class="my-4 success mx-4" @click="submit_challan">Submit</v-btn>
+              <v-btn
+                class="my-4 ml-4 float-right"
+                color="primary"
+                @click="submit_print_challan"
+              >Submit & Print</v-btn>
+            </v-row>
+          </v-container>
+        </v-form>
+      </v-card-text>
+    </v-card>
+    <v-snackbar v-model="snackbar">
+      {{ text }}
+      <v-btn color="pink" text @click="snackbar = false">Close</v-btn>
+    </v-snackbar>
+  </div>
 </template>
 
 
 <script>
 export default {
   data: () => ({
+    bread_crumb_items: [
+      {
+        text: "Challan"
+      },
+      {
+        text: "Add Challan"
+      }
+    ],
+    snackbar: false,
+    text: "",
+    isUpdating: false,
+    menu: false,
+    date: new Date().toISOString().substr(0, 10),
     challan_no: "",
-    truck_no: "",
-    permit_no: "",
-    driver_name: "",
-    agent_name: "",
-    cnic: "",
-    transport: "",
+    truck_no: "-",
+    permit_no: "-",
+    driver_name: "-",
+    agent_name: "-",
+    cnic: "-",
+    transport: "-",
     expenses: "0",
     search: "",
     loading: true,
@@ -133,17 +251,51 @@ export default {
     selected: [],
     headers: [
       {
+        text: "",
+        value: "data-table-select",
+        class: "light-blue darken-3 white--text"
+      },
+      {
         text: "Builty No",
         align: "left",
-        value: "no"
+        value: "no",
+        class: "light-blue darken-3 white--text"
       },
-      { text: "Manual", value: "manual" },
-      { text: "Lc/bl-no", value: "lc_bl_no" },
-      { text: "Sender", value: "sender" },
-      { text: "Receiver", value: "receiver" },
-      { text: "Customer", value: "customer_name" },
-      { text: "Payment", value: "payment_status" },
-      { text: "Amount", value: "bilty_total" }
+      {
+        text: "Manual",
+        value: "manual",
+        class: "light-blue darken-3 white--text"
+      },
+      {
+        text: "Lc/bl-no",
+        value: "lc_bl_no",
+        class: "light-blue darken-3 white--text"
+      },
+      {
+        text: "Sender",
+        value: "sender",
+        class: "light-blue darken-3 white--text"
+      },
+      {
+        text: "Receiver",
+        value: "receiver",
+        class: "light-blue darken-3 white--text"
+      },
+      {
+        text: "Customer",
+        value: "customer_name",
+        class: "light-blue darken-3 white--text"
+      },
+      {
+        text: "Payment",
+        value: "payment_status",
+        class: "light-blue darken-3 white--text"
+      },
+      {
+        text: "Amount",
+        value: "bilty_total",
+        class: "light-blue darken-3 white--text"
+      }
     ],
     bilties: [],
     valid: true,
@@ -153,6 +305,7 @@ export default {
       v =>
         /(?=.*[A-Z])/.test(v) ||
         /(?=.*[a-z])/.test(v) ||
+        /(?=.*[-])/.test(v) ||
         "Only characters allowed"
     ],
     selectRule: [v => !!v || "Field is required"],
@@ -173,7 +326,7 @@ export default {
   computed: {
     total_amount() {
       let total_amount = 0;
-      for (let bilty of this.bilties) {
+      for (let bilty of this.selected) {
         if (bilty.payment_status == "unpaid") {
           total_amount += parseFloat(bilty.bilty_total);
         }
@@ -181,7 +334,9 @@ export default {
       return total_amount;
     },
     grand_total() {
-      return parseFloat(this.total_amount) - parseFloat(this.expenses);
+      return Math.round(
+        parseFloat(this.total_amount) - parseFloat(this.expenses)
+      );
     }
   },
   async created() {
@@ -204,16 +359,11 @@ export default {
         }
       );
     },
-    checkForBiltyNo() {
-      if (!this.manual) {
-        this.getLastChallanNo();
-      }
-    },
     getBilties() {
       this.loading = true;
       let bilties = [];
       this.$http({
-        url: `bilty`,
+        url: `bilties/registered`,
         method: "GET"
       }).then(
         res => {
@@ -253,6 +403,7 @@ export default {
         },
         () => {
           console.log("error occured");
+          this.loading = false;
           // this.has_error = true
         }
       );
@@ -287,12 +438,35 @@ export default {
     resetValidation() {
       this.$refs.form.resetValidation();
     },
+    emptyFields() {
+      this.truck_no = "-";
+      this.permit_no = "-";
+      this.driver_name = "-";
+      this.agent_name = "-";
+      this.cnic = "-";
+      this.transport = "-";
+      this.expenses = "0";
+      this.from_city_items = ["Karachi", "Lahore", "Sheikhupura", "Islamabad"];
+      this.to_city_items = ["Lahore", "Sheikhupura", "Karachi", "Islamabad"];
+      this.from_city_value = "Karachi";
+      this.to_city_value = "Lahore";
+      this.selected = [];
+    },
     submit_challan() {
-      if (true) {
+      let check = true;
+      this.isUpdating = true;
+      if (!this.selected.length > 0) {
+        this.isUpdating = false;
+        this.snackbar = true;
+        this.text = "Select bilties first";
+        check = false;
+      }
+      if (this.$refs.challan_form.validate()) {
         let that = this;
         let challan = {
           challan_no: that.challan_no,
           from: that.from_city_value,
+          date: that.date,
           to: that.to_city_value,
           manual: that.manual.toString(),
           truck_no: that.truck_no,
@@ -306,9 +480,13 @@ export default {
           grand_total: that.grand_total,
           bilties: []
         };
+
+        // this.created_challan.bilties = this.selected;
         for (let bilty of this.selected) {
+          console.log(bilty, "bilty check");
           challan.bilties.push(bilty.id);
         }
+        this.created_challan = challan;
         console.log(challan);
         this.$http({
           url: `challan/create`,
@@ -317,13 +495,43 @@ export default {
         }).then(
           res => {
             console.log(res);
+            this.isUpdating = false;
+            this.snackbar = true;
+            this.text = "Successfully added challan";
+            this.emptyFields();
+            this.getLastChallanNo();
+            this.getBilties();
           },
           err => {
+            check = false;
+            this.isUpdating = false;
+            this.snackbar = true;
+            this.text =
+              "Error adding challan, Failed with Error: " +
+              err.response.statusText;
             console.log("error status", err.response.status);
             console.log("error status text", err.response.statusText);
             // this.has_error = true
           }
         );
+      } else {
+        this.isUpdating = false;
+        this.snackbar = true;
+        this.text = "Validation Failed";
+        check = false;
+      }
+      return check;
+    },
+    submit_print_challan() {
+      if (this.submit_challan()) {
+        console.log(this.created_challan);
+        this.$store.dispatch("destroyChallan");
+        this.$store.dispatch("createChallan", this.created_challan);
+        let routeData = this.$router.resolve({
+          name: "invoice.challan",
+          query: { id: this.challan_no }
+        });
+        window.open(routeData.href, "_blank");
       }
     }
   }

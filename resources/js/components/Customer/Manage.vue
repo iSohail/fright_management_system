@@ -1,91 +1,130 @@
 <template>
-  <v-container>
-    <v-card>
-      <v-card-title>
-        Manage Customer
-        <v-spacer></v-spacer>
-        <v-text-field
-          v-model="search"
-          append-icon="mdi-magnify"
-          label="Search"
-          single-line
-          hide-details
-        ></v-text-field>
-      </v-card-title>
-
-      <v-data-table
-        :headers="headers"
-        :items="customers"
-        :search="search"
-        show-expand
-        item-key="id"
-        :single-expand="singleExpand"
-        :expanded.sync="expanded"
-      >
-        <template v-slot:top>
-          <v-dialog v-model="dialog" max-width="800px">
-            <v-card>
-              <v-card-title>
-                <span class="headline">Edit Item</span>
-              </v-card-title>
-
-              <v-card-text>
-                <v-container>
-                  <v-row>
-                    <v-col cols="12" sm="6" md="4">
-                      <v-text-field v-model="editedItem.no" label="Customer No"></v-text-field>
-                    </v-col>
-                    <v-col cols="12" sm="6" md="4">
-                      <v-text-field v-model="editedItem.name" label="Name"></v-text-field>
-                    </v-col>
-                    <v-col cols="12" sm="6" md="4">
-                      <v-text-field v-model="editedItem.cellNo" label="Cell No"></v-text-field>
-                    </v-col>
-                    <v-col cols="12" sm="6" md="4">
-                      <v-text-field v-model="editedItem.perKg" label="Per Kg"></v-text-field>
-                    </v-col>
-                    <v-col cols="12" sm="6" md="4">
-                      <v-text-field v-model="editedItem.perCbm" label="Per Cbm"></v-text-field>
-                    </v-col>
-                    <v-col cols="12" sm="6" md="4">
-                      <v-text-field v-model="editedItem.perPackage" label="Per Package"></v-text-field>
-                    </v-col>
-                  </v-row>
-                </v-container>
-              </v-card-text>
-
-              <v-card-actions>
-                <v-spacer></v-spacer>
-                <v-btn color="blue darken-1" text @click="close">Cancel</v-btn>
-                <v-btn color="blue darken-1" text @click="save">Save</v-btn>
-              </v-card-actions>
-            </v-card>
-          </v-dialog>
+  <div>
+    <v-alert color="light-blue darken-3 mb-0" dark dense tile flat>
+      <v-breadcrumbs class="py-3" dark :items="bread_crumb_items">
+        <template v-slot:item="{ item }">
+          <v-breadcrumbs-item>{{ item.text.toUpperCase() }}</v-breadcrumbs-item>
         </template>
-        <template v-slot:item.action="{ item }">
-          <v-btn class="primary mr-2" small @click="editItem(item)">
-            <v-icon>mdi-pencil</v-icon>
-          </v-btn>
-        </template>
-        <template v-slot:expanded-item="{ headers, item }">
-          <td :colspan="headers.length" class="black">
-            <v-row>
-              <v-subheader>Bilty Details</v-subheader>
-            </v-row>
-            <v-row>
-              <v-col cols="12">
-                <v-data-table :headers="headers_bilties" :items="item.bilties" :items-per-page="5"></v-data-table>
-              </v-col>
-            </v-row>
-          </td>
-        </template>
-      </v-data-table>
+      </v-breadcrumbs>
+    </v-alert>
+    <v-card style="height: 100%; min-height: 100vh" dark flat tile>
+      <v-card-title class="px-8 pt-8 headline">MANAGE CUSTOMER</v-card-title>
+      <v-card-text>
+        <v-card class="mx-4 my-2 mb-4">
+          <v-card-title>
+            Customers
+            <v-spacer></v-spacer>
+            <v-text-field
+              v-model="search"
+              append-icon="mdi-magnify"
+              label="Search"
+              single-line
+              hide-details
+            ></v-text-field>
+          </v-card-title>
+
+          <v-data-table
+            :headers="headers"
+            :items="customers"
+            :search="search"
+            show-expand
+            item-key="id"
+            :single-expand="singleExpand"
+            :expanded.sync="expanded"
+          >
+            <template v-slot:top>
+              <v-dialog v-model="dialog" max-width="800px">
+                <v-card>
+                  <v-card-title>
+                    <span class="headline">Edit Item</span>
+                  </v-card-title>
+
+                  <v-card-text>
+                    <v-container>
+                      <v-row>
+                        <v-col cols="12" sm="6" md="4">
+                          <v-text-field :rules="nameRule" v-model="editedItem.name" label="Name"></v-text-field>
+                        </v-col>
+                        <v-col cols="12" sm="6" md="4">
+                          <v-text-field v-model="editedItem.email" label="Email"></v-text-field>
+                        </v-col>
+                        <v-col cols="12" sm="6" md="4">
+                          <v-text-field
+                            :rules="selectRule"
+                            v-model="editedItem.cellNo"
+                            label="Cell No"
+                          ></v-text-field>
+                        </v-col>
+                        <v-col cols="12" sm="6" md="4">
+                          <v-text-field
+                            :rules="selectRule"
+                            v-model="editedItem.company"
+                            label="Company"
+                          ></v-text-field>
+                        </v-col>
+                        <v-col cols="12" sm="6" md="4">
+                          <v-text-field
+                            :rules="numberRule"
+                            v-model="editedItem.perKg"
+                            label="Per Kg"
+                          ></v-text-field>
+                        </v-col>
+                        <v-col cols="12" sm="6" md="4">
+                          <v-text-field
+                            :rules="numberRule"
+                            v-model="editedItem.perCbm"
+                            label="Per Cbm"
+                          ></v-text-field>
+                        </v-col>
+                        <v-col cols="12" sm="6" md="4">
+                          <v-text-field
+                            :rules="numberRule"
+                            v-model="editedItem.perPackage"
+                            label="Per Package"
+                          ></v-text-field>
+                        </v-col>
+                      </v-row>
+                    </v-container>
+                  </v-card-text>
+
+                  <v-card-actions>
+                    <v-spacer></v-spacer>
+                    <v-btn color="blue darken-1" text @click="close">Cancel</v-btn>
+                    <v-btn color="blue darken-1" text @click="save">Save</v-btn>
+                  </v-card-actions>
+                </v-card>
+              </v-dialog>
+            </template>
+            <template v-slot:item.action="{ item }">
+              <v-btn class="primary mr-2" small @click="editItem(item)">
+                <v-icon>mdi-pencil</v-icon>
+              </v-btn>
+            </template>
+            <template v-slot:expanded-item="{ headers, item }">
+              <td :colspan="headers.length" class="black">
+                <v-row>
+                  <v-subheader>Bilty Details</v-subheader>
+                </v-row>
+                <v-row>
+                  <v-col cols="12">
+                    <v-data-table
+                      :headers="headers_bilties"
+                      :items="item.bilties"
+                      :items-per-page="5"
+                    ></v-data-table>
+                  </v-col>
+                </v-row>
+              </td>
+            </template>
+          </v-data-table>
+        </v-card>
+        <v-snackbar v-model="snackbar">
+          {{ text }}
+          <v-btn color="pink" text @click="snackbar = false">Close</v-btn>
+        </v-snackbar>
+      </v-card-text>
     </v-card>
-    <v-snackbar v-model="snackbar">
-      {{ text }}
-      <v-btn color="pink" text @click="snackbar = false">Close</v-btn>
-    </v-snackbar>
-  </v-container>
+  </div>
 </template>
 
 
@@ -94,6 +133,14 @@
 export default {
   data() {
     return {
+      bread_crumb_items: [
+        {
+          text: "Customer"
+        },
+        {
+          text: "Manage Customer"
+        }
+      ],
       snackbar: false,
       text: "",
       search: "",
@@ -104,41 +151,122 @@ export default {
         {
           text: "Builty No",
           align: "left",
-          sortable: false,
-          value: "no"
+          value: "no",
+          class: "light-blue darken-3 white--text"
         },
-        { text: "Manual", value: "manual" },
-        { text: "Lc/bl-no", value: "lc_bl_no" },
-        { text: "Sender", value: "sender" },
-        { text: "Receiver", value: "receiver" },
-        { text: "Payment", value: "payment_status" },
-        { text: "Status", value: "status" }
+        {
+          text: "Manual",
+          value: "manual",
+          class: "light-blue darken-3 white--text"
+        },
+        {
+          text: "Lc/bl-no",
+          value: "lc_bl_no",
+          class: "light-blue darken-3 white--text"
+        },
+        {
+          text: "Sender",
+          value: "sender",
+          class: "light-blue darken-3 white--text"
+        },
+        {
+          text: "Receiver",
+          value: "receiver",
+          class: "light-blue darken-3 white--text"
+        },
+        {
+          text: "Payment",
+          value: "payment_status",
+          class: "light-blue darken-3 white--text"
+        },
+        {
+          text: "Status",
+          value: "status",
+          class: "light-blue darken-3 white--text"
+        }
       ],
       headers: [
         {
           text: "Customer No",
           align: "left",
-          value: "no"
+          value: "no",
+          class: "light-blue darken-3 white--text"
         },
-        { text: "Name", value: "name" },
-        { text: "Cell No", value: "cellNo" },
-        { text: "Per Kg", value: "perKg" },
-        { text: "Per Cbm", value: "perCbm" },
-        { text: "Per Package", value: "perPackage" },
-        { text: "Action", value: "action" },
-        { text: "", value: "data-table-expand" }
+        {
+          text: "Name",
+          value: "name",
+          class: "light-blue darken-3 white--text"
+        },
+        {
+          text: "Email",
+          value: "email",
+          class: "light-blue darken-3 white--text"
+        },
+        {
+          text: "Cell No",
+          value: "cellNo",
+          class: "light-blue darken-3 white--text"
+        },
+        {
+          text: "Per Kg",
+          value: "perKg",
+          class: "light-blue darken-3 white--text"
+        },
+        {
+          text: "Per Cbm",
+          value: "perCbm",
+          class: "light-blue darken-3 white--text"
+        },
+        {
+          text: "Per Package",
+          value: "perPackage",
+          class: "light-blue darken-3 white--text"
+        },
+        {
+          text: "Action",
+          value: "action",
+          class: "light-blue darken-3 white--text"
+        },
+        {
+          text: "",
+          value: "data-table-expand",
+          class: "light-blue darken-3 white--text"
+        }
       ],
       customers: [],
       editedIndex: -1,
       editedItem: {
         id: "",
-        no: "",
+        company: "",
         name: "",
         cellNo: "",
         perKg: "",
         perCbm: "",
-        perPackage: ""
-      }
+        perPackage: "",
+        email: ""
+      },
+      nameRule: [
+        v => !!v || "Field is required",
+        v => (v && v.length <= 30) || "Field must be less than 30 characters",
+        v =>
+          /(?=.*[A-Z])/.test(v) ||
+          /(?=.*[a-z])/.test(v) ||
+          "Only characters allowed"
+      ],
+      selectRule: [v => !!v || "Field is required"],
+      descriptionRule: [
+        v => !!v || "Description is required",
+        v =>
+          (v && v.length <= 1000) ||
+          "Descriptipn must be less than 1000 characters"
+      ],
+      numberRule: [
+        v => !!v || "Field is required",
+        v => {
+          if (!isNaN(parseFloat(v)) && v >= 0 && v <= 9999999) return true;
+          return "Only numbers allowed";
+        }
+      ]
     };
   },
   mounted() {
@@ -156,6 +284,8 @@ export default {
             no: customer.attributes.customer_no,
             name: customer.attributes.name,
             cellNo: customer.attributes.cell_no,
+            email: customer.attributes.email,
+            company: customer.attributes.company,
             perKg: customer.attributes.per_kg_rate,
             perCbm: customer.attributes.per_cbm_rate,
             perPackage: customer.attributes.per_pck_rate,
@@ -207,6 +337,8 @@ export default {
               id: customer.id,
               no: customer.attributes.customer_no,
               name: customer.attributes.name,
+              email: customer.attributes.email,
+              company: customer.attributes.company,
               cellNo: customer.attributes.cell_no,
               perKg: customer.attributes.per_kg_rate,
               perCbm: customer.attributes.per_cbm_rate,
@@ -245,34 +377,11 @@ export default {
         }
       );
     },
-    deleteCustomer(id) {
-      this.$http({
-        url: `customer/${id}`,
-        method: "DELETE"
-      }).then(
-        res => {
-          this.getCustomers();
-          this.snackbar = true;
-          this.text = "Success deleting customer";
-        },
-        () => {
-          this.snackbar = true;
-          this.text = "Error deleting customer";
-        }
-      );
-    },
+
     editItem(item) {
       this.editedIndex = this.customers.indexOf(item);
       this.editedItem = Object.assign({}, item);
       this.dialog = true;
-    },
-
-    deleteItem(item) {
-      const index = this.customers.indexOf(item);
-      let confirm_dlt = confirm("Are you sure you want to delete this item?");
-      if (confirm_dlt) {
-        this.deleteCustomer(item.id);
-      }
     },
 
     close() {

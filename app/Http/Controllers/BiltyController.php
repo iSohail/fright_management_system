@@ -3,12 +3,15 @@
 namespace App\Http\Controllers;
 
 use App\Bilty;
-use App\Challan;
 use App\Customer;
-use App\Package;
+use App\Challan;
+use App\Events\BiltyAdded;
 use App\Http\Resources\BiltyResource;
-use Illuminate\Support\Facades\Validator;
+use App\Package;
+use Carbon\Carbon;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Auth;
 
 class BiltyController extends Controller
 {
@@ -56,36 +59,52 @@ class BiltyController extends Controller
         // converting JSON object into PHP code
         $data = json_decode($request->getContent(), true);
 
-        $customer = NULL;
-
+        $customer = null;
         $bilty = new Bilty;
-        
-        if (isset($data['customer_id'])){
-            if (gettype($data['customer_id']) == "string"){
+        if (isset($data['customer_id'])) {
+            if (gettype($data['customer_id']) == "string") {
                 $customer = Customer::findOrFail($data['customer_id']);
             }
         }
-        
+        $validatedData = $request->validate([
+            'date' => 'required',
+            'bilty_no' => 'required',
+            'lc_bl_no' => 'required',
+            'from' => 'required',
+            'to' => 'required',
+            'sender' => 'required',
+            'receiver' => 'required',
+            'receiver_address' => 'required',
+            'payment_status_item_value' => 'required',
+            'bilty_charges' => 'required',
+            'local_charges' => 'required',
+            'bilty_total' => 'required',
+            'packages_total' => 'required',
+            'manual' => 'required',
+        ]);
+        $bilty->created_at = Carbon::parse($data['date']);
         $bilty->bilty_no = $data['bilty_no'];
         $bilty->lg_bl_no = $data['lc_bl_no'];
+        $bilty->description = $data['description'];
         $bilty->from = $data['from'];
         $bilty->to = $data['to'];
         $bilty->sender = $data['sender'];
         $bilty->receiver = $data['receiver'];
         $bilty->receiver_address = $data['receiver_address'];
-        $bilty->status = $data['status_item_value'];
+        $bilty->status = 'registered';
         $bilty->payment_status = $data['payment_status_item_value'];
         $bilty->bilty_charges = $data['bilty_charges'];
         $bilty->local_charges = $data['local_charges'];
         $bilty->bilty_total = $data['bilty_total'];
         $bilty->packages_total = $data['packages_total'];
         $bilty->manual = $data['manual'];
+        $bilty->user_id = Auth::user()->id;
 
-        if ($bilty->save()) {
+        if ($bilty->save(['timestamps' => false])) {
             $bilty = Bilty::find($bilty->id);
-            if($customer){
+            if ($customer) {
                 $bilty->customer()->associate($customer);
-            } 
+            }
 
             foreach ($data['packages'] as $val) {
                 $package = Package::orderby('package_no', 'desc')->first();
@@ -97,7 +116,8 @@ class BiltyController extends Controller
                 $bilty->packages()->save($package);
             }
             $bilty->save();
-            
+
+            event(new BiltyAdded());
             BiltyResource::withoutWrapping();
             return new BiltyResource($bilty);
         } else {
@@ -147,38 +167,58 @@ class BiltyController extends Controller
      * @return \Illuminate\Http\Response
      */
     public function update(Request $request, $id)
-    {// converting JSON object into PHP code
+    { // converting JSON object into PHP code
         $data = json_decode($request->getContent(), true);
 
         // return $data;
         $bilty = Bilty::findOrFail($id);
-        $customer = -1;
-        if ($data['customer_id'] != -1){
+        // $customer = -1;
+        if ($data['customer_id'] != -1) {
             $customer = Customer::findOrFail($data['customer_id']);
         }
+        // return $bilty;
+        $validatedData = $request->validate([
+            'date' => 'required',
+            'lc_bl_no' => 'required',
+            'from' => 'required',
+            'to' => 'required',
+            'sender' => 'required',
+            'receiver' => 'required',
+            'receiver_address' => 'required',
+            'payment_status_item_value' => 'required',
+            'bilty_charges' => 'required',
+            'local_charges' => 'required',
+            'bilty_total' => 'required',
+            'packages_total' => 'required',
+        ]);
         // $challan = Challan::findOrFail($data['challan_id']);
         // return $customer;
+        $bilty->created_at = Carbon::parse($data['date']);
         $bilty->lg_bl_no = $data['lc_bl_no'];
+        if (isset($data['description'])) {
+
+            $bilty->description = $data['description'];
+        }
         $bilty->from = $data['from'];
         $bilty->to = $data['to'];
         $bilty->sender = $data['sender'];
         $bilty->receiver = $data['receiver'];
         $bilty->receiver_address = $data['receiver_address'];
-        $bilty->status = $data['status_item_value'];
         $bilty->payment_status = $data['payment_status_item_value'];
         $bilty->bilty_charges = $data['bilty_charges'];
         $bilty->local_charges = $data['local_charges'];
+        $bilty->bilty_total = $data['bilty_total'];
+        $bilty->packages_total = $data['packages_total'];
+        // return $bilty;
 
         // $packages=['1','2','3'];
-        // return $bilty;
-        if ($bilty->save()) {
-            
+        if ($bilty->save(['timestamps' => false])) {
 
             $bilty = Bilty::find($bilty->id);
-            // return $bilty;
-            if($customer != -1){
+            if (isset($customer)) {
+                // return $bilty;
                 $bilty->customer()->associate($customer);
-            } else{
+            } else {
                 // return 'dafad';
                 // return $bilty->id;
                 $bilty->customer_id = null;
@@ -189,7 +229,7 @@ class BiltyController extends Controller
             foreach ($packages_bilty as $package) {
                 $package->delete();
             }
-            
+
             foreach ($data['packages'] as $val) {
                 $package = Package::orderby('package_no', 'desc')->first();
                 $package_no = 1000;
@@ -201,7 +241,7 @@ class BiltyController extends Controller
             }
             $bilty->save();
             // return $bilty->id;
-
+            event(new BiltyAdded());
             // $bilty = Bilty::find($bilty->id);
             BiltyResource::withoutWrapping();
             return new BiltyResource($bilty);
@@ -246,5 +286,110 @@ class BiltyController extends Controller
 
         // default value for starting customer number
         return 1000;
+    }
+
+    public function changeStatus(Request $request, $status)
+    {
+        $data = json_decode($request->getContent(), true);
+
+        foreach ($data as $id) {
+            $bilty = Bilty::findOrFail($id);
+            $bilty->status = $status;
+            $bilty->save();
+        }
+
+        return response()->json([
+            'status' => 'success',
+            'message' => 'status changed to ' . $status,
+        ], 200);
+    }
+
+    public function changePaymentStatus(Request $request, $status)
+    {
+        $data = json_decode($request->getContent(), true);
+
+        foreach ($data as $id) {
+            $bilty = Bilty::findOrFail($id);
+            $bilty->payment_status = $status;
+            $bilty->save();
+        }
+
+        return response()->json([
+            'status' => 'success',
+            'message' => 'status changed to ' . $status,
+        ], 200);
+    }
+
+    public function totalCount()
+    {
+        $totalCount = Bilty::count();
+        return response()->json([
+            'status' => 'success',
+            'total_bilties' => $totalCount,
+        ], 200);
+    }
+
+    public function showCustomerBilties($customer_id)
+    {
+        $bilties = Customer::find($customer_id)->bilties;
+        $monthly_bilties = [];
+        foreach ($bilties as $bilty) {
+            if(isset($bilty['ledger_id'])){
+                continue;
+            }
+            if ($bilty['payment_status'] != 'monthly') {
+                continue;
+            }
+            array_push($monthly_bilties, $bilty);
+        }
+        BiltyResource::withoutWrapping();
+        return BiltyResource::collection($monthly_bilties);
+    }
+
+    public function showChallanBilties($challan_id)
+    {
+        $bilties = Challan::find($challan_id)->bilties;
+        BiltyResource::withoutWrapping();
+        return BiltyResource::collection($bilties);
+    }
+
+    public function monthlyTotal()
+    {
+        $now = Carbon::now();
+        $bilties = DB::table('bilties')
+            ->whereYear('created_at', $now->year)
+            ->pluck('created_at');
+
+        return $bilties;
+    }
+
+    public function showRegisteredBilties()
+    {
+        $bilties = Bilty::where('status', 'registered')->get();
+
+        BiltyResource::withoutWrapping();
+        return BiltyResource::collection($bilties);
+    }
+
+    public function resetRegisteredBilties(Request $request)
+    {
+        $data = json_decode($request->getContent(), true);
+        // return $data;
+        foreach ($data as $data_bilty) {
+            // return $data_bilty['id'];
+            $bilty = Bilty::findOrFail($data_bilty['id']);
+            $bilty->status = 'registered';
+            $bilty->save();
+        }
+
+        return response()->json([
+            'status' => 'success',
+            'message' => 'bilty registeration reset',
+        ], 200);
+
+        // $bilties = Bilty::where('status', 'registered')->get();
+
+        // BiltyResource::withoutWrapping();
+        // return BiltyResource::collection($bilties);
     }
 }

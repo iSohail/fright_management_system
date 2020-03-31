@@ -5,7 +5,10 @@ namespace App\Http\Controllers;
 use App\Bilty;
 use App\Challan;
 use App\Http\Resources\ChallanResource;
+use App\Events\ChallanAdded;
 use Illuminate\Http\Request;
+use Carbon\Carbon;
+use Illuminate\Support\Facades\Auth;
 
 class ChallanController extends Controller
 {
@@ -51,9 +54,11 @@ class ChallanController extends Controller
         // return $data;
         $challan = new Challan;
 
+        $challan->created_at = Carbon::parse($data['date']);
         $challan->challan_no = $data['challan_no'];
         $challan->from = $data['from'];
         $challan->to = $data['to'];
+        $challan->created_at = Carbon::parse($data['date']);
         $challan->truck_no = $data['truck_no'];
         $challan->permit_no = $data['permit_no'];
         $challan->transport = $data['transport'];
@@ -63,15 +68,19 @@ class ChallanController extends Controller
         $challan->total_amount = $data['total_amount'];
         $challan->expenses = $data['expenses'];
         $challan->grand_total = $data['grand_total'];
-
-        if ($challan->save()) {
+        $challan->user_id = Auth::user()->id;
+        // return $challan;
+        if ($challan->save(['timestamps' => false])) {
             $challan = Challan::find($challan->id);
             foreach ($data['bilties'] as $id) {
                 $bilty = Bilty::find($id);
+                $bilty->status = 'dispatched';
+                $bilty->lock = 'true';
                 $challan->bilties()->save($bilty);
             }
             $challan->save();
-            ChallanResource::withoutWrapping();
+            event(new ChallanAdded());
+            ChallanResource::withoutWrapping(); 
             return new ChallanResource($challan);
         } else {
             return response()->json([
@@ -117,9 +126,10 @@ class ChallanController extends Controller
         $data = json_decode($request->getContent(), true);
         // return $data;
         $challan = Challan::findOrFail($id);
-
+        
         $challan->from = $data['from'];
         $challan->to = $data['to'];
+        $challan->created_at = Carbon::parse($data['date']);
         $challan->truck_no = $data['truck_no'];
         $challan->permit_no = $data['permit_no'];
         $challan->transport = $data['transport'];
@@ -131,18 +141,21 @@ class ChallanController extends Controller
         $challan->grand_total = $data['grand_total'];
 
         // return $challan;
-        if ($challan->save()) {
+        if ($challan->save(['timestamps' => false])) {
             $challan = Challan::find($challan->id);
             $bilties_challan = Bilty::where('challan_id', $challan->id)->get();
             foreach ($bilties_challan as $bilty) {
+                $bilty->status = 'registered';
                 $bilty->challan_id = null;
                 $bilty->save();
             }
             foreach ($data['bilties'] as $id) {
                 $bilty = Bilty::find($id);
+                $bilty->status = 'dispatched';
                 $challan->bilties()->save($bilty);
             }
             $challan->save();
+            event(new ChallanAdded());
             ChallanResource::withoutWrapping();
             return new ChallanResource($challan);
         } else {
@@ -173,5 +186,14 @@ class ChallanController extends Controller
 
         // default value for starting customer number
         return 1000;
+    }
+
+    public function totalCount()
+    {
+        $totalCount = Challan::count();
+        return response()->json([
+            'status' => 'success',
+            'total_challans' => $totalCount,
+        ], 200);
     }
 }

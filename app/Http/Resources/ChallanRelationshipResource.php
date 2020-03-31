@@ -17,7 +17,10 @@ class ChallanRelationshipResource extends JsonResource
         return [
             'bilties' => [
                 'data' => BiltyIdentifierResource::collection($this->bilties)
-            ]
+            ],
+            'user' => [
+                'data' => new UserIdentifierResource($this->user)
+            ],
         ];
     }
 }

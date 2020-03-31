@@ -11,12 +11,17 @@ class Customer extends Model
     public $incrementing = false;
 
     protected $fillable = [
-        'name', 'cell_no', 'customer_no', 'company', 'per_kg_rate', 'per_cbm_rate', 'per_pck_rate',
+        'name', 'cell_no', 'customer_no', 'company', 'email', 'per_kg_rate', 'per_cbm_rate', 'per_pck_rate', 'income_tax', 'sales_tax'
     ];
 
     public function bilties()
     {
         return $this->hasMany('App\Bilty');
+    }
+
+    public function generalLedgers()
+    {
+        return $this->hasMany('App\GeneralLedger');
     }
 
     public function sender()
