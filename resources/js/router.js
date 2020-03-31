@@ -9,6 +9,8 @@ import OperatorDashboard from './components/OperatorDashboard';
 import Home from './components/Home';
 import AddBilty from './components/Bilty/Add';
 import ManageBilty from './components/Bilty/Manage';
+import MonthlyBilty from './components/Bilty/Monthly';
+import ReceiveBilty from './components/Bilty/Receive';
 import EditBilty from './components/Bilty/Edit';
 import AddChallan from './components/Challan/Add';
 import ManageChallan from './components/Challan/Manage';
@@ -16,11 +18,17 @@ import EditChallan from './components/Challan/Edit';
 import AddCustomer from './components/Customer/Add';
 import ManageCustomer from './components/Customer/Manage';
 import CustomerAccount from './components/Accounts/Customer';
+import ManageLedger from './components/Ledgers/Manage';
+import EditLedger from './components/Ledgers/Edit';
 import Package from './components/Packages/Package';
 import BiltyReport from './components/Reports/Bilty';
 import ChallanReport from './components/Reports/Challan';
 import PageNotFound from './components/Errors/PageNotFound';
 import ForbiddenPage from './components/Errors/ForbiddenPage';
+import InvoicePrint from './components/Print/Invoice';
+import InvoiceBilty from './components/Print/Bilty';
+import InvoiceChallan from './components/Print/Challan';
+import UserManage from './components/Users/User';
 
 
 const routes = [
@@ -51,9 +59,33 @@ const routes = [
             auth: false
         }
     },
+    {
+        path: '/invoice',
+        name: 'invoice',
+        component: InvoicePrint,
+        meta: {
+            auth: true
+        }
+    },
+    {
+        path: '/invoice/bilty',
+        name: 'invoice.bilty',
+        component: InvoiceBilty,
+        meta: {
+            auth: true
+        }
+    },
+    {
+        path: '/invoice/challan',
+        name: 'invoice.challan',
+        component: InvoiceChallan,
+        meta: {
+            auth: true
+        }
+    },
     //OPERATOR
     {
-        path: '/dashboard',
+        path: '/operator',
         component: OperatorDashboard,
         meta: {
             auth: { roles: [1, 3, 4], redirect: { name: 'login' }, forbiddenRedirect: '/403' }
@@ -62,30 +94,63 @@ const routes = [
             {
                 path: '',
                 name: 'dashboard',
-                component: OperatorDashboardStats,
-            },
-            {
-                path: 'bilty/manage',
-                name: 'dashboard.bilty.manage',
-                component: ManageBilty,
+                component: AdminDashboardStats,
             },
             {
                 path: 'bilty/create',
-                name: 'dashboard.bilty.create',
+                name: 'operator.bilty.create',
                 component: AddBilty,
                 meta: {
                     auth: { roles: [1, 3], redirect: { name: 'login' }, forbiddenRedirect: '/403' }
                 },
             },
-            //FURTHUR WORK ON AUTHENTICATION REQUIRED
+            {
+                path: 'bilty/manage',
+                name: 'operator.bilty.manage',
+                component: ManageBilty,
+            },
+            {
+                path: 'bilty/receive',
+                name: 'operator.bilty.receive',
+                component: ReceiveBilty,
+            },
+            {
+                path: 'bilty/monthly',
+                name: 'operator.bilty.monthly',
+                component: MonthlyBilty,
+                meta: {
+                    auth: { roles: [1, 3], redirect: { name: 'login' }, forbiddenRedirect: '/403' }
+                },
+            },
+            {
+                path: 'bilty/edit/:id',
+                name: 'operator.bilty.edit',
+                component: EditBilty,
+                meta: {
+                    auth: { roles: [1, 3], redirect: { name: 'login' }, forbiddenRedirect: '/403' }
+                },
+            },
+            {
+                path: 'ledger/manage',
+                name: 'operator.ledger.manage',
+                component: ManageLedger,
+            },
+            {
+                path: 'ledger/edit/:id',
+                name: 'operator.ledger.edit',
+                component: EditLedger,
+                meta: {
+                    auth: { roles: [1, 3], redirect: { name: 'login' }, forbiddenRedirect: '/403' }
+                },
+            },
             {
                 path: 'account/customer',
-                name: 'dashboard.account.customer',
+                name: 'operator.account.customer',
                 component: CustomerAccount,
             },
             {
                 path: 'challan/create',
-                name: 'dashboard.challan.create',
+                name: 'operator.challan.create',
                 component: AddChallan,
                 meta: {
                     auth: { roles: [1, 3], redirect: { name: 'login' }, forbiddenRedirect: '/403' }
@@ -93,12 +158,20 @@ const routes = [
             },
             {
                 path: 'challan/manage',
-                name: 'dashboard.challan.manage',
+                name: 'operator.challan.manage',
                 component: ManageChallan
             },
             {
+                path: 'challan/edit/:id',
+                name: 'operator.challan.edit',
+                component: EditChallan,
+                meta: {
+                    auth: { roles: [1, 3], redirect: { name: 'login' }, forbiddenRedirect: '/403' }
+                },
+            },
+            {
                 path: 'customer/create',
-                name: 'dashboard.customer.create',
+                name: 'operator.customer.create',
                 component: AddCustomer,
                 meta: {
                     auth: { roles: [1, 3], redirect: { name: 'login' }, forbiddenRedirect: '/403' }
@@ -106,23 +179,8 @@ const routes = [
             },
             {
                 path: 'customer/manage',
-                name: 'dashboard.customer.manage',
+                name: 'operator.customer.manage',
                 component: ManageCustomer
-            },
-            {
-                path: 'package',
-                name: 'dashboard.package',
-                component: Package
-            },
-            {
-                path: 'report/bilty',
-                name: 'dashboard.report.bilty',
-                component: BiltyReport
-            },
-            {
-                path: 'report/challan',
-                name: 'dashboard.report.challan',
-                component: ChallanReport
             },
         ]
     },
@@ -150,11 +208,36 @@ const routes = [
                 component: AddBilty,
             },
             {
+                path: 'bilty/receive',
+                name: 'admin.bilty.receive',
+                component: ReceiveBilty,
+            },
+            {
+                path: 'bilty/monthly',
+                name: 'admin.bilty.monthly',
+                component: MonthlyBilty,
+            },
+            {
                 path: 'bilty/edit/:id',
                 name: 'admin.bilty.edit',
                 component: EditBilty,
             },
             //FURTHUR WORK ON AUTHENTICATION REQUIRED
+            {
+                path: 'user/manage',
+                name: 'admin.user.manage',
+                component: UserManage,
+            },
+            {
+                path: 'ledger/manage',
+                name: 'admin.ledger.manage',
+                component: ManageLedger,
+            },
+            {
+                path: 'ledger/edit/:id',
+                name: 'admin.ledger.edit',
+                component: EditLedger,
+            },
             {
                 path: 'account/customer',
                 name: 'admin.account.customer',

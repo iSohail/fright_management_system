@@ -1,101 +1,142 @@
 <template>
   <v-app id="inspire">
     <v-navigation-drawer v-model="drawer" app clipped>
-      <v-list>
-        <v-list-item router :to="dashboard.route">
-          <v-list-item-action>
-            <v-icon>{{dashboard.icon}}</v-icon>
-          </v-list-item-action>
-          <v-list-item-content>
-            <v-list-item-title>{{dashboard.text}}</v-list-item-title>
-          </v-list-item-content>
-        </v-list-item>
-
-        <v-list-group prepend-icon>
-          <template v-slot:activator>
-            <v-list-item-icon>
-              <v-icon>mdi-home</v-icon>
-            </v-list-item-icon>
-            <v-list-item-title>Bilty</v-list-item-title>
-          </template>
-
-          <v-list-item v-for="(bilty, i) in bilty" :key="i" router :to="bilty.link">
-            <v-list-item-title class="pl-4" v-text="bilty.title"></v-list-item-title>
-            <v-list-item-icon>
-              <!-- <v-icon>mdi-home</v-icon> -->
-            </v-list-item-icon>
+      <v-list height="100%">
+        <div style="height: calc(100% - 50px); overflow:auto; width: 100%">
+          <v-list-item router :to="dashboard.route">
+            <v-list-item-action>
+              <v-icon>{{dashboard.icon}}</v-icon>
+            </v-list-item-action>
+            <v-list-item-content>
+              <v-list-item-title>{{dashboard.text}}</v-list-item-title>
+            </v-list-item-content>
           </v-list-item>
-        </v-list-group>
 
-        <v-list-group prepend-icon>
-          <template v-slot:activator>
-            <v-list-item-icon>
-              <v-icon>mdi-home</v-icon>
-            </v-list-item-icon>
-            <v-list-item-title>Challan</v-list-item-title>
-          </template>
+          <v-list-group prepend-icon>
+            <template v-slot:activator>
+              <v-list-item-icon>
+                <v-icon>mdi-truck-fast</v-icon>
+              </v-list-item-icon>
+              <v-list-item-title>Bilty</v-list-item-title>
+            </template>
 
-          <v-list-item v-for="(challan, i) in challan" :key="i" router :to="challan.link">
-            <v-list-item-title class="pl-4" v-text="challan.title"></v-list-item-title>
-            <v-list-item-icon>
-              <!-- <v-icon>mdi-home</v-icon> -->
-            </v-list-item-icon>
+            <v-list-item v-for="(bilty, i) in bilty" :key="i" router :to="bilty.link">
+              <v-list-item-title class="pl-4" v-text="bilty.title"></v-list-item-title>
+              <v-list-item-icon>
+                <!-- <v-icon>mdi-home</v-icon> -->
+              </v-list-item-icon>
+            </v-list-item>
+          </v-list-group>
+
+          <v-list-group prepend-icon>
+            <template v-slot:activator>
+              <v-list-item-icon>
+                <v-icon>mdi-clipboard-check</v-icon>
+              </v-list-item-icon>
+              <v-list-item-title>Challan</v-list-item-title>
+            </template>
+
+            <v-list-item v-for="(challan, i) in challan" :key="i" router :to="challan.link">
+              <v-list-item-title class="pl-4" v-text="challan.title"></v-list-item-title>
+              <v-list-item-icon>
+                <!-- <v-icon>mdi-home</v-icon> -->
+              </v-list-item-icon>
+            </v-list-item>
+          </v-list-group>
+
+          <v-list-group prepend-icon>
+            <template v-slot:activator>
+              <v-list-item-icon>
+                <v-icon>mdi-account-group</v-icon>
+              </v-list-item-icon>
+              <v-list-item-title>Customer</v-list-item-title>
+            </template>
+
+            <v-list-item v-for="(customer, i) in customers" :key="i" router :to="customer.link">
+              <v-list-item-title class="pl-4" v-text="customer.title"></v-list-item-title>
+              <v-list-item-icon>
+                <!-- <v-icon v-text="bilty[1]"></v-icon> -->
+              </v-list-item-icon>
+            </v-list-item>
+          </v-list-group>
+
+          <v-list-group prepend-icon>
+            <template v-slot:activator>
+              <v-list-item-icon>
+                <v-icon>mdi-cash-multiple</v-icon>
+              </v-list-item-icon>
+              <v-list-item-title>Ledger</v-list-item-title>
+            </template>
+
+            <v-list-item v-for="(ledger, i) in ledgers" :key="i" router :to="ledger.link">
+              <v-list-item-title class="pl-4" v-text="ledger.title"></v-list-item-title>
+              <v-list-item-icon>
+                <!-- <v-icon v-text="bilty[1]"></v-icon> -->
+              </v-list-item-icon>
+            </v-list-item>
+          </v-list-group>
+
+          <v-list-group prepend-icon>
+            <template v-slot:activator>
+              <v-list-item-icon>
+                <v-icon>mdi-account-cash</v-icon>
+              </v-list-item-icon>
+              <v-list-item-title>Accounts</v-list-item-title>
+            </template>
+
+            <v-list-item v-for="(account, i) in accounts" :key="i" router :to="account.link">
+              <v-list-item-title class="pl-4" v-text="account.title"></v-list-item-title>
+              <v-list-item-icon>
+                <!-- <v-icon v-text="bilty[1]"></v-icon> -->
+              </v-list-item-icon>
+            </v-list-item>
+          </v-list-group>
+
+          <!-- <v-list-group prepend-icon>
+            <template v-slot:activator>
+              <v-list-item-icon>
+                <v-icon>mdi-clipboard-file</v-icon>
+              </v-list-item-icon>
+              <v-list-item-title>Reports</v-list-item-title>
+            </template>
+
+            <v-list-item v-for="(report, i) in reports" :key="i" router :to="report.link">
+              <v-list-item-title class="pl-4" v-text="report.title"></v-list-item-title>
+              <v-list-item-icon>
+                <v-icon v-text="bilty[1]"></v-icon>
+              </v-list-item-icon>
+            </v-list-item>
+          </v-list-group>-->
+
+          <v-list-item router :to="users.route">
+            <v-list-item-action>
+              <v-icon>{{users.icon}}</v-icon>
+            </v-list-item-action>
+            <v-list-item-content>
+              <v-list-item-title>{{users.text}}</v-list-item-title>
+            </v-list-item-content>
           </v-list-item>
-        </v-list-group>
+        </div>
 
-        <v-list-group prepend-icon>
-          <template v-slot:activator>
-            <v-list-item-icon>
-              <v-icon>mdi-home</v-icon>
-            </v-list-item-icon>
-            <v-list-item-title>Customer</v-list-item-title>
-          </template>
-
-          <v-list-item v-for="(customer, i) in customers" :key="i" router :to="customer.link">
-            <v-list-item-title class="pl-4" v-text="customer.title"></v-list-item-title>
-            <v-list-item-icon>
-              <!-- <v-icon v-text="bilty[1]"></v-icon> -->
-            </v-list-item-icon>
+        <div style="position: absolute; bottom:0px; width: 100%">
+          <v-list-item class="light-blue darken-3" @click="logout">
+            <v-list-item-action>
+              <v-icon>mdi-export</v-icon>
+            </v-list-item-action>
+            <v-list-item-content>
+              <v-list-item-title>Logout</v-list-item-title>
+            </v-list-item-content>
           </v-list-item>
-        </v-list-group>
-
-        <v-list-group prepend-icon>
-          <template v-slot:activator>
-            <v-list-item-icon>
-              <v-icon>mdi-home</v-icon>
-            </v-list-item-icon>
-            <v-list-item-title>Accounts</v-list-item-title>
-          </template>
-
-          <v-list-item v-for="(account, i) in accounts" :key="i" router :to="account.link">
-            <v-list-item-title class="pl-4" v-text="account.title"></v-list-item-title>
-            <v-list-item-icon>
-              <!-- <v-icon v-text="bilty[1]"></v-icon> -->
-            </v-list-item-icon>
-          </v-list-item>
-        </v-list-group>
-
-        <v-list-group prepend-icon>
-          <template v-slot:activator>
-            <v-list-item-icon>
-              <v-icon>mdi-home</v-icon>
-            </v-list-item-icon>
-            <v-list-item-title>Reports</v-list-item-title>
-          </template>
-
-          <v-list-item v-for="(report, i) in reports" :key="i" router :to="report.link">
-            <v-list-item-title class="pl-4" v-text="report.title"></v-list-item-title>
-            <v-list-item-icon>
-              <!-- <v-icon v-text="bilty[1]"></v-icon> -->
-            </v-list-item-icon>
-          </v-list-item>
-        </v-list-group>
+        </div>
       </v-list>
     </v-navigation-drawer>
 
     <v-app-bar app clipped-left>
       <v-app-bar-nav-icon @click.stop="drawer = !drawer"/>
-      <v-toolbar-title>Application</v-toolbar-title>
+      <v-toolbar-title class="mx-auto">BILTY MANAGEMENT SYSTEM</v-toolbar-title>
+      <v-btn @click="logout" icon>
+        <v-icon>mdi-export</v-icon>
+      </v-btn>
     </v-app-bar>
 
     <v-content>
@@ -103,7 +144,7 @@
     </v-content>
 
     <v-footer app>
-      <span>&copy; 2019 Admin</span>
+      <span class="mx-auto">Logical4io</span>
     </v-footer>
   </v-app>
 </template>
@@ -121,29 +162,46 @@ export default {
       text: "Dashboard",
       route: "/admin"
     },
+    users: {
+      icon: "mdi-account",
+      text: "Users",
+      route: "/admin/user/manage"
+    },
     bilty: [
       { title: "Add Bilty", link: "/admin/bilty/create" },
       { title: "Manage Bilty", link: "/admin/bilty/manage" },
-      { title: "Manage Packages", link: "/admin/package" }
+      { title: "Receive Bilty", link: "/admin/bilty/receive" }
     ],
     challan: [
       { title: "Add challan", link: "/admin/challan/create" },
-      { title: "Manage challan", link: "/admin/challan/manage" },
+      { title: "Manage challan", link: "/admin/challan/manage" }
       // ?{ title: "Manage Packages", link: "/admin/package" }
     ],
     customers: [
       { title: "Add Customer", link: "/admin/customer/create" },
       { title: "Manage Customer", link: "/admin/customer/manage" }
     ],
+    ledgers: [
+      { title: "Add Ledger", link: "/admin/bilty/monthly" },
+      { title: "Manage Ledger", link: "/admin/ledger/manage" }
+    ],
     accounts: [{ title: "Customer Account", link: "/admin/account/customer" }],
     reports: [
       { title: "Bilty Report", link: "/admin/report/bilty" },
-      { title: "Challan Report", link: "/admin/report/challan" }
+      { title: "Challan Report", link: "/admin/report/challan" },
+      { title: "Monthly Billing", link: "/admin/bilty/monthly" }
     ]
   }),
 
   created() {
     this.$vuetify.theme.dark = true;
+  },
+  methods: {
+    logout() {
+      localStorage.clear();
+      this.$router.push({ path: `/login` });
+      console.log("logout");
+    }
   }
 };
 </script>

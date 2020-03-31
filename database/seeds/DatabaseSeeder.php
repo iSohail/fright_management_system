@@ -36,7 +36,6 @@ class DatabaseSeeder extends Seeder
         ]);
 
         User::create([
-            'id' => '1',
             'name' => 'Admin',
             'email' => 'admin@test.com',
             'user_name' => 'admin123',
@@ -44,7 +43,6 @@ class DatabaseSeeder extends Seeder
             'role' => 2
         ]);
         User::create([
-            'id' => '2',
             'name' => 'Operator',
             'email' => 'operator@test.com',
             'user_name' => 'operator123',
@@ -52,7 +50,6 @@ class DatabaseSeeder extends Seeder
             'role' => 1
         ]);
         User::create([
-            'id' => '3',
             'name' => 'Sender',
             'email' => 'sender@test.com',
             'user_name' => 'sender123',
@@ -60,7 +57,6 @@ class DatabaseSeeder extends Seeder
             'role' => 3
         ]);
         User::create([
-            'id' => '4',
             'name' => 'Receiver',
             'email' => 'receiver@test.com',
             'user_name' => 'receiver123',

@@ -19,9 +19,12 @@ class CreateCustomersTable extends Migration
             $table->string('cell_no');
             $table->string('customer_no');
             $table->string('company')->nullable();
+            $table->string('email')->nullable();
             $table->unsignedDecimal('per_kg_rate')->nullable();
             $table->unsignedDecimal('per_cbm_rate')->nullable();
             $table->unsignedDecimal('per_pck_rate')->nullable();
+            $table->unsignedDecimal('income_tax')->nullable();
+            $table->unsignedDecimal('sales_tax')->nullable();
             $table->timestamps();
 
             $table->primary('id');

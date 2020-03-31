@@ -27,8 +27,6 @@ class CustomerAdded implements ShouldBroadcast
         $customers_data = Customer::with('bilties')->get();
         CustomerResource::withoutWrapping();
         $this->customers = CustomerResource::collection($customers_data);
-        // $this->customers = Customer::with('bilties')->get();
-        // $this->customers = Bilty::with(['customer', 'challan', 'packages'])->get();
     }
 
     /**

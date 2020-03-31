@@ -27,11 +27,13 @@ class CreateChallansTable extends Migration
             $table->unsignedDecimal('total_amount');
             $table->unsignedDecimal('expenses');
             $table->unsignedDecimal('grand_total');
+            $table->string('user_id')->nullable();
 
             $table->timestamps();
 
             $table->primary('id');
             $table->unique('challan_no');
+            $table->foreign('user_id')->references('id')->on('users');
         });
     }
 

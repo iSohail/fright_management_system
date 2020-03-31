@@ -16,7 +16,8 @@ class RoleIdentifierResource extends JsonResource
     {
         return [
             'type'=> 'Role',
-            'id' => (string)$this->id
+            'id' => (string)$this->id,
+            'role' => (string)$this->role,
         ];
     }
 }
