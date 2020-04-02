@@ -413,6 +413,7 @@ export default {
         res => {
           console.log(res);
           this.getLedgers();
+          this.selected = [];
           this.snackbar = true;
           this.text = "successfully changed status to paid";
           return;

@@ -699,6 +699,7 @@ export default {
           payment_status_item_value: that.payment_status_item_value,
           packages_total: that.packages_total,
           bilty_total: that.bilty_total,
+          total_amount: that.bilty_total,
           customer_id: that.customer,
           packages: that.packages
         };
@@ -732,6 +733,7 @@ export default {
         this.text = "Validation Failed";
         clear = false;
       }
+      return clear;
     },
     submit_print_bilty() {
       if (this.submit_bilty()) {

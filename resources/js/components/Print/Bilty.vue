@@ -10,108 +10,30 @@
           </v-toolbar-items>
         </v-toolbar>
         <v-row class="px-4">
-          <v-col>
-            <v-row>
-              <v-simple-table style="width: 100%" dense light>
-                <template v-slot:default>
-                  <thead class="blue lighten-4">
-                    <tr>
-                      <th class="text-left subtitle-2 black--text">Sender</th>
-                    </tr>
-                  </thead>
-                  <tbody>
-                    <tr>
-                      <td>
-                        <v-list-item class="pl-2">
-                          <v-list-item-content>
-                            <v-list-item-subtitle
-                              class="body-2 black--text"
-                            >{{sender.toUpperCase()}}</v-list-item-subtitle>
-                            <v-list-item-subtitle class="body-2 black--text">{{sender_cell}}</v-list-item-subtitle>
-                          </v-list-item-content>
-                        </v-list-item>
-                      </td>
-                    </tr>
-                  </tbody>
-                </template>
-              </v-simple-table>
-            </v-row>
-            <v-row>
-              <v-simple-table style="width: 100%" dense light>
-                <template v-slot:default>
-                  <thead class="blue lighten-4">
-                    <tr>
-                      <th class="text-left subtitle-2 black--text">Received By</th>
-                    </tr>
-                  </thead>
-                  <tbody>
-                    <tr>
-                      <td>
-                        <v-list-item class="pl-2">
-                          <v-list-item-content>
-                            <v-list-item-subtitle
-                              class="body-2 black--text"
-                            >{{receiver.toUpperCase()}}</v-list-item-subtitle>
-                            <v-list-item-subtitle class="body-2 black--text">{{receiver_address}}</v-list-item-subtitle>
-                          </v-list-item-content>
-                        </v-list-item>
-                      </td>
-                    </tr>
-                  </tbody>
-                </template>
-              </v-simple-table>
-            </v-row>
-          </v-col>
-          <v-col>
-            <v-row justify="end">
-              <v-simple-table dense style="width: 50%; ">
-                <template v-slot:default>
-                  <thead class="blue lighten-4">
-                    <tr>
-                      <th class="text-left subtitle-2 black--text">Bilty No</th>
-                    </tr>
-                  </thead>
-                  <tbody>
-                    <tr>
-                      <td>{{bilty_no}}</td>
-                    </tr>
-                  </tbody>
-                </template>
-              </v-simple-table>
-            </v-row>
-            <v-row justify="end">
-              <v-simple-table dense style="width: 50%; ">
-                <template v-slot:default>
-                  <thead class="blue lighten-4">
-                    <tr>
-                      <th class="text-left subtitle-2 black--text">L/C-B/L No / Container No</th>
-                    </tr>
-                  </thead>
-                  <tbody>
-                    <tr>
-                      <td>{{container_no}}</td>
-                    </tr>
-                  </tbody>
-                </template>
-              </v-simple-table>
-            </v-row>
-            <v-row justify="end">
-              <v-simple-table dense style="width: 50%; ">
-                <template v-slot:default>
-                  <thead class="blue lighten-4">
-                    <tr>
-                      <th class="text-left subtitle-2 black--text">Date</th>
-                    </tr>
-                  </thead>
-                  <tbody>
-                    <tr>
-                      <td>{{created}}</td>
-                    </tr>
-                  </tbody>
-                </template>
-              </v-simple-table>
-            </v-row>
-          </v-col>
+          <v-simple-table style="width: 100%">
+            <template v-slot:default>
+              <tbody class="subtitle-2">
+                <tr>
+                  <td style="width: 10%">Bilty No</td>
+                  <td class="text-left font-weight-regular black--text">{{bilty_no}}</td>
+                  <td style="width: 20%" class="text-right">Container / L-C/B-L No</td>
+                  <td class="text-left font-weight-regular black--text">{{container_no}}</td>
+                  <td style="width: 10%" class="text-right">Date</td>
+                  <td class="text-left font-weight-regular black--text">{{created}}</td>
+                </tr>
+                <tr>
+                  <td style="width: 10%">Sender</td>
+                  <td class="text-left font-weight-regular black--text">{{sender.toUpperCase()}}</td>
+                  <td style="width: 15%" class="text-right">Received By</td>
+                  <td class="text-left font-weight-regular black--text">{{receiver.toUpperCase()}}</td>
+                  <td style="width: 15%" class="text-right">Karachi To</td>
+                  <td class="text-left font-weight-regular black--text">{{receiver.toUpperCase()}}</td>
+                  <!-- <td>Karachi To</td>
+                  <td class="font-weight-regular black--text">{{challan_no}}</td>-->
+                </tr>
+              </tbody>
+            </template>
+          </v-simple-table>
         </v-row>
         <v-row>
           <v-col>
@@ -125,21 +47,41 @@
               disable-sort
               disable-filtering
               flat
-              dense
               class="table_data_style"
             ></v-data-table>
           </v-col>
         </v-row>
-        <v-row v-if="bilty_charges" justify="end" align="end">
-          <p class="title mb-2 pr-4 subtitle-2">+ Bilty Charges: Rs.{{bilty_charges}}</p>
-        </v-row>
-        <v-row v-if="local_charges" justify="end" align="end">
-          <p class="title mb-2 pr-4 subtitle-2">+ Local Charges: Rs.{{local_charges}}</p>
-        </v-row>
-        <v-row justify="end" align="end">
-          <v-subheader
-            class="title black--text font-weight-medium subtitle-1"
-          >Net Total: Rs.{{bilty_total}}</v-subheader>
+        <v-row class="mt-5">
+          <v-simple-table dense style="width: 100%">
+            <template v-slot:default>
+              <tbody class="subtitle-2">
+                <tr>
+                  <td></td>
+                  <td></td>
+                  <td class="text-right blue lighten-5">+ Bilty Charges</td>
+                  <td
+                    class="text-left blue lighten-5 font-weight-regular black--text"
+                  >Rs. {{bilty_charges}}</td>
+                </tr>
+                <tr>
+                  <td></td>
+                  <td></td>
+                  <td class="text-right blue lighten-5">+ Local Charges</td>
+                  <td
+                    class="text-left blue lighten-5 font-weight-regular black--text"
+                  >Rs. {{local_charges}}</td>
+                </tr>
+                <tr>
+                  <td style="width: 15%">DELIVERY AT</td>
+                  <td style="width: 55%">{{receiver_address}}</td>
+                  <td class="text-right blue lighten-5">Net Total</td>
+                  <td
+                    class="text-left blue lighten-5 font-weight-regular black--text"
+                  >Rs. {{bilty_total}}</td>
+                </tr>
+              </tbody>
+            </template>
+          </v-simple-table>
         </v-row>
       </v-container>
     </v-app>
@@ -190,7 +132,12 @@ export default {
           class: "blue lighten-4 black--text subtitle-2"
         },
         {
-          text: "Rent",
+          text: "Labour",
+          value: "labour",
+          class: "blue lighten-4 black--text subtitle-2"
+        },
+        {
+          text: "Fright",
           value: "rent",
           class: "blue lighten-4 black--text subtitle-2"
         }
@@ -203,7 +150,7 @@ export default {
       this.$route.query.id,
       this.$route.query.manual
     );
-    console.log(bilty);
+    console.log(bilty, "from store");
     if (bilty) {
       this.bilty_no = bilty.bilty_no;
       this.created = bilty.date;
@@ -211,7 +158,7 @@ export default {
       this.receiver = bilty.receiver;
       this.receiver_address = bilty.receiver_address;
       this.container_no = bilty.lc_bl_no;
-      this.bilty_total = bilty.bilty_total;
+      this.bilty_total = bilty.total_amount;
       this.bilty_charges = bilty.bilty_charges;
       this.local_charges = bilty.local_charges;
       bilty.packages.forEach((element, index) => {
