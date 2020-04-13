@@ -1,4 +1,4 @@
-import Vue from 'Vue';
+
 import VueRouter from 'vue-router';
 import Login from './components/Authentication/Login';
 import Register from './components/Authentication/Register';
