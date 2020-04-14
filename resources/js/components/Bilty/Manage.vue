@@ -346,7 +346,7 @@ export default {
             id: bilty.id,
             no: bilty.attributes.bilty_no,
             lc_bl_no: bilty.attributes.lg_bl_no,
-            date: bilty.created_at.slice(0, 10),
+            date: bilty.attributes.created_at.slice(0, 10),
             manual: bilty.attributes.manual,
             from: bilty.attributes.from,
             to: bilty.attributes.to,
