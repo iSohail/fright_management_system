@@ -15,7 +15,9 @@ class SenderController extends Controller
      */
     public function index()
     {
-        //
+        $senders = Sender::with('customer')->get();
+        SenderResource::withoutWrapping();
+        return SenderResource::collection($senders);
     }
 
     /**
@@ -36,7 +38,15 @@ class SenderController extends Controller
      */
     public function store(Request $request)
     {
-        //
+        $data = json_decode($request->getContent(), true);
+
+        $sender = new Sender;
+        $sender->name = $data['name'];
+        $sender->address = $data['address'];
+        $sender->customer_id = $data['customer_id'];
+        $sender->save();
+        SenderResource::withoutWrapping();
+        return new SenderResource($sender);
     }
 
     /**
@@ -83,6 +93,7 @@ class SenderController extends Controller
      */
     public function destroy($id)
     {
-        //
+        $sender = Sender::findOrFail($id);
+        $sender->delete();
     }
 }

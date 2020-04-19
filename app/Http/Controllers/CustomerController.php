@@ -5,8 +5,6 @@ namespace App\Http\Controllers;
 use App\Customer;
 use App\Events\CustomerAdded;
 use App\Http\Resources\CustomerResource;
-use App\Receiver;
-use App\Sender;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 
@@ -52,37 +50,58 @@ class CustomerController extends Controller
     {
         $data = json_decode($request->getContent(), true);
 
+        $customer_no_stored = Customer::where('customer_no', $data['customerNo'])->get();
+        if (count($customer_no_stored) > 0) {
+            return response()->json([
+                'status' => 'error',
+                'message' => 'customer no already used',
+            ], 500);
+        }
+
         $customer = new Customer;
 
         if (isset($data['email'])) {
             $customer->email = $data['email'];
         }
+        if (isset($data['cellNo'])) {
+            $customer->cell_no = $data['cellNo'];
+        }
+        if (isset($data['perKg'])) {
+            $customer->per_kg_rate = $data['perKg'];
+        }
+        if (isset($data['perCbm'])) {
+            $customer->per_cbm_rate = $data['perCbm'];
+        }
+        if (isset($data['perPckg'])) {
+            $customer->per_pck_rate = $data['perPckg'];
+        }
+        if (isset($data['incomeTax'])) {
+            $customer->income_tax = $data['incomeTax'];
+        }
+        if (isset($data['salesTax'])) {
+            $customer->sales_tax = $data['salesTax'];
+        }
         $customer->name = $data['customerName'];
-        $customer->cell_no = $data['cellNo'];
         $customer->customer_no = $data['customerNo'];
-        $customer->per_kg_rate = $data['perKg'];
-        $customer->per_cbm_rate = $data['perCbm'];
-        $customer->per_pck_rate = $data['perPckg'];
         $customer->company = $data['company'];
-        $customer->income_tax = $data['incomeTax'];
-        $customer->sales_tax = $data['salesTax'];
+
+        // return $customer->save();
 
         if ($customer->save()) {
             $customer = Customer::findOrFail($customer->id);
-            // return $customer;
-            $sender = new Sender;
-            $sender->name = $data['sender'];
-            $sender->address = $data['sender_address'];
-            $sender->customer()->associate($customer);
+            // $sender = new Sender;
+            // $sender->name = $data['sender'];
+            // $sender->address = $data['sender_address'];
+            // $sender->customer()->associate($customer);
 
-            $sender->save();
+            // $sender->save();
 
-            $receiver = new Receiver;
-            $receiver->name = $data['receiver'];
-            $receiver->address = $data['receiver_address'];
-            $receiver->customer()->associate($customer);
+            // $receiver = new Receiver;
+            // $receiver->name = $data['receiver'];
+            // $receiver->address = $data['receiver_address'];
+            // $receiver->customer()->associate($customer);
 
-            $receiver->save();
+            // $receiver->save();
             // return 'sdfasdfas';
 
             event(new CustomerAdded());
@@ -140,12 +159,26 @@ class CustomerController extends Controller
         if (isset($data['email'])) {
             $customer->email = $data['email'];
         }
+        if (isset($data['cellNo'])) {
+            $customer->cell_no = $data['cellNo'];
+        }
+        if (isset($data['perKg'])) {
+            $customer->per_kg_rate = $data['perKg'];
+        }
+        if (isset($data['perCbm'])) {
+            $customer->per_cbm_rate = $data['perCbm'];
+        }
+        if (isset($data['perPckg'])) {
+            $customer->per_pck_rate = $data['perPckg'];
+        }
+        if (isset($data['incomeTax'])) {
+            $customer->income_tax = $data['incomeTax'];
+        }
+        if (isset($data['salesTax'])) {
+            $customer->sales_tax = $data['salesTax'];
+        }
         $customer->name = $data['name'];
-        $customer->cell_no = $data['cellNo'];
-        $customer->customer_no = $data['no'];
-        $customer->per_kg_rate = $data['perKg'];
-        $customer->per_cbm_rate = $data['perCbm'];
-        $customer->per_pck_rate = $data['perPackage'];
+        $customer->company = $data['company'];
 
         if ($customer->save()) {
             CustomerResource::withoutWrapping();

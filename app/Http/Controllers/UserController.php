@@ -132,4 +132,17 @@ class UserController extends Controller
             ], 404);
         }
     }
+
+    public function changePassword(Request $request, $id) {
+        $user = User::findOrFail($id);
+        if ($user) {
+            $user->password = Hash::make($request['password']);
+            $user->save();
+        } else {
+            return response()->json([
+                'status' => 'error',
+                'message' => 'resource not found',
+            ], 404);
+        }
+    }
 }

@@ -327,6 +327,10 @@ export default {
   },
 
   methods: {
+    changeDateFormat(date) {
+      let dateSplit = date.split("-");
+      return dateSplit[2] + "-" + dateSplit[1] + "-" + dateSplit[0];
+    },
     initialize() {
       // THIS IS DUMMY DATA OF TABLE
       // this.getLedgers();
@@ -407,8 +411,12 @@ export default {
               amount_paid: ledger.attributes.amount_paid,
               pending_amount: ledger.attributes.pending_amount,
               status: ledger.attributes.status,
-              paid_on: ledger.attributes.paid_on,
-              created_at: ledger.attributes.created_at.slice(0, 10),
+              paid_on: this.changeDateFormat(
+                ledger.attributes.paid_on.slice(0, 10)
+              ),
+              created_at: this.changeDateFormat(
+                ledger.attributes.created_at.slice(0, 10)
+              ),
               bilties: []
             };
             if (ledger.relationships.customer.data) {

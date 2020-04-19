@@ -17,6 +17,7 @@ class CustomerIdentifierResource extends JsonResource
         return [
             'type'       => 'customer',
             'id'         => (string)$this->id,
+            'customer_no'         => (string)$this->customer_no,
         ];
     }
 }

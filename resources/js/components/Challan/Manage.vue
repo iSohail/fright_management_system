@@ -269,37 +269,13 @@ export default {
     this.listen();
   },
   methods: {
+    changeDateFormat(date) {
+      let dateSplit = date.split("-");
+      return dateSplit[2] + "-" + dateSplit[1] + "-" + dateSplit[0];
+    },
     listen() {
       Echo.channel("challans").listen("ChallanAdded", challans => {
-        let challans_arr = [];
-
-        for (let challan of challans.challans) {
-          let challan_data = {
-            id: challan.id,
-            no: challan.attributes.challan_no,
-            truck_no: challan.attributes.truck_no,
-            from: challan.attributes.from,
-            permit_no: challan.attributes.permit_no,
-            to: challan.attributes.to,
-            transport: challan.attributes.transport,
-            driver_name: challan.attributes.driver_name,
-            agent_name: challan.attributes.agent_name,
-            cnic: challan.attributes.cnic,
-            total_amount: challan.attributes.total_amount,
-            user_name: challan.relationships.user.data.user_name,
-            expenses: challan.attributes.expenses,
-            grand_total: challan.attributes.grand_total,
-            bilties: []
-          };
-          for (let bilty of challan.relationships.bilties.data) {
-            console.log(bilty.id);
-            this.getBilty(bilty.id).then(res => {
-              challan_data.bilties.push(res);
-            });
-          }
-          challans_arr.push(challan_data);
-        }
-        this.challans = challans_arr;
+        this.addChallanData(challans.challans);
         this.snackbar = true;
         this.text = "New data added";
       });
@@ -311,45 +287,45 @@ export default {
         method: "GET"
       }).then(
         res => {
-          console.log(res.data);
-          let challans = [];
-          for (let challan of res.data) {
-            let challan_data = {
-              id: challan.id,
-              no: challan.attributes.challan_no,
-              date: challan.attributes.created_at.slice(0, 10),
-              truck_no: challan.attributes.truck_no,
-              from: challan.attributes.from,
-              permit_no: challan.attributes.permit_no,
-              to: challan.attributes.to,
-              transport: challan.attributes.transport,
-              driver_name: challan.attributes.driver_name,
-              agent_name: challan.attributes.agent_name,
-              cnic: challan.attributes.cnic,
-              total_amount: challan.attributes.total_amount,
-              user_name: challan.relationships.user.data.user_name,
-              expenses: challan.attributes.expenses,
-              grand_total: challan.attributes.grand_total,
-              bilties: []
-            };
-            for (let bilty of challan.relationships.bilties.data) {
-              console.log(bilty.id);
-              this.getBilty(bilty.id).then(res => {
-                challan_data.bilties.push(res);
-              });
-            }
-            challans.push(challan_data);
-          }
-          this.challans = challans;
+          this.addChallanData(res.data);
           this.loading = false;
-          // console.log(bilties);
         },
         () => {
-          console.log("error occured");
           this.loading = false;
-          // this.has_error = true
         }
       );
+    },
+    addChallanData(data) {
+      let challans = [];
+      for (let challan of data) {
+        let challan_data = {
+          id: challan.id,
+          no: challan.attributes.challan_no,
+          date: this.changeDateFormat(
+            challan.attributes.created_at.slice(0, 10)
+          ),
+          truck_no: challan.attributes.truck_no,
+          from: challan.attributes.from,
+          permit_no: challan.attributes.permit_no,
+          to: challan.attributes.to,
+          transport: challan.attributes.transport,
+          driver_name: challan.attributes.driver_name,
+          agent_name: challan.attributes.agent_name,
+          cnic: challan.attributes.cnic,
+          total_amount: challan.attributes.total_amount,
+          user_name: challan.relationships.user.data.user_name,
+          expenses: challan.attributes.expenses,
+          grand_total: challan.attributes.grand_total,
+          bilties: []
+        };
+        for (let bilty of challan.relationships.bilties.data) {
+          this.getBilty(bilty.id).then(res => {
+            challan_data.bilties.push(res);
+          });
+        }
+        challans.push(challan_data);
+      }
+      this.challans = challans;
     },
     async getBilty(id) {
       let bilty = {};
@@ -358,7 +334,6 @@ export default {
         method: "GET"
       }).then(
         res => {
-          console.log(res);
           bilty = {
             id: res.data.id,
             no: res.data.attributes.bilty_no,
@@ -368,14 +343,9 @@ export default {
             receiver: res.data.attributes.receiver,
             payment_status: res.data.attributes.payment_status
           };
-          console.log(bilty);
         },
-        () => {
-          console.log("error occured");
-          // this.has_error = true
-        }
+        () => {}
       );
-      // console.log(customer);
       return bilty;
     },
     editItem(item) {
@@ -387,7 +357,6 @@ export default {
       }
     },
     printItem(item) {
-      console.log(item);
       item.challan_no = item.no;
       let bilties = [];
       item.bilties.forEach((element, index) => {

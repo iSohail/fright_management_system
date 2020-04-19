@@ -11,7 +11,7 @@ class Bilty extends Model
     public $incrementing = false;
 
     protected $fillable = [
-        'bilty_no', 'lg_bl_no', 'description', 'from', 'to', 'manual', 'sender', 'receiver', 'receiver_address', 'status', 'payment_status', 'bilty_charges', 'local_charges', 'bilty_total', 'packages_total', 'customer_id', 'user_id', 'challan_id', 'ledger_id', 'lock'
+        'bilty_no', 'lg_bl_no', 'description', 'from', 'to', 'manual', 'sender', 'receiver', 'receiver_address', 'status', 'payment_status', 'bilty_charges', 'local_charges', 'bilty_total', 'packages_total', 'customer_id', 'user_id', 'challan_id', 'ledger_id', 'lock',
     ];
 
     public function customer()

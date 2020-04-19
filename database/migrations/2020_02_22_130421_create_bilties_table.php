@@ -16,7 +16,7 @@ class CreateBiltiesTable extends Migration
         Schema::create('bilties', function (Blueprint $table) {
             $table->string('id');
             $table->string('bilty_no');
-            $table->string('lg_bl_no');
+            $table->string('lg_bl_no')->nullable();
             $table->string('description')->nullable();
             $table->string('from');
             $table->string('to');

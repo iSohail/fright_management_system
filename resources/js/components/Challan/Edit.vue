@@ -146,29 +146,15 @@
 
             <v-row>
               <v-col cols="12" md="4">
-                <v-text-field
-                  dense
-                  filled
-                  :rules="selectRule"
-                  v-model="total_amount"
-                  readonly
-                  label="Total Amount"
-                ></v-text-field>
+                <v-text-field dense filled v-model="total_amount" readonly label="Total Amount"></v-text-field>
               </v-col>
 
               <v-col cols="12" md="4">
-                <v-text-field dense filled :rules="selectRule" v-model="expenses" label="Expenses"></v-text-field>
+                <v-text-field dense filled v-model="expenses" label="Expenses"></v-text-field>
               </v-col>
 
               <v-col cols="12" md="4">
-                <v-text-field
-                  dense
-                  filled
-                  :rules="selectRule"
-                  v-model="grand_total"
-                  readonly
-                  label="Grand Total"
-                ></v-text-field>
+                <v-text-field dense filled v-model="grand_total" readonly label="Grand Total"></v-text-field>
               </v-col>
             </v-row>
 

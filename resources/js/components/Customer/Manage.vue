@@ -49,11 +49,7 @@
                           <v-text-field v-model="editedItem.email" label="Email"></v-text-field>
                         </v-col>
                         <v-col cols="12" sm="6" md="4">
-                          <v-text-field
-                            :rules="selectRule"
-                            v-model="editedItem.cellNo"
-                            label="Cell No"
-                          ></v-text-field>
+                          <v-text-field v-model="editedItem.cellNo" label="Cell No"></v-text-field>
                         </v-col>
                         <v-col cols="12" sm="6" md="4">
                           <v-text-field
@@ -83,6 +79,20 @@
                             label="Per Package"
                           ></v-text-field>
                         </v-col>
+                        <v-col cols="12" sm="6" md="4">
+                          <v-text-field
+                            :rules="numberRule"
+                            v-model="editedItem.income_tax"
+                            label="Income Tax"
+                          ></v-text-field>
+                        </v-col>
+                        <v-col cols="12" sm="6" md="4">
+                          <v-text-field
+                            :rules="numberRule"
+                            v-model="editedItem.sales_tax"
+                            label="Sales Tax"
+                          ></v-text-field>
+                        </v-col>
                       </v-row>
                     </v-container>
                   </v-card-text>
@@ -102,6 +112,64 @@
             </template>
             <template v-slot:expanded-item="{ headers, item }">
               <td :colspan="headers.length" class="black">
+                <v-row>
+                  <v-subheader>Customer Details</v-subheader>
+                </v-row>
+                <v-row>
+                  <v-col cols="12" sm="4">
+                    <v-text-field
+                      label="Per Kg"
+                      placeholder="Per Kg"
+                      v-model="item.perKg"
+                      readonly
+                      outlined
+                      dense
+                    ></v-text-field>
+                  </v-col>
+                  <v-col cols="12" sm="4">
+                    <v-text-field
+                      label="Per Cbm"
+                      placeholder="Per Cbm"
+                      v-model="item.perCbm"
+                      readonly
+                      outlined
+                      dense
+                    ></v-text-field>
+                  </v-col>
+                  <v-col cols="12" sm="4">
+                    <v-text-field
+                      label="Per Package"
+                      placeholder="Per Package"
+                      v-model="item.perPackage"
+                      readonly
+                      outlined
+                      dense
+                    ></v-text-field>
+                  </v-col>
+                </v-row>
+                <v-row>
+                  <v-col cols="12" sm="6">
+                    <v-text-field
+                      label="Income Tax"
+                      placeholder="Income Tax"
+                      v-model="item.income_tax"
+                      readonly
+                      outlined
+                      dense
+                    ></v-text-field>
+                  </v-col>
+                  <v-col cols="12" sm="6">
+                    <v-text-field
+                      label="Sales Tax"
+                      placeholder="Sales Tax"
+                      v-model="item.sales_tax"
+                      readonly
+                      outlined
+                      dense
+                    ></v-text-field>
+                  </v-col>
+                </v-row>
+                <v-divider></v-divider>
                 <v-row>
                   <v-subheader>Bilty Details</v-subheader>
                 </v-row>
@@ -160,11 +228,6 @@ export default {
           class: "light-blue darken-3 white--text"
         },
         {
-          text: "Lc/bl-no",
-          value: "lc_bl_no",
-          class: "light-blue darken-3 white--text"
-        },
-        {
           text: "Sender",
           value: "sender",
           class: "light-blue darken-3 white--text"
@@ -208,18 +271,8 @@ export default {
           class: "light-blue darken-3 white--text"
         },
         {
-          text: "Per Kg",
-          value: "perKg",
-          class: "light-blue darken-3 white--text"
-        },
-        {
-          text: "Per Cbm",
-          value: "perCbm",
-          class: "light-blue darken-3 white--text"
-        },
-        {
-          text: "Per Package",
-          value: "perPackage",
+          text: "Company",
+          value: "company",
           class: "light-blue darken-3 white--text"
         },
         {
@@ -243,30 +296,37 @@ export default {
         perKg: "",
         perCbm: "",
         perPackage: "",
-        email: ""
+        email: "",
+        income_tax: "",
+        sales_tax: ""
+      },
+      defaultItem: {
+        id: "",
+        company: "",
+        name: "",
+        cellNo: "",
+        perKg: "",
+        perCbm: "",
+        perPackage: "",
+        email: "",
+        income_tax: "",
+        sales_tax: ""
       },
       nameRule: [
         v => !!v || "Field is required",
-        v => (v && v.length <= 30) || "Field must be less than 30 characters",
+        v => (v && v.length <= 50) || "Field must be less than 50 characters",
         v =>
           /(?=.*[A-Z])/.test(v) ||
           /(?=.*[a-z])/.test(v) ||
           "Only characters allowed"
       ],
-      selectRule: [v => !!v || "Field is required"],
-      descriptionRule: [
-        v => !!v || "Description is required",
-        v =>
-          (v && v.length <= 1000) ||
-          "Descriptipn must be less than 1000 characters"
-      ],
       numberRule: [
-        v => !!v || "Field is required",
         v => {
-          if (!isNaN(parseFloat(v)) && v >= 0 && v <= 9999999) return true;
+          if (v >= 0 && v <= 9999999) return true;
           return "Only numbers allowed";
         }
-      ]
+      ],
+      selectRule: [v => !!v || "Field is required"]
     };
   },
   mounted() {
@@ -276,29 +336,7 @@ export default {
   methods: {
     listen() {
       Echo.channel("customers").listen("CustomerAdded", customers => {
-        let customers_arr = [];
-
-        for (let customer of customers.customers) {
-          let customers_data = {
-            id: customer.id,
-            no: customer.attributes.customer_no,
-            name: customer.attributes.name,
-            cellNo: customer.attributes.cell_no,
-            email: customer.attributes.email,
-            company: customer.attributes.company,
-            perKg: customer.attributes.per_kg_rate,
-            perCbm: customer.attributes.per_cbm_rate,
-            perPackage: customer.attributes.per_pck_rate,
-            bilties: []
-          };
-          for (let customer of customer.relationships.bilties.data) {
-            this.getBilty(customer.id).then(res => {
-              customers_data.bilties.push(res);
-            });
-          }
-          customers_arr.push(customers_data);
-        }
-        this.customers = customers_arr;
+        this.addCustomerData(customers.customers);
         this.snackbar = true;
         this.text = "New data added";
       });
@@ -330,35 +368,39 @@ export default {
         method: "GET"
       }).then(
         res => {
-          let customers_arr = [];
-
-          for (let customer of res.data) {
-            let customers_data = {
-              id: customer.id,
-              no: customer.attributes.customer_no,
-              name: customer.attributes.name,
-              email: customer.attributes.email,
-              company: customer.attributes.company,
-              cellNo: customer.attributes.cell_no,
-              perKg: customer.attributes.per_kg_rate,
-              perCbm: customer.attributes.per_cbm_rate,
-              perPackage: customer.attributes.per_pck_rate,
-              bilties: []
-            };
-            for (let customer of customer.relationships.bilties.data) {
-              this.getBilty(customer.id).then(res => {
-                customers_data.bilties.push(res);
-              });
-            }
-            customers_arr.push(customers_data);
-          }
-          this.customers = customers_arr;
+          this.addCustomerData(res.data);
         },
         () => {
           this.snackbar = true;
           this.text = "Error fetching customers, please refresh";
         }
       );
+    },
+    addCustomerData(data) {
+      let customers_arr = [];
+      for (let customer of data) {
+        let customers_data = {
+          id: customer.id,
+          no: customer.attributes.customer_no,
+          name: customer.attributes.name,
+          email: customer.attributes.email,
+          company: customer.attributes.company,
+          cellNo: customer.attributes.cell_no,
+          perKg: customer.attributes.per_kg_rate,
+          perCbm: customer.attributes.per_cbm_rate,
+          perPackage: customer.attributes.per_pck_rate,
+          income_tax: customer.attributes.income_tax,
+          sales_tax: customer.attributes.sales_tax,
+          bilties: []
+        };
+        for (let customer of customer.relationships.bilties.data) {
+          this.getBilty(customer.id).then(res => {
+            customers_data.bilties.push(res);
+          });
+        }
+        customers_arr.push(customers_data);
+      }
+      this.customers = customers_arr;
     },
     updateCustomer(editedItem, id) {
       this.$http({

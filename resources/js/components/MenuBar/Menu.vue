@@ -23,16 +23,31 @@
 <script>
 export default {
   data: () => ({
-    links: [
-      { icon: "mdi-home", text: "Home", route: "/" },
-      { icon: "mdi-login", text: "Login", route: "/login" },
-      { icon: "mdi-view-dashboard", text: "Admin Dashboard", route: "/admin" },
-      {
+    links: []
+  }),
+  created() {
+    this.links = [{ icon: "mdi-home", text: "Home", route: "/", show: true }];
+    if (!this.$auth.check()) {
+      this.links.push({
+        icon: "mdi-login",
+        text: "Login",
+        route: "/login"
+      });
+    }
+    if (this.$auth.check(2)) {
+      this.links.push({
+        icon: "mdi-view-dashboard",
+        text: "Admin Dashboard",
+        route: "/admin"
+      });
+    }
+    if (this.$auth.check([1, 3, 4])) {
+      this.links.push({
         icon: "mdi-view-dashboard-variant",
         text: "Dashboard",
         route: "/operator"
-      }
-    ]
-  })
+      });
+    }
+  }
 };
 </script>

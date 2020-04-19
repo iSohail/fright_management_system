@@ -15,7 +15,9 @@ class ReceiverController extends Controller
      */
     public function index()
     {
-        //
+        $receivers = Receiver::with('customer')->get();
+        ReceiverResource::withoutWrapping();
+        return ReceiverResource::collection($receivers);
     }
 
     /**
@@ -36,7 +38,15 @@ class ReceiverController extends Controller
      */
     public function store(Request $request)
     {
-        //
+        $data = json_decode($request->getContent(), true);
+
+        $receiver = new Receiver;
+        $receiver->name = $data['name'];
+        $receiver->address = $data['address'];
+        $receiver->customer_id = $data['customer_id'];
+        $receiver->save();
+        ReceiverResource::withoutWrapping();
+        return new ReceiverResource($receiver);
     }
 
     /**
@@ -83,6 +93,7 @@ class ReceiverController extends Controller
      */
     public function destroy($id)
     {
-        //
+        $receiver = Receiver::findOrFail($id);
+        $receiver->delete();
     }
 }

@@ -11,7 +11,7 @@ class Customer extends Model
     public $incrementing = false;
 
     protected $fillable = [
-        'name', 'cell_no', 'customer_no', 'company', 'email', 'per_kg_rate', 'per_cbm_rate', 'per_pck_rate', 'income_tax', 'sales_tax'
+        'name', 'cell_no', 'customer_no', 'company', 'email', 'per_kg_rate', 'per_cbm_rate', 'per_pck_rate', 'income_tax', 'sales_tax',
     ];
 
     public function bilties()
@@ -24,14 +24,14 @@ class Customer extends Model
         return $this->hasMany('App\GeneralLedger');
     }
 
-    public function sender()
+    public function senders()
     {
-        return $this->hasOne('App\Sender');
+        return $this->hasMany('App\Sender');
     }
 
-    public function receiver()
+    public function receivers()
     {
-        return $this->hasOne('App\Receiver');
+        return $this->hasMany('App\Receiver');
     }
 
     public static function boot()
@@ -39,6 +39,14 @@ class Customer extends Model
         parent::boot();
         self::creating(function ($model) {
             $model->id = self::generateUuid();
+        });
+        // for saving records with null values
+        static::saving(function ($model) {
+            foreach ($model->attributes as $key => $value) {
+                if ($value !== 0) {
+                    $model->{$key} = empty($value) ? null : $value;
+                }
+            }
         });
     }
     public static function generateUuid()

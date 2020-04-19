@@ -69,7 +69,7 @@ class BiltyController extends Controller
         $validatedData = $request->validate([
             'date' => 'required',
             'bilty_no' => 'required',
-            'lc_bl_no' => 'required',
+            
             'from' => 'required',
             'to' => 'required',
             'sender' => 'required',
@@ -84,8 +84,13 @@ class BiltyController extends Controller
         ]);
         $bilty->created_at = Carbon::parse($data['date']);
         $bilty->bilty_no = $data['bilty_no'];
-        $bilty->lg_bl_no = $data['lc_bl_no'];
-        $bilty->description = $data['description'];
+        if (!empty($data['lc_bl_no'])) {
+            $bilty->lg_bl_no = $data['lc_bl_no'];
+        }
+        if (!empty($data['description'])) {
+
+            $bilty->description = $data['description'];
+        }
         $bilty->from = $data['from'];
         $bilty->to = $data['to'];
         $bilty->sender = $data['sender'];
@@ -100,6 +105,7 @@ class BiltyController extends Controller
         $bilty->manual = $data['manual'];
         $bilty->user_id = Auth::user()->id;
 
+        // return $bilty;
         if ($bilty->save(['timestamps' => false])) {
             $bilty = Bilty::find($bilty->id);
             if ($customer) {
@@ -179,7 +185,6 @@ class BiltyController extends Controller
         // return $bilty;
         $validatedData = $request->validate([
             'date' => 'required',
-            'lc_bl_no' => 'required',
             'from' => 'required',
             'to' => 'required',
             'sender' => 'required',
@@ -190,12 +195,16 @@ class BiltyController extends Controller
             'local_charges' => 'required',
             'bilty_total' => 'required',
             'packages_total' => 'required',
+            'manual' => 'required',
         ]);
         // $challan = Challan::findOrFail($data['challan_id']);
         // return $customer;
         $bilty->created_at = Carbon::parse($data['date']);
-        $bilty->lg_bl_no = $data['lc_bl_no'];
-        if (isset($data['description'])) {
+
+        if (!empty($data['lc_bl_no'])) {
+            $bilty->lg_bl_no = $data['lc_bl_no'];
+        }
+        if (!empty($data['description'])) {
 
             $bilty->description = $data['description'];
         }
