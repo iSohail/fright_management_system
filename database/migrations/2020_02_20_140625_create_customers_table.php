@@ -16,7 +16,7 @@ class CreateCustomersTable extends Migration
         Schema::create('customers', function (Blueprint $table) {
             $table->string('id');
             $table->string('name');
-            $table->string('cell_no');
+            $table->string('cell_no')->nullable();
             $table->string('customer_no');
             $table->string('company')->nullable();
             $table->string('email')->nullable();
@@ -29,7 +29,6 @@ class CreateCustomersTable extends Migration
 
             $table->primary('id');
             $table->unique('customer_no');
-            $table->unique('cell_no');
         });
     }
 

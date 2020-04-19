@@ -124,7 +124,16 @@
 
     <v-app-bar app clipped-left>
       <v-app-bar-nav-icon @click.stop="drawer = !drawer"/>
-      <v-toolbar-title class="mx-auto">BILTY MANAGEMENT SYSTEM</v-toolbar-title>
+      <v-toolbar-title v-if="windowWidth > 720" class="mx-auto">BILTY MANAGEMENT SYSTEM</v-toolbar-title>
+      <v-toolbar-title v-else class="mx-auto">BMS</v-toolbar-title>
+      <div class="mr-2">
+        <p
+          class="caption grey--text"
+          style="padding: 0px; margin: 0px"
+        >{{ $auth.user().name.toUpperCase()}} ( {{ $auth.user().role == '2' ? 'admin' : ($auth.user().role == '1' ? 'operator' : ( $auth.user().role == '3' ? 'sender' : ( $auth.user().role == '4' ? 'receiver' : 'none' ) ) ) }} )</p>
+        <p class="caption grey--text" style="padding: 0px; margin: 0px">{{ $auth.user().email}}</p>
+      </div>
+      <!-- <p>email</p> -->
       <v-btn @click="logout" icon>
         <v-icon>mdi-export</v-icon>
       </v-btn>
@@ -147,6 +156,7 @@ export default {
   },
 
   data: () => ({
+    windowWidth: window.innerWidth,
     drawer: null,
     dashboard: {
       icon: "mdi-view-dashboard",
@@ -165,7 +175,9 @@ export default {
     ],
     customers: [
       { title: "Add Customer", link: "/operator/customer/create" },
-      { title: "Manage Customer", link: "/operator/customer/manage" }
+      { title: "Manage Customer", link: "/operator/customer/manage" },
+      { title: "Sender", link: "/operator/customer/sender" },
+      { title: "Receiver", link: "/operator/customer/receiver" }
     ],
     ledgers: [
       { title: "Add Ledger", link: "/operator/bilty/monthly" },
@@ -183,6 +195,11 @@ export default {
 
   created() {
     this.$vuetify.theme.dark = true;
+  },
+  mounted() {
+    window.onresize = () => {
+      this.windowWidth = window.innerWidth;
+    };
   },
   methods: {
     logout() {

@@ -27,8 +27,10 @@
                     id="password"
                     label="Password"
                     name="password"
-                    type="password"
+                    :append-icon="show2 ? 'mdi-eye' : 'mdi-eye-off'"
+                    :type="show2 ? 'text' : 'password'"
                     v-model="password"
+                    @click:append="show2 = !show2"
                   />
                 </v-form>
               </v-card-text>
@@ -39,6 +41,10 @@
             </v-card>
           </v-col>
         </v-row>
+        <v-snackbar v-model="snackbar">
+          {{ text }}
+          <v-btn color="pink" text @click="snackbar = false">Close</v-btn>
+        </v-snackbar>
       </v-container>
       <Footer/>
     </v-content>
@@ -51,6 +57,9 @@ import Footer from "../Footer/FooterPadless";
 export default {
   data() {
     return {
+      show2: false,
+      snackbar: false,
+      text: "",
       email: null,
       password: null,
       has_error: false,
@@ -66,13 +75,9 @@ export default {
   },
   methods: {
     login() {
-      // axios.post('/api/login' , {'email': this.email , 'password' : this.password})
-
-      console.log(this.email, " ", this.password);
       // get the redirect object
       this.loading = true;
       var redirect = this.$auth.redirect();
-      console.log(redirect);
       var app = this;
       this.$auth.login({
         params: {
@@ -81,19 +86,19 @@ export default {
         },
         success: function() {
           // handle redirection
-          console.log(redirect, "success");
           const redirectTo = redirect
             ? redirect.from.name
             : this.$auth.user().role === 2
             ? "admin.dashboard.stats"
             : "dashboard";
-          console.log(redirectTo, "HeLLO ROUTER");
           this.$router.push({ name: redirectTo });
         },
         error: function() {
+          console.log("eerk");
           this.loading = false;
-          console.log("errorrr");
           app.has_error = true;
+          this.snackbar = true;
+          this.text = "error loging in, check credentials";
         },
         // rememberMe: true,
         fetchUser: true

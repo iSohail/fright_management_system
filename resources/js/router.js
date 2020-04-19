@@ -1,7 +1,6 @@
 
 import VueRouter from 'vue-router';
 import Login from './components/Authentication/Login';
-import Register from './components/Authentication/Register';
 import AdminDashboard from './components/AdminDashboard';
 import AdminDashboardStats from './components/Admin/AdminDashboardStats';
 import OperatorDashboardStats from './components/Operator/OperatorDashboardStats';
@@ -17,6 +16,8 @@ import ManageChallan from './components/Challan/Manage';
 import EditChallan from './components/Challan/Edit';
 import AddCustomer from './components/Customer/Add';
 import ManageCustomer from './components/Customer/Manage';
+import Sender from './components/Customer/Sender';
+import Receiver from './components/Customer/Receiver';
 import CustomerAccount from './components/Accounts/Customer';
 import ManageLedger from './components/Ledgers/Manage';
 import EditLedger from './components/Ledgers/Edit';
@@ -47,14 +48,6 @@ const routes = [
         path: '/login',
         name: 'login',
         component: Login,
-        meta: {
-            auth: false
-        }
-    },
-    {
-        path: '/register',
-        name: 'register',
-        component: Register,
         meta: {
             auth: false
         }
@@ -182,6 +175,16 @@ const routes = [
                 name: 'operator.customer.manage',
                 component: ManageCustomer
             },
+            {
+                path: 'customer/sender',
+                name: 'operator.customer.sender',
+                component: Sender
+            },
+            {
+                path: 'customer/receiver',
+                name: 'operator.customer.receiver',
+                component: Receiver
+            },
         ]
     },
     //ADMIN
@@ -267,6 +270,16 @@ const routes = [
                 path: 'customer/manage',
                 name: 'admin.customer.manage',
                 component: ManageCustomer
+            },
+            {
+                path: 'customer/sender',
+                name: 'operator.customer.sender',
+                component: Sender
+            },
+            {
+                path: 'customer/receiver',
+                name: 'operator.customer.receiver',
+                component: Receiver
             },
             {
                 path: 'package',

@@ -36,7 +36,6 @@
                 filled
                 hint="should be unique"
                 persistent-hint
-                :rules="numberRule"
                 label="L/C - B/L No / Container No"
               ></v-text-field>
             </v-col>
@@ -69,6 +68,8 @@
                 dense
                 row-height="10"
                 v-model="description"
+                hint="auto description from packages"
+                persistent-hint
                 class="ma-1"
                 filled
               ></v-textarea>
@@ -135,16 +136,79 @@
 
           <v-row>
             <v-col cols="12" md="6">
-              <v-text-field v-model="sender" dense filled :rules="nameRule" label="Sender Name"></v-text-field>
+              <!-- <v-text-field v-model="sender" dense filled :rules="nameRule" label="Sender Name"></v-text-field> -->
+              <v-combobox
+                v-model="sender"
+                :items="senderItems"
+                :rules="nameRule"
+                label="Sender Name"
+                :search-input.sync="searchSenderItem"
+                filled
+                dense
+              >
+                <template v-slot:no-data>
+                  <v-list-item>
+                    <v-list-item-content>
+                      <v-list-item-title>
+                        No results matching "
+                        <strong>{{ searchSenderItem }}</strong>". Press
+                        <kbd>enter</kbd> to create a new one
+                      </v-list-item-title>
+                    </v-list-item-content>
+                  </v-list-item>
+                </template>
+              </v-combobox>
             </v-col>
 
             <v-col cols="12" md="6">
-              <v-text-field v-model="receiver" dense filled :rules="nameRule" label="Reciever Name"></v-text-field>
+              <!-- <v-text-field v-model="receiver" dense filled :rules="nameRule" label="Reciever Name"></v-text-field> -->
+              <v-combobox
+                v-model="receiver"
+                :items="receiverItems"
+                :rules="nameRule"
+                :search-input.sync="searchReceiverItem"
+                label="Receiver Name"
+                filled
+                dense
+              >
+                <template v-slot:no-data>
+                  <v-list-item>
+                    <v-list-item-content>
+                      <v-list-item-title>
+                        No results matching "
+                        <strong>{{ searchReceiverItem }}</strong>". Press
+                        <kbd>enter</kbd> to create a new one
+                      </v-list-item-title>
+                    </v-list-item-content>
+                  </v-list-item>
+                </template>
+              </v-combobox>
             </v-col>
           </v-row>
           <v-row>
             <v-col cols="12" md="12">
-              <v-textarea
+              <v-combobox
+                v-model="receiver_address"
+                :rules="descriptionRule"
+                :items="receiverAddressItems"
+                :search-input.sync="searchReceiverAddressItem"
+                label="Reciever Address"
+                filled
+                dense
+              >
+                <template v-slot:no-data>
+                  <v-list-item>
+                    <v-list-item-content>
+                      <v-list-item-title>
+                        No results matching "
+                        <strong>{{ searchReceiverAddressItem }}</strong>". Press
+                        <kbd>enter</kbd> to create a new one
+                      </v-list-item-title>
+                    </v-list-item-content>
+                  </v-list-item>
+                </template>
+              </v-combobox>
+              <!-- <v-textarea
                 label="Reciever Address"
                 rows="1"
                 dense
@@ -153,7 +217,7 @@
                 class="ma-1"
                 filled
                 :rules="descriptionRule"
-              ></v-textarea>
+              ></v-textarea>-->
             </v-col>
           </v-row>
 
@@ -222,14 +286,14 @@
                             </v-col>
                           </v-row>
                           <v-row>
-                            <v-col cols="12" sm="8" md="4">
+                            <v-col cols="12" sm="6" md="4">
                               <v-text-field
                                 v-model="editedItem.quantity"
                                 :rules="numberRule"
                                 label="Quantity"
                               ></v-text-field>
                             </v-col>
-                            <v-col cols="12" sm="8" md="4">
+                            <v-col cols="12" sm="6" md="4">
                               <v-select
                                 v-model="editedItem.unit"
                                 :items="unit_items"
@@ -238,31 +302,31 @@
                                 label="Unit"
                               ></v-select>
                             </v-col>
-                            <v-col cols="12" sm="8" md="4">
+                            <v-col cols="12" sm="6" md="4">
                               <v-text-field
                                 v-model="editedItem.rate"
                                 :rules="numberRule"
                                 label="Rate/Unit"
                               ></v-text-field>
                             </v-col>
-                            <v-col cols="12" sm="8" md="3">
+                            <v-col cols="12" sm="6" md="3">
                               <v-text-field
                                 v-model="editedItem.total_weight"
                                 :rules="numberRule"
                                 label="Total Weight"
                               ></v-text-field>
                             </v-col>
-                            <v-col cols="12" sm="8" md="3">
+                            <v-col cols="12" sm="6" md="3">
                               <v-text-field
                                 v-model="editedItem.total_volume"
                                 :rules="numberRule"
                                 label="Total Volume"
                               ></v-text-field>
                             </v-col>
-                            <v-col cols="12" sm="8" md="3">
+                            <v-col cols="12" sm="6" md="3">
                               <v-text-field v-model="rentCalc" :rules="numberRule" label="Rent"></v-text-field>
                             </v-col>
-                            <v-col cols="12" sm="8" md="3">
+                            <v-col cols="12" sm="6" md="3">
                               <v-text-field
                                 v-model="editedItem.labour"
                                 :rules="numberRule"
@@ -333,15 +397,620 @@ export default {
     ],
     snackbar: false,
     text: "",
-    from_city_items: ["Karachi", "Lahore", "Sheikhupura", "Islamabad"],
-    to_city_items: ["Lahore", "Sheikhupura", "Karachi", "Islamabad"],
+    from_city_items: [
+      "Karachi",
+      "Lahore",
+      "Islamabad",
+      "Sheikhupura",
+      "Abbottabad",
+      "Adezai",
+      "Ali Bandar",
+      "Amir Chah",
+      "Attock",
+      "Ayubia",
+      "Bahawalpur",
+      "Baden",
+      "Bagh",
+      "Bahawalnagar",
+      "Burewala",
+      "Banda Daud Shah",
+      "Bannu district|Bannu",
+      "Batagram",
+      "Bazdar",
+      "Bela",
+      "Bellpat",
+      "Bhag",
+      "Bhakkar",
+      "Bhalwal",
+      "Bhimber",
+      "Birote",
+      "Buner",
+      "Burj",
+      "Chiniot",
+      "Chachro",
+      "Chagai",
+      "Chah Sandan",
+      "Chailianwala",
+      "Chakdara",
+      "Chakku",
+      "Chakwal",
+      "Chaman",
+      "Charsadda",
+      "Chhatr",
+      "Chichawatni",
+      "Chitral",
+      "Dadu",
+      "Dera Ghazi Khan",
+      "Dera Ismail Khan",
+      "Dalbandin",
+      "Dargai",
+      "Darya Khan",
+      "Daska",
+      "Dera Bugti",
+      "Dhana Sar",
+      "Digri",
+      "Dina City|Dina",
+      "Dinga",
+      ", Pakistan|Diplo",
+      "Diwana",
+      "Dokri",
+      "Drosh",
+      "Duki",
+      "Dushi",
+      "Duzab",
+      "Faisalabad",
+      "Fateh Jang",
+      "Ghotki",
+      "Gwadar",
+      "Gujranwala",
+      "Gujrat",
+      "Gadra",
+      "Gajar",
+      "Gandava",
+      "Garhi Khairo",
+      "Garruck",
+      "Ghakhar Mandi",
+      "Ghanian",
+      "Ghauspur",
+      "Ghazluna",
+      "Girdan",
+      "Gulistan",
+      "Gwash",
+      "Hyderabad",
+      "Hala",
+      "Haripur",
+      "Hab Chauki",
+      "Hafizabad",
+      "Hameedabad",
+      "Hangu",
+      "Harnai",
+      "Hasilpur",
+      "Haveli Lakha",
+      "Hinglaj",
+      "Hoshab",
+
+      "Islamkot",
+      "Ispikan",
+      "Jacobabad",
+      "Jamshoro",
+      "Jhang",
+      "Jhelum",
+      "Jamesabad",
+      "Jampur",
+      "Janghar",
+      "Jati(Mughalbhin)",
+      "Jauharabad",
+      "Jhal",
+      "Jhal Jhao",
+      "Jhatpat",
+      "Jhudo",
+      "Jiwani",
+      "Jungshahi",
+
+      "Kotri",
+      "Kalam",
+      "Kalandi",
+      "Kalat",
+      "Kamalia",
+      "Kamararod",
+      "Kamber",
+      "Kamokey",
+      "Kanak",
+      "Kandi",
+      "Kandiaro",
+      "Kanpur",
+      "Kapip",
+      "Kappar",
+      "Karak City",
+      "Karodi",
+      "Kashmor",
+      "Kasur",
+      "Katuri",
+      "Keti Bandar",
+      "Khairpur",
+      "Khanaspur",
+      "Khanewal",
+      "Kharan",
+      "kharian",
+      "Khokhropur",
+      "Khora",
+      "Khushab",
+      "Khuzdar",
+      "Kikki",
+      "Klupro",
+      "Kohan",
+      "Kohat",
+      "Kohistan",
+      "Kohlu",
+      "Korak",
+      "Korangi",
+      "Kot Sarae",
+      "Kotli",
+
+      "Larkana",
+      "Lahri",
+      "Lakki Marwat",
+      "Lasbela",
+      "Latamber",
+      "Layyah",
+      "Leiah",
+      "Liari",
+      "Lodhran",
+      "Loralai",
+      "Lower Dir",
+      "Shadan Lund",
+      "Multan",
+      "Mandi Bahauddin",
+      "Mansehra",
+      "Mian Chanu",
+      "Mirpur",
+      "Mardan",
+      "Mach",
+      "Madyan",
+      "Malakand",
+      "Mand",
+      "Manguchar",
+      "Mashki Chah",
+      "Maslti",
+      "Mastuj",
+      "Mastung",
+      "Mathi",
+      "Matiari",
+      "Mehar",
+      "Mekhtar",
+      "Merui",
+      "Mianwali",
+      "Mianez",
+      "Mirpur Batoro",
+      "Mirpur Khas",
+      "Mirpur Sakro",
+      "Mithi",
+      "Mongora",
+      "Murgha Kibzai",
+      "Muridke",
+      "Musa Khel Bazar",
+      "Muzaffar Garh",
+      "Muzaffarabad",
+      "Nawabshah",
+      "Nazimabad",
+      "Nowshera",
+      "Nagar Parkar",
+      "Nagha Kalat",
+      "Nal",
+      "Naokot",
+      "Nasirabad",
+      "Nauroz Kalat",
+      "Naushara",
+      "Nur Gamma",
+      "Nushki",
+      "Nuttal",
+      "Okara",
+      "Ormara",
+      "Peshawar",
+      "Panjgur",
+      "Pasni City",
+      "Paharpur",
+      "Palantuk",
+      "Pendoo",
+      "Piharak",
+      "Pirmahal",
+      "Pishin",
+      "Plandri",
+      "Pokran",
+      "Pounch",
+      "Quetta",
+      "Qambar",
+      "Qamruddin Karez",
+      "Qazi Ahmad",
+      "Qila Abdullah",
+      "Qila Ladgasht",
+      "Qila Safed",
+      "Qila Saifullah",
+      "Rawalpindi",
+      "Rabwah",
+      "Rahim Yar Khan",
+      "Rajan Pur",
+      "Rakhni",
+      "Ranipur",
+      "Ratodero",
+      "Rawalakot",
+      "Renala Khurd",
+      "Robat Thana",
+      "Rodkhan",
+      "Rohri",
+      "Sialkot",
+      "Sadiqabad",
+      "Safdar Abad- (Dhaban Singh)",
+      "Sahiwal",
+      "Saidu Sharif",
+      "Saindak",
+      "Sakrand",
+      "Sanjawi",
+      "Sargodha",
+      "Saruna",
+      "Shabaz Kalat",
+      "Shadadkhot",
+      "Shahbandar",
+      "Shahpur",
+      "Shahpur Chakar",
+      "Shakargarh",
+      "Shangla",
+      "Sharam Jogizai",
+
+      "Shikarpur",
+      "Shingar",
+      "Shorap",
+      "Sibi",
+      "Sohawa",
+      "Sonmiani",
+      "Sooianwala",
+      "Spezand",
+      "Spintangi",
+      "Sui",
+      "Sujawal",
+      "Sukkur",
+      "Suntsar",
+      "Surab",
+      "Swabi",
+      "Swat",
+      "Tando Adam",
+      "Tando Bago",
+      "Tangi",
+      "Tank City",
+      "Tar Ahamd Rind",
+      "Thalo",
+      "Thatta",
+      "Toba Tek Singh",
+      "Tordher",
+      "Tujal",
+      "Tump",
+      "Turbat",
+      "Umarao",
+      "Umarkot",
+      "Upper Dir",
+      "Uthal",
+      "Vehari",
+      "Veirwaro",
+      "Vitakri",
+      "Wadh",
+      "Wah Cantt",
+      "Warah",
+      "Washap",
+      "Wasjuk",
+      "Wazirabad",
+      "Yakmach",
+      "Zhob"
+    ],
+    to_city_items: [
+      "Karachi",
+      "Lahore",
+      "Islamabad",
+      "Sheikhupura",
+      "Abbottabad",
+      "Adezai",
+      "Ali Bandar",
+      "Amir Chah",
+      "Attock",
+      "Ayubia",
+      "Bahawalpur",
+      "Baden",
+      "Bagh",
+      "Bahawalnagar",
+      "Burewala",
+      "Banda Daud Shah",
+      "Bannu district|Bannu",
+      "Batagram",
+      "Bazdar",
+      "Bela",
+      "Bellpat",
+      "Bhag",
+      "Bhakkar",
+      "Bhalwal",
+      "Bhimber",
+      "Birote",
+      "Buner",
+      "Burj",
+      "Chiniot",
+      "Chachro",
+      "Chagai",
+      "Chah Sandan",
+      "Chailianwala",
+      "Chakdara",
+      "Chakku",
+      "Chakwal",
+      "Chaman",
+      "Charsadda",
+      "Chhatr",
+      "Chichawatni",
+      "Chitral",
+      "Dadu",
+      "Dera Ghazi Khan",
+      "Dera Ismail Khan",
+      "Dalbandin",
+      "Dargai",
+      "Darya Khan",
+      "Daska",
+      "Dera Bugti",
+      "Dhana Sar",
+      "Digri",
+      "Dina City|Dina",
+      "Dinga",
+      ", Pakistan|Diplo",
+      "Diwana",
+      "Dokri",
+      "Drosh",
+      "Duki",
+      "Dushi",
+      "Duzab",
+      "Faisalabad",
+      "Fateh Jang",
+      "Ghotki",
+      "Gwadar",
+      "Gujranwala",
+      "Gujrat",
+      "Gadra",
+      "Gajar",
+      "Gandava",
+      "Garhi Khairo",
+      "Garruck",
+      "Ghakhar Mandi",
+      "Ghanian",
+      "Ghauspur",
+      "Ghazluna",
+      "Girdan",
+      "Gulistan",
+      "Gwash",
+      "Hyderabad",
+      "Hala",
+      "Haripur",
+      "Hab Chauki",
+      "Hafizabad",
+      "Hameedabad",
+      "Hangu",
+      "Harnai",
+      "Hasilpur",
+      "Haveli Lakha",
+      "Hinglaj",
+      "Hoshab",
+
+      "Islamkot",
+      "Ispikan",
+      "Jacobabad",
+      "Jamshoro",
+      "Jhang",
+      "Jhelum",
+      "Jamesabad",
+      "Jampur",
+      "Janghar",
+      "Jati(Mughalbhin)",
+      "Jauharabad",
+      "Jhal",
+      "Jhal Jhao",
+      "Jhatpat",
+      "Jhudo",
+      "Jiwani",
+      "Jungshahi",
+
+      "Kotri",
+      "Kalam",
+      "Kalandi",
+      "Kalat",
+      "Kamalia",
+      "Kamararod",
+      "Kamber",
+      "Kamokey",
+      "Kanak",
+      "Kandi",
+      "Kandiaro",
+      "Kanpur",
+      "Kapip",
+      "Kappar",
+      "Karak City",
+      "Karodi",
+      "Kashmor",
+      "Kasur",
+      "Katuri",
+      "Keti Bandar",
+      "Khairpur",
+      "Khanaspur",
+      "Khanewal",
+      "Kharan",
+      "kharian",
+      "Khokhropur",
+      "Khora",
+      "Khushab",
+      "Khuzdar",
+      "Kikki",
+      "Klupro",
+      "Kohan",
+      "Kohat",
+      "Kohistan",
+      "Kohlu",
+      "Korak",
+      "Korangi",
+      "Kot Sarae",
+      "Kotli",
+
+      "Larkana",
+      "Lahri",
+      "Lakki Marwat",
+      "Lasbela",
+      "Latamber",
+      "Layyah",
+      "Leiah",
+      "Liari",
+      "Lodhran",
+      "Loralai",
+      "Lower Dir",
+      "Shadan Lund",
+      "Multan",
+      "Mandi Bahauddin",
+      "Mansehra",
+      "Mian Chanu",
+      "Mirpur",
+      "Mardan",
+      "Mach",
+      "Madyan",
+      "Malakand",
+      "Mand",
+      "Manguchar",
+      "Mashki Chah",
+      "Maslti",
+      "Mastuj",
+      "Mastung",
+      "Mathi",
+      "Matiari",
+      "Mehar",
+      "Mekhtar",
+      "Merui",
+      "Mianwali",
+      "Mianez",
+      "Mirpur Batoro",
+      "Mirpur Khas",
+      "Mirpur Sakro",
+      "Mithi",
+      "Mongora",
+      "Murgha Kibzai",
+      "Muridke",
+      "Musa Khel Bazar",
+      "Muzaffar Garh",
+      "Muzaffarabad",
+      "Nawabshah",
+      "Nazimabad",
+      "Nowshera",
+      "Nagar Parkar",
+      "Nagha Kalat",
+      "Nal",
+      "Naokot",
+      "Nasirabad",
+      "Nauroz Kalat",
+      "Naushara",
+      "Nur Gamma",
+      "Nushki",
+      "Nuttal",
+      "Okara",
+      "Ormara",
+      "Peshawar",
+      "Panjgur",
+      "Pasni City",
+      "Paharpur",
+      "Palantuk",
+      "Pendoo",
+      "Piharak",
+      "Pirmahal",
+      "Pishin",
+      "Plandri",
+      "Pokran",
+      "Pounch",
+      "Quetta",
+      "Qambar",
+      "Qamruddin Karez",
+      "Qazi Ahmad",
+      "Qila Abdullah",
+      "Qila Ladgasht",
+      "Qila Safed",
+      "Qila Saifullah",
+      "Rawalpindi",
+      "Rabwah",
+      "Rahim Yar Khan",
+      "Rajan Pur",
+      "Rakhni",
+      "Ranipur",
+      "Ratodero",
+      "Rawalakot",
+      "Renala Khurd",
+      "Robat Thana",
+      "Rodkhan",
+      "Rohri",
+      "Sialkot",
+      "Sadiqabad",
+      "Safdar Abad- (Dhaban Singh)",
+      "Sahiwal",
+      "Saidu Sharif",
+      "Saindak",
+      "Sakrand",
+      "Sanjawi",
+      "Sargodha",
+      "Saruna",
+      "Shabaz Kalat",
+      "Shadadkhot",
+      "Shahbandar",
+      "Shahpur",
+      "Shahpur Chakar",
+      "Shakargarh",
+      "Shangla",
+      "Sharam Jogizai",
+
+      "Shikarpur",
+      "Shingar",
+      "Shorap",
+      "Sibi",
+      "Sohawa",
+      "Sonmiani",
+      "Sooianwala",
+      "Spezand",
+      "Spintangi",
+      "Sui",
+      "Sujawal",
+      "Sukkur",
+      "Suntsar",
+      "Surab",
+      "Swabi",
+      "Swat",
+      "Tando Adam",
+      "Tando Bago",
+      "Tangi",
+      "Tank City",
+      "Tar Ahamd Rind",
+      "Thalo",
+      "Thatta",
+      "Toba Tek Singh",
+      "Tordher",
+      "Tujal",
+      "Tump",
+      "Turbat",
+      "Umarao",
+      "Umarkot",
+      "Upper Dir",
+      "Uthal",
+      "Vehari",
+      "Veirwaro",
+      "Vitakri",
+      "Wadh",
+      "Wah Cantt",
+      "Warah",
+      "Washap",
+      "Wasjuk",
+      "Wazirabad",
+      "Yakmach",
+      "Zhob"
+    ],
     from_city_value: "Karachi",
     to_city_value: "Lahore",
     manual: false,
     bilty_no: "",
     date: new Date().toISOString().substr(0, 10),
     menu: false,
-    description: "",
     lc_bl_no: "",
     bilty_charges: "0",
     local_charges: "0",
@@ -354,6 +1023,12 @@ export default {
     customers: [],
     created_bilty: "",
     dialog: false,
+    senderItems: [],
+    searchSenderItem: null,
+    receiverItems: [],
+    searchReceiverItem: null,
+    receiverAddressItems: [],
+    searchReceiverAddressItem: null,
     headers: [
       {
         text: "Description",
@@ -420,6 +1095,9 @@ export default {
     per_cbm_rate: "",
     per_pck_rate: "",
     valid: true,
+    setRentFlag: false,
+    setDescriptionFlag: false,
+    tempDescription: "",
     nameRule: [
       v => !!v || "Field is required",
       v => (v && v.length <= 30) || "Field must be less than 30 characters",
@@ -444,27 +1122,59 @@ export default {
     ]
   }),
   computed: {
+    description: {
+      get: function() {
+        if (!this.setDescriptionFlag) {
+          let description = "";
+          for (let pck of this.packages) {
+            description += pck.description + ", ";
+          }
+          // remove last comma from string
+          return description.slice(0, -2);
+        }
+        this.setDescriptionFlag = false;
+        return this.tempDescription;
+      },
+      set: function(value) {
+        this.setDescriptionFlag = true;
+        console.log(value, "setting");
+        return (this.tempDescription = value);
+      }
+    },
     formTitle() {
       return this.editedIndex === -1 ? "New Item" : "Edit Item";
     },
-    rentCalc() {
-      let perUnitRate = parseFloat(this.editedItem.rate);
-      let totalWeight = parseFloat(this.editedItem.total_weight);
-      let totalVolume = parseFloat(this.editedItem.total_volume);
-      let quantity = parseFloat(this.editedItem.quantity);
-      if (perUnitRate) {
-        if (totalWeight && this.editedItem.unit == "kg") {
-          this.editedItem.rent = perUnitRate * totalWeight;
-          return this.editedItem.rent;
+    rentCalc: {
+      get() {
+        if (!this.setRentFlag) {
+          let perUnitRate = parseFloat(this.editedItem.rate);
+          let totalWeight = parseFloat(this.editedItem.total_weight);
+          let totalVolume = parseFloat(this.editedItem.total_volume);
+          let quantity = parseFloat(this.editedItem.quantity);
+          if (perUnitRate) {
+            if (totalWeight && this.editedItem.unit == "kg") {
+              this.editedItem.rent = perUnitRate * totalWeight;
+              return this.editedItem.rent;
+            }
+            if (totalVolume && this.editedItem.unit == "cbm") {
+              this.editedItem.rent = perUnitRate * totalVolume;
+              return this.editedItem.rent;
+            }
+            if (quantity && this.editedItem.unit == "pck") {
+              this.editedItem.rent = perUnitRate * quantity;
+              return this.editedItem.rent;
+            }
+          }
         }
-        if (totalVolume && this.editedItem.unit == "cbm") {
-          this.editedItem.rent = perUnitRate * totalVolume;
-          return this.editedItem.rent;
-        }
-        if (quantity && this.editedItem.unit == "pck") {
-          this.editedItem.rent = perUnitRate * quantity;
-          return this.editedItem.rent;
-        }
+        this.setRentFlag = false;
+      },
+      set(value) {
+        console.log(value, "seeter rent");
+        this.editedItem.rent = value;
+        console.log(this.editedItem.rent, "seeter rent");
+        this.setRentFlag = true;
+        return this.editedItem.rent;
+        // return value;
       }
     },
     packages_total() {
@@ -485,6 +1195,7 @@ export default {
   created() {
     this.getLastBiltyNo();
     this.getCustomers();
+    this.listen();
   },
   watch: {
     dialog(val) {
@@ -504,6 +1215,17 @@ export default {
   },
 
   methods: {
+    changeDateFormat(date) {
+      let dateSplit = date.split("-");
+      return dateSplit[2] + "-" + dateSplit[1] + "-" + dateSplit[0];
+    },
+    listen() {
+      Echo.channel("bilties").listen("BiltyAdded", bilties => {
+        this.getLastBiltyNo();
+        this.snackbar = true;
+        this.text = "Bilty no updated";
+      });
+    },
     unitChanged(val) {
       let perKg = parseFloat(this.per_kg_rate);
       let perCbm = parseFloat(this.per_cbm_rate);
@@ -519,6 +1241,7 @@ export default {
       }
     },
     getCustomerDetails() {
+      console.log(this.description);
       if (this.customer && this.customer.length > 0) {
         this.$http({
           url: `customer/${this.customer}`,
@@ -529,11 +1252,15 @@ export default {
             this.per_kg_rate = res.data.attributes.per_kg_rate;
             this.per_cbm_rate = res.data.attributes.per_cbm_rate;
             this.per_pck_rate = res.data.attributes.per_pck_rate;
-            if (res.data.relationships.sender.data) {
-              this.getSenderDetails(res.data.relationships.sender.data.id);
+            if (res.data.relationships.senders.data) {
+              for (let sender of res.data.relationships.senders.data) {
+                this.getSenderDetails(sender.id);
+              }
             }
-            if (res.data.relationships.receiver.data) {
-              this.getReceiverDetails(res.data.relationships.receiver.data.id);
+            if (res.data.relationships.receivers.data) {
+              for (let receiver of res.data.relationships.receivers.data) {
+                this.getReceiverDetails(receiver.id);
+              }
             }
           },
           () => {
@@ -563,7 +1290,7 @@ export default {
         method: "GET"
       }).then(
         res => {
-          this.sender = res.data.attributes.name;
+          this.senderItems.push(res.data.attributes.name);
         },
         () => {}
       );
@@ -574,8 +1301,8 @@ export default {
         method: "GET"
       }).then(
         res => {
-          this.receiver = res.data.attributes.name;
-          this.receiver_address = res.data.attributes.address;
+          this.receiverItems.push(res.data.attributes.name);
+          this.receiverAddressItems.push(res.data.attributes.address);
         },
         () => {}
       );
@@ -654,6 +1381,7 @@ export default {
         if (this.editedIndex > -1) {
           Object.assign(this.packages[this.editedIndex], this.editedItem);
         } else {
+          console.log(this.editedItem);
           this.packages.push(this.editedItem);
         }
         this.close();
@@ -703,6 +1431,7 @@ export default {
           customer_id: that.customer,
           packages: that.packages
         };
+        console.log(bilty, "sending");
         this.created_bilty = bilty;
         this.$http({
           url: `bilty/create`,
@@ -737,6 +1466,7 @@ export default {
     },
     submit_print_bilty() {
       if (this.submit_bilty()) {
+        this.created_bilty.date = this.changeDateFormat(this.created_bilty.date);
         this.$store.dispatch("destroyBilty");
         this.$store.dispatch("createBilty", this.created_bilty);
         let routeData = this.$router.resolve({

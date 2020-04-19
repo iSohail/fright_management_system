@@ -91,9 +91,19 @@
           <v-data-table :headers="headers" :items="users" :search="search">
             <template v-slot:item.action="{ item }">
               <v-row>
-                <v-col cols="6" class="px-0">
-                  <v-btn class="red mr-sm-3" small @click="deleteItem(item)">
+                <v-col cols="6" class="px-0 text-right">
+                  <v-btn
+                    v-if="item.role != 'Admin'"
+                    class="red mr-sm-3"
+                    small
+                    @click="deleteItem(item)"
+                  >
                     <v-icon>mdi-delete</v-icon>
+                  </v-btn>
+                </v-col>
+                <v-col cols="6" class="px-0 text-left">
+                  <v-btn class="primary mx-sm-3" small @click="openDialog(item)">
+                    <v-icon>mdi-lock</v-icon>
                   </v-btn>
                 </v-col>
               </v-row>
@@ -101,11 +111,31 @@
           </v-data-table>
         </v-card>
       </v-card-text>
+
       <v-snackbar v-model="snackbar">
         {{ text }}
         <v-btn color="pink" text @click="snackbar = false">Close</v-btn>
       </v-snackbar>
     </v-card>
+    <v-row justify="center">
+      <v-dialog v-model="dialog" persistent max-width="600px">
+        <v-form ref="change_pass_form">
+          <v-card>
+            <v-card-title>
+              <span class="headline">Change password {{changePasswordItem.name}}</span>
+            </v-card-title>
+            <v-card-text>
+              <v-text-field label="password" :rules="selectRule" v-model="password" required></v-text-field>
+            </v-card-text>
+            <v-card-actions>
+              <v-spacer></v-spacer>
+              <v-btn color="blue darken-1" text @click="dialog = false">Close</v-btn>
+              <v-btn color="blue darken-1" text @click="changePassword()">Save</v-btn>
+            </v-card-actions>
+          </v-card>
+        </v-form>
+      </v-dialog>
+    </v-row>
   </div>
 </template>
 
@@ -117,6 +147,7 @@ export default {
         text: "Users"
       }
     ],
+    dialog: false,
     name: "",
     user_name: "",
     email: "",
@@ -129,6 +160,8 @@ export default {
     valid: true,
     text: "",
     users: [],
+    password: "",
+    changePasswordItem: "",
     headers: [
       {
         text: "Name",
@@ -176,9 +209,9 @@ export default {
           console.log(res.data.data);
           let users_arr = [];
           for (let user of res.data.data) {
-            if (user.relationships.role.data.id == "2") {
-              continue;
-            }
+            // if (user.relationships.role.data.id == "2") {
+            //   continue;
+            // }
             let users_data = {
               id: user.id,
               name: user.attributes.name,
@@ -195,6 +228,10 @@ export default {
           this.text = "Error fetching users, please refresh";
         }
       );
+    },
+    openDialog(item) {
+      this.changePasswordItem = item;
+      this.dialog = true;
     },
     deleteItem(item) {
       this.$http({
@@ -213,6 +250,31 @@ export default {
           this.text = "Error deleting user";
         }
       );
+    },
+    changePassword() {
+      if (this.$refs.change_pass_form.validate()) {
+        this.$http({
+          url: `user/password/${this.changePasswordItem.id}`,
+          data: { password: this.password },
+          method: "POST"
+        }).then(
+          res => {
+            console.log(res);
+            this.getUsers();
+            this.snackbar = true;
+            this.password = "";
+            this.text = "Success changing password";
+          },
+          err => {
+            console.log(err);
+            this.snackbar = true;
+            this.password = "";
+            this.text = "Error changing password";
+          }
+        );
+      }
+      this.changePasswordItem = "";
+      this.dialog = false;
     },
     save() {
       if (this.$refs.form.validate()) {

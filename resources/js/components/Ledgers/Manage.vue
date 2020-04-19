@@ -326,7 +326,6 @@ export default {
   },
   watch: {
     paid(paid) {
-      console.log(this.selected);
       if (paid == "paid") {
         // this.delivered = false;
         let selected = this.selected;
@@ -355,42 +354,13 @@ export default {
     this.listen();
   },
   methods: {
+    changeDateFormat(date) {
+      let dateSplit = date.split("-");
+      return dateSplit[2] + "-" + dateSplit[1] + "-" + dateSplit[0];
+    },
     listen() {
       Echo.channel("ledgers").listen("LedgerAdded", ledgers => {
-        let ledger_arr = [];
-
-        for (let ledger of ledgers.ledgers) {
-          let ledger_data = {
-            id: ledger.id,
-            no: ledger.attributes.ledger_no,
-            description: ledger.attributes.description,
-            income_tax: ledger.attributes.income_tax,
-            sales_tax: ledger.attributes.sales_tax,
-            gross_total: ledger.attributes.bilty_total,
-            account_receivable: ledger.attributes.account_receivable,
-            amount_paid: ledger.attributes.amount_paid,
-            pending_amount: ledger.attributes.pending_amount,
-            user_name: ledger.relationships.user.data.user_name,
-            status: ledger.attributes.status,
-            created_at: ledger.attributes.created_at.slice(0, 10),
-            bilties: []
-          };
-          if (ledger.relationships.customer.data) {
-            this.getCustomer(ledger.relationships.customer.data.id).then(
-              res => {
-                ledger_data.customer = res;
-              }
-            );
-          }
-          for (let bilty of ledger.relationships.bilties.data) {
-            console.log(bilty.id);
-            this.getBilty(bilty.id).then(res => {
-              ledger_data.bilties.push(res);
-            });
-          }
-          ledger_arr.push(ledger_data);
-        }
-        this.ledgers = ledger_arr;
+        this.addLedgerData(ledgers.ledgers);
         this.snackbar = true;
         this.text = "New data added";
       });
@@ -411,7 +381,6 @@ export default {
         method: "POST"
       }).then(
         res => {
-          console.log(res);
           this.getLedgers();
           this.selected = [];
           this.snackbar = true;
@@ -431,50 +400,49 @@ export default {
         method: "GET"
       }).then(
         res => {
-          console.log(res.data);
-          let ledgers = [];
-          for (let ledger of res.data) {
-            let ledger_data = {
-              id: ledger.id,
-              no: ledger.attributes.ledger_no,
-              description: ledger.attributes.description,
-              income_tax: ledger.attributes.income_tax,
-              sales_tax: ledger.attributes.sales_tax,
-              gross_total: ledger.attributes.bilty_total,
-              bilty_total: ledger.attributes.bilty_total,
-              account_receivable: ledger.attributes.account_receivable,
-              amount_paid: ledger.attributes.amount_paid,
-              pending_amount: ledger.attributes.pending_amount,
-              status: ledger.attributes.status,
-              user_name: ledger.relationships.user.data.user_name,
-              created_at: ledger.attributes.created_at.slice(0, 10),
-              created: ledger.attributes.created_at.slice(0, 10),
-              bilties: []
-            };
-            if (ledger.relationships.customer.data) {
-              this.getCustomer(ledger.relationships.customer.data.id).then(
-                res => {
-                  ledger_data.customer = res;
-                }
-              );
-            }
-            for (let bilty of ledger.relationships.bilties.data) {
-              console.log(bilty.id);
-              this.getBilty(bilty.id).then(res => {
-                ledger_data.bilties.push(res);
-              });
-            }
-            ledgers.push(ledger_data);
-          }
-          this.ledgers = ledgers;
+          this.addLedgerData(res.data);
           this.loading = false;
-          // console.log(bilties);
         },
-        () => {
-          console.log("error occured");
-          // this.has_error = true
-        }
+        () => {}
       );
+    },
+    addLedgerData(data) {
+      let ledgers = [];
+      for (let ledger of data) {
+        let ledger_data = {
+          id: ledger.id,
+          no: ledger.attributes.ledger_no,
+          description: ledger.attributes.description,
+          income_tax: ledger.attributes.income_tax,
+          sales_tax: ledger.attributes.sales_tax,
+          gross_total: ledger.attributes.bilty_total,
+          bilty_total: ledger.attributes.bilty_total,
+          account_receivable: ledger.attributes.account_receivable,
+          amount_paid: ledger.attributes.amount_paid,
+          pending_amount: ledger.attributes.pending_amount,
+          status: ledger.attributes.status,
+          user_name: ledger.relationships.user.data.user_name,
+          created_at: this.changeDateFormat(
+            ledger.attributes.created_at.slice(0, 10)
+          ),
+          created: this.changeDateFormat(
+            ledger.attributes.created_at.slice(0, 10)
+          ),
+          bilties: []
+        };
+        if (ledger.relationships.customer.data) {
+          this.getCustomer(ledger.relationships.customer.data.id).then(res => {
+            ledger_data.customer = res;
+          });
+        }
+        for (let bilty of ledger.relationships.bilties.data) {
+          this.getBilty(bilty.id).then(res => {
+            ledger_data.bilties.push(res);
+          });
+        }
+        ledgers.push(ledger_data);
+      }
+      this.ledgers = ledgers;
     },
     async getCustomer(id) {
       let customer = {};
@@ -490,12 +458,8 @@ export default {
             cellNo: res.data.attributes.cell_no
           };
         },
-        () => {
-          console.log("error occured");
-          // this.has_error = true
-        }
+        () => {}
       );
-      // console.log(customer);
       return customer;
     },
     async getBilty(id) {
@@ -521,19 +485,13 @@ export default {
             date: res.data.attributes.created_at.slice(0, 10)
           };
           for (let pck of res.data.relationships.packages.data) {
-            console.log(pck.id);
             this.getPackage(pck.id).then(res => {
               bilty.weight += parseFloat(res.total_weight);
             });
           }
-          console.log(bilty);
         },
-        () => {
-          console.log("error occured");
-          // this.has_error = true
-        }
+        () => {}
       );
-      // console.log(customer);
       return bilty;
     },
     async getPackage(id) {
@@ -546,18 +504,12 @@ export default {
           pck = {
             total_weight: res.data.attributes.total_weight
           };
-          console.log(pck);
         },
-        () => {
-          console.log("error occured");
-          // this.has_error = true
-        }
+        () => {}
       );
-      // console.log(customer);
       return pck;
     },
     editItem(item) {
-      console.log(item);
       if (item.status == "pending") {
         let user = this.$auth.user();
         if (user.role == 2) {
@@ -583,7 +535,6 @@ export default {
       item.invoice_no = item.no;
       item.customer_data = item.customer;
       item.selected_items = item.bilties;
-      console.log(item);
 
       this.$store.dispatch("destroyInvoice");
       this.$store.dispatch("createInvoice", item);

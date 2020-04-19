@@ -361,8 +361,8 @@ export default {
           class: "light-blue darken-3 white--text"
         },
         {
-          text: "Lc/bl-no",
-          value: "lc_bl_no",
+          text: "Truck No",
+          value: "truck_no",
           class: "light-blue darken-3 white--text"
         },
         {
@@ -417,7 +417,6 @@ export default {
   watch: {
     delivered(delivered) {
       if (delivered == "delivered") {
-        // this.delivered = false;
         let selected = this.selected;
         if (selected.length > 0) {
           this.delivered = false;
@@ -430,7 +429,6 @@ export default {
     },
     paid(paid) {
       if (paid == "paid") {
-        // this.delivered = false;
         let selected = this.selected;
         if (selected.length > 0) {
           this.paid = false;
@@ -447,9 +445,12 @@ export default {
     this.listen();
   },
   methods: {
+    changeDateFormat(date) {
+      let dateSplit = date.split("-");
+      return dateSplit[2] + "-" + dateSplit[1] + "-" + dateSplit[0];
+    },
     listen() {
       Echo.channel("challans").listen("ChallanAdded", challans => {
-        console.log("received");
         this.getBilties();
         this.snackbar = true;
         this.text = "New data added";
@@ -482,7 +483,6 @@ export default {
       );
     },
     setDelivered() {
-      console.log("hello");
       let bilties_id = [];
       for (let item of this.selected) {
         if (item.payment_status == "unpaid") {
@@ -516,7 +516,6 @@ export default {
         method: "GET"
       }).then(
         res => {
-          console.log(res.data);
           let bilties = [];
           for (let bilty of res.data) {
             if (bilty.attributes.status != "dispatched") {
@@ -534,13 +533,23 @@ export default {
               receiver_address: bilty.attributes.receiver_address,
               status: bilty.attributes.status,
               payment_status: bilty.attributes.payment_status,
-              created_at: bilty.attributes.created_at.slice(0, 10),
+              created_at: this.changeDateFormat(
+                bilty.attributes.created_at.slice(0, 10)
+              ),
               bilty_charges: bilty.attributes.bilty_charges,
               local_charges: bilty.attributes.local_charges,
               packages: [],
               package_total: bilty.attributes.packages_total,
-              total_amount: bilty.attributes.bilty_total
+              total_amount: bilty.attributes.bilty_total,
+              truck_no: ""
             };
+            if (bilty.relationships.challan.data) {
+              this.getChallanTruck(bilty.relationships.challan.data.id).then(
+                res => {
+                  bilty_data.truck_no = res;
+                }
+              );
+            }
             if (bilty.relationships.customer.data) {
               this.getCustomer(bilty.relationships.customer.data.id).then(
                 res => {
@@ -549,7 +558,6 @@ export default {
               );
             }
             for (let pck of bilty.relationships.packages.data) {
-              console.log(pck.id);
               this.getPackage(pck.id).then(res => {
                 bilty_data.packages.push(res);
               });
@@ -558,14 +566,24 @@ export default {
           }
           this.bilties = bilties;
           this.loading = false;
-          // console.log(bilties);
         },
         () => {
           this.loading = false;
-          console.log("error occured");
-          // this.has_error = true
         }
       );
+    },
+    async getChallanTruck(id) {
+      let truck_no = "";
+      await this.$http({
+        url: `challan/truck_no/${id}`,
+        method: "GET"
+      }).then(
+        res => {
+          truck_no = res.data;
+        },
+        () => {}
+      );
+      return truck_no;
     },
     async getCustomer(id) {
       let customer = {};
@@ -580,12 +598,8 @@ export default {
             company: res.data.attributes.company
           };
         },
-        () => {
-          console.log("error occured");
-          // this.has_error = true
-        }
+        () => {}
       );
-      // console.log(customer);
       return customer;
     },
     async getPackage(id) {
@@ -606,23 +620,10 @@ export default {
             labour: res.data.attributes.labour,
             rent: res.data.attributes.rent
           };
-          console.log(pck);
         },
-        () => {
-          console.log("error occured");
-          // this.has_error = true
-        }
+        () => {}
       );
-      // console.log(customer);
       return pck;
-    },
-    editItem(item) {
-      let user = this.$auth.user();
-      if (user.role == 2) {
-        this.$router.push({ path: `/admin/bilty/edit/${item.id}` });
-      } else {
-        this.$router.push({ path: `/operator/bilty/edit/${item.id}` });
-      }
     }
   }
 };

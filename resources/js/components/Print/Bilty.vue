@@ -26,8 +26,8 @@
                   <td class="text-left font-weight-regular black--text">{{sender.toUpperCase()}}</td>
                   <td style="width: 15%" class="text-right">Received By</td>
                   <td class="text-left font-weight-regular black--text">{{receiver.toUpperCase()}}</td>
-                  <td style="width: 15%" class="text-right">Karachi To</td>
-                  <td class="text-left font-weight-regular black--text">{{receiver.toUpperCase()}}</td>
+                  <td style="width: 15%" class="text-right">{{from.toUpperCase()}} To</td>
+                  <td class="text-left font-weight-regular black--text">{{to.toUpperCase()}}</td>
                   <!-- <td>Karachi To</td>
                   <td class="font-weight-regular black--text">{{challan_no}}</td>-->
                 </tr>
@@ -100,6 +100,8 @@ export default {
       receiver_address: "",
       created: "",
       selected_items: [],
+      from: "",
+      to: "",
       bilty_total: "",
       bilty_charges: "",
       local_charges: "",
@@ -156,6 +158,8 @@ export default {
       this.created = bilty.date;
       this.sender = bilty.sender;
       this.receiver = bilty.receiver;
+      this.to = bilty.to;
+      this.from = bilty.from;
       this.receiver_address = bilty.receiver_address;
       this.container_no = bilty.lc_bl_no;
       this.bilty_total = bilty.total_amount;

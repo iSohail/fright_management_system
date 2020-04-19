@@ -90,62 +90,10 @@
                 ></v-text-field>
               </v-col>
               <v-col cols="12" md="3">
-                <v-text-field
-                  v-model="customer.cellNo"
-                  :rules="selectRule"
-                  filled
-                  dense
-                  label="Cell No"
-                  required
-                ></v-text-field>
+                <v-text-field v-model="customer.cellNo" filled dense label="Cell No" required></v-text-field>
               </v-col>
             </v-row>
 
-            <v-row>
-              <v-col cols="12" md="4">
-                <v-text-field
-                  v-model="customer.sender"
-                  :rules="nameRule"
-                  filled
-                  dense
-                  label="Sender Name"
-                  required
-                ></v-text-field>
-              </v-col>
-              <v-col cols="12" md="8">
-                <v-text-field
-                  v-model="customer.sender_address"
-                  :rules="descriptionRule"
-                  filled
-                  dense
-                  label="Sender Address"
-                  required
-                ></v-text-field>
-              </v-col>
-            </v-row>
-
-            <v-row>
-              <v-col cols="12" md="4">
-                <v-text-field
-                  v-model="customer.receiver"
-                  :rules="nameRule"
-                  filled
-                  dense
-                  label="Receiver Name"
-                  required
-                ></v-text-field>
-              </v-col>
-              <v-col cols="12" md="8">
-                <v-text-field
-                  v-model="customer.receiver_address"
-                  :rules="descriptionRule"
-                  filled
-                  dense
-                  label="Receiver Address"
-                  required
-                ></v-text-field>
-              </v-col>
-            </v-row>
             <v-row>
               <v-col cols="12" sm="6">
                 <v-text-field
@@ -207,33 +155,22 @@ export default {
         incomeTax: "",
         salesTax: "",
         company: "",
-        email: "",
-        sender: "",
-        receiver: "",
-        sender_address: "",
-        receiver_address: ""
+        email: ""
       },
       valid: true,
 
       nameRule: [
         v => !!v || "Field is required",
-        v => (v && v.length <= 30) || "Field must be less than 30 characters",
+        v => (v && v.length <= 50) || "Field must be less than 50 characters",
         v =>
           /(?=.*[A-Z])/.test(v) ||
           /(?=.*[a-z])/.test(v) ||
           "Only characters allowed"
       ],
       selectRule: [v => !!v || "Field is required"],
-      descriptionRule: [
-        v => !!v || "Description is required",
-        v =>
-          (v && v.length <= 1000) ||
-          "Descriptipn must be less than 1000 characters"
-      ],
       numberRule: [
-        v => !!v || "Field is required",
         v => {
-          if (!isNaN(parseFloat(v)) && v >= 0 && v <= 9999999) return true;
+          if (v >= 0 && v <= 9999999) return true;
           return "Only numbers allowed";
         }
       ]
@@ -243,11 +180,19 @@ export default {
     this.getLastCustomerNo();
   },
   mounted() {
-    Echo.channel("customers").listen("CustomerAdded", customers => {
-      console.log(customers);
-    });
+    this.listen();
   },
   methods: {
+    // listens for customer added by any other user and updates customer no
+    // so that no clash happens
+    listen() {
+      Echo.channel("customers").listen("CustomerAdded", customers => {
+        this.getLastCustomerNo();
+        this.snackbar = true;
+        this.text = "Customer no updated";
+      });
+    },
+    // fetch last customer no
     getLastCustomerNo() {
       this.$http({
         url: `customer/last`,
@@ -285,12 +230,10 @@ export default {
               perKg: "",
               perCbm: "",
               perPckg: "",
+              incomeTax: "",
+              salesTax: "",
               company: "",
-              email: "",
-              sender: "",
-              receiver: "",
-              sender_address: "",
-              receiver_address: ""
+              email: ""
             };
             this.customer = customer;
             this.resetValidation();
@@ -298,9 +241,12 @@ export default {
             this.snackbar = true;
             this.text = "Success adding customer";
           },
-          () => {
+          err => {
             this.snackbar = true;
-            this.text = "Error adding customer";
+            this.text =
+              "Error: " +
+              err.response.data.message +
+              ". \n Customer No already updated, no need to reload.";
           }
         );
       }

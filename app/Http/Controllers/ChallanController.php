@@ -102,6 +102,7 @@ class ChallanController extends Controller
         ChallanResource::withoutWrapping();
         return new ChallanResource($challan);
     }
+    
 
     /**
      * Show the form for editing the specified resource.
@@ -195,5 +196,11 @@ class ChallanController extends Controller
             'status' => 'success',
             'total_challans' => $totalCount,
         ], 200);
+    }
+
+    public function getTruckNo($id)
+    {
+        $challan = Challan::findOrFail($id);
+        return $challan->truck_no;
     }
 }

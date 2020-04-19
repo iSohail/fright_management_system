@@ -112,7 +112,7 @@
             </v-row>
             <v-card>
               <v-card-title>
-                Monthly Customers
+                Bilties
                 <v-spacer></v-spacer>
                 <v-text-field
                   v-model="search"
@@ -462,7 +462,7 @@ export default {
       var mm = String(today.getMonth() + 1).padStart(2, "0"); //January is 0!
       var yyyy = today.getFullYear();
 
-      today = mm + "/" + dd + "/" + yyyy;
+      today = dd + "-" + mm + "-" + yyyy;
       return today;
     },
     selected_gross_amount() {
@@ -523,10 +523,22 @@ export default {
     }
   },
   created() {
+    this.listen();
     this.getLastLedgerNo();
     this.getCustomers();
   },
   methods: {
+    changeDateFormat(date) {
+      let dateSplit = date.split("-");
+      return dateSplit[2] + "-" + dateSplit[1] + "-" + dateSplit[0];
+    },
+    listen() {
+      Echo.channel("ledgers").listen("LedgerAdded", ledgers => {
+        this.getLastLedgerNo();
+        this.snackbar = true;
+        this.text = "Ledger no updated";
+      });
+    },
     getLastLedgerNo() {
       this.$http({
         url: `ledgers/last`,
@@ -569,7 +581,9 @@ export default {
                 receiver_address: bilty.attributes.receiver_address,
                 status: bilty.attributes.status,
                 payment_status: bilty.attributes.payment_status,
-                created_at: bilty.attributes.created_at,
+                created_at: this.changeDateFormat(
+                  bilty.attributes.created_at.slice(0, 10)
+                ),
                 bilty_charges: bilty.attributes.bilty_charges,
                 local_charges: bilty.attributes.local_charges,
                 packages: [],

@@ -89,11 +89,31 @@
                 <v-subheader>Bilty Details</v-subheader>
               </v-row>
               <v-row>
-                <v-col cols="12" md="6">
+                <v-col cols="12" md="4">
                   <v-text-field
                     label="Receiver"
                     placeholder="Receiver"
                     v-model="item.receiver"
+                    readonly
+                    outlined
+                    dense
+                  ></v-text-field>
+                </v-col>
+                <v-col cols="12" md="4">
+                  <v-text-field
+                    label="Description"
+                    placeholder="Description"
+                    v-model="item.description"
+                    readonly
+                    outlined
+                    dense
+                  ></v-text-field>
+                </v-col>
+                <v-col cols="12" md="4">
+                  <v-text-field
+                    label="Lc-Bl-No"
+                    placeholder="Lc-Bl-No"
+                    v-model="item.lc_bl_no"
                     readonly
                     outlined
                     dense
@@ -280,11 +300,11 @@ export default {
           value: "manual",
           class: "light-blue darken-3 white--text"
         },
-        {
-          text: "Lc/bl-no",
-          value: "lc_bl_no",
-          class: "light-blue darken-3 white--text"
-        },
+        // {
+        //   text: "Lc/bl-no",
+        //   value: "lc_bl_no",
+        //   class: "light-blue darken-3 white--text"
+        // },
         {
           text: "Sender",
           value: "sender",
@@ -336,47 +356,13 @@ export default {
     this.listen();
   },
   methods: {
+    changeDateFormat(date) {
+      let dateSplit = date.split("-");
+      return dateSplit[2] + "-" + dateSplit[1] + "-" + dateSplit[0];
+    },
     listen() {
       Echo.channel("bilties").listen("BiltyAdded", bilties => {
-        console.log(bilties);
-        let bilties_arr = [];
-
-        for (let bilty of bilties.bilties) {
-          let bilty_data = {
-            id: bilty.id,
-            no: bilty.attributes.bilty_no,
-            lc_bl_no: bilty.attributes.lg_bl_no,
-            date: bilty.attributes.created_at.slice(0, 10),
-            manual: bilty.attributes.manual,
-            from: bilty.attributes.from,
-            to: bilty.attributes.to,
-            sender: bilty.attributes.sender,
-            receiver: bilty.attributes.receiver,
-            receiver_address: bilty.attributes.receiver_address,
-            status: bilty.attributes.status,
-            payment_status: bilty.attributes.payment_status,
-            created_at: bilty.attributes.created_at.slice(0, 10),
-            bilty_charges: bilty.attributes.bilty_charges,
-            local_charges: bilty.attributes.local_charges,
-            user_name: bilty.relationships.user.data.user_name,
-            packages: [],
-            package_total: bilty.attributes.packages_total,
-            total_amount: bilty.attributes.bilty_total
-          };
-          if (bilty.relationships.customer.data) {
-            this.getCustomer(bilty.relationships.customer.data.id).then(res => {
-              bilty_data.customer = res;
-            });
-          }
-          for (let pck of bilty.relationships.packages.data) {
-            console.log(pck.id);
-            this.getPackage(pck.id).then(res => {
-              bilty_data.packages.push(res);
-            });
-          }
-          bilties_arr.push(bilty_data);
-        }
-        this.bilties = bilties_arr;
+        this.addBiltyData(bilties.bilties);
         this.snackbar = true;
         this.text = "New data added";
       });
@@ -388,57 +374,55 @@ export default {
         method: "GET"
       }).then(
         res => {
-          console.log(res.data);
-          let bilties = [];
-          for (let bilty of res.data) {
-            let bilty_data = {
-              id: bilty.id,
-              no: bilty.attributes.bilty_no,
-              lc_bl_no: bilty.attributes.lg_bl_no,
-              manual: bilty.attributes.manual,
-              date: bilty.attributes.created_at.slice(0, 10),
-              description: bilty.attributes.description,
-              from: bilty.attributes.from,
-              to: bilty.attributes.to,
-              sender: bilty.attributes.sender,
-              receiver: bilty.attributes.receiver,
-              receiver_address: bilty.attributes.receiver_address,
-              status: bilty.attributes.status,
-              lock: bilty.attributes.lock,
-              payment_status: bilty.attributes.payment_status,
-              created_at: bilty.attributes.created_at.slice(0, 10),
-              bilty_charges: bilty.attributes.bilty_charges,
-              local_charges: bilty.attributes.local_charges,
-              user_name: bilty.relationships.user.data.user_name,
-              packages: [],
-              package_total: bilty.attributes.packages_total,
-              total_amount: bilty.attributes.bilty_total
-            };
-            if (bilty.relationships.customer.data) {
-              this.getCustomer(bilty.relationships.customer.data.id).then(
-                res => {
-                  bilty_data.customer = res;
-                }
-              );
-            }
-            for (let pck of bilty.relationships.packages.data) {
-              console.log(pck.id);
-              this.getPackage(pck.id).then(res => {
-                bilty_data.packages.push(res);
-              });
-            }
-            bilties.push(bilty_data);
-          }
-          this.bilties = bilties;
-          this.loading = false;
-          // console.log(bilties);
+          this.addBiltyData(res.data);
         },
         () => {
           this.loading = false;
-          console.log("error occured");
-          // this.has_error = true
         }
       );
+    },
+    addBiltyData(data) {
+      let bilties = [];
+      for (let bilty of data) {
+        let bilty_data = {
+          id: bilty.id,
+          no: bilty.attributes.bilty_no,
+          lc_bl_no: bilty.attributes.lg_bl_no,
+          manual: bilty.attributes.manual,
+          date: this.changeDateFormat(bilty.attributes.created_at.slice(0, 10)),
+          description: bilty.attributes.description,
+          from: bilty.attributes.from,
+          to: bilty.attributes.to,
+          sender: bilty.attributes.sender,
+          receiver: bilty.attributes.receiver,
+          receiver_address: bilty.attributes.receiver_address,
+          status: bilty.attributes.status,
+          lock: bilty.attributes.lock,
+          payment_status: bilty.attributes.payment_status,
+          created_at: this.changeDateFormat(
+            bilty.attributes.created_at.slice(0, 10)
+          ),
+          bilty_charges: bilty.attributes.bilty_charges,
+          local_charges: bilty.attributes.local_charges,
+          user_name: bilty.relationships.user.data.user_name,
+          packages: [],
+          package_total: bilty.attributes.packages_total,
+          total_amount: bilty.attributes.bilty_total
+        };
+        if (bilty.relationships.customer.data) {
+          this.getCustomer(bilty.relationships.customer.data.id).then(res => {
+            bilty_data.customer = res;
+          });
+        }
+        for (let pck of bilty.relationships.packages.data) {
+          this.getPackage(pck.id).then(res => {
+            bilty_data.packages.push(res);
+          });
+        }
+        bilties.push(bilty_data);
+      }
+      this.bilties = bilties;
+      this.loading = false;
     },
     async getCustomer(id) {
       let customer = {};
@@ -454,12 +438,8 @@ export default {
             company: res.data.attributes.company
           };
         },
-        () => {
-          console.log("error occured");
-          // this.has_error = true
-        }
+        () => {}
       );
-      // console.log(customer);
       return customer;
     },
     async getPackage(id) {
@@ -481,14 +461,9 @@ export default {
             labour: res.data.attributes.labour,
             rent: res.data.attributes.rent
           };
-          console.log(pck);
         },
-        () => {
-          console.log("error occured");
-          // this.has_error = true
-        }
+        () => {}
       );
-      // console.log(customer);
       return pck;
     },
     editItem(item) {
@@ -508,11 +483,9 @@ export default {
       }
     },
     printItem(item) {
-      console.log(item);
       item.bilty_no = item.no;
       this.$store.dispatch("destroyBilty");
       this.$store.dispatch("createBilty", item);
-      console.log(item.no);
 
       let routeData = this.$router.resolve({
         name: "invoice.bilty",

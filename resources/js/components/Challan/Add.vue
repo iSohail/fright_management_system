@@ -146,29 +146,15 @@
 
             <v-row>
               <v-col cols="12" md="4">
-                <v-text-field
-                  dense
-                  filled
-                  :rules="selectRule"
-                  v-model="total_amount"
-                  readonly
-                  label="Total Amount"
-                ></v-text-field>
+                <v-text-field dense filled v-model="total_amount" readonly label="Total Amount"></v-text-field>
               </v-col>
 
               <v-col cols="12" md="4">
-                <v-text-field dense filled :rules="selectRule" v-model="expenses" label="Expenses"></v-text-field>
+                <v-text-field dense filled v-model="expenses" label="Expenses"></v-text-field>
               </v-col>
 
               <v-col cols="12" md="4">
-                <v-text-field
-                  dense
-                  filled
-                  :rules="selectRule"
-                  v-model="grand_total"
-                  readonly
-                  label="Grand Total"
-                ></v-text-field>
+                <v-text-field dense filled v-model="grand_total" readonly label="Grand Total"></v-text-field>
               </v-col>
             </v-row>
 
@@ -340,11 +326,23 @@ export default {
     }
   },
   async created() {
+    this.listen();
     this.getLastChallanNo();
     await this.getBilties();
     console.log(this.bilties);
   },
   methods: {
+    changeDateFormat(date) {
+      let dateSplit = date.split("-");
+      return dateSplit[2] + "-" + dateSplit[1] + "-" + dateSplit[0];
+    },
+    listen() {
+      Echo.channel("challans").listen("ChallanAdded", challans => {
+        this.getLastChallanNo();
+        this.snackbar = true;
+        this.text = "Challan no updated";
+      });
+    },
     getLastChallanNo() {
       this.$http({
         url: `challan/last`,
@@ -525,6 +523,9 @@ export default {
     submit_print_challan() {
       if (this.submit_challan()) {
         console.log(this.created_challan);
+        this.created_challan.date = this.changeDateFormat(
+          this.created_challan.date
+        );
         this.$store.dispatch("destroyChallan");
         this.$store.dispatch("createChallan", this.created_challan);
         let routeData = this.$router.resolve({
