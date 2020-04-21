@@ -4,9 +4,11 @@ namespace App;
 
 use Illuminate\Database\Eloquent\Model;
 use Webpatser\Uuid\Uuid;
+use Laravel\Scout\Searchable;
 
 class Customer extends Model
 {
+    use Searchable;
     public $timestamps = true;
     public $incrementing = false;
 
@@ -52,5 +54,20 @@ class Customer extends Model
     public static function generateUuid()
     {
         return Uuid::generate()->string;
+    }
+
+    // tnt search with scout
+    public function searchableAs()
+    {
+        return 'customers_index';
+    }
+
+    public function toSearchableArray()
+    {
+        $array = $this->toArray();
+
+        // Customize array...
+
+        return $array;
     }
 }

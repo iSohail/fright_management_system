@@ -51,6 +51,9 @@ Route::group(['middleware' => 'auth:api'], function () {
     Route::get('bilties/total/month', 'BiltyController@monthlyTotal');
     
     Route::get('customer', 'CustomerController@index');
+    Route::get('customer/paginate', 'CustomerController@paginate');
+    Route::get('customer/sort', 'CustomerController@sort');
+    Route::get('customer/search', 'CustomerController@search');
     Route::get('customer/last', 'CustomerController@last');
     Route::get('customer/{id}', 'CustomerController@show');
     Route::post('customer/create', 'CustomerController@store');
