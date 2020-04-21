@@ -177,6 +177,9 @@ return [
 
         //JWT PROVIDER
         Tymon\JWTAuth\Providers\LaravelServiceProvider::class,
+        // Scout with TNT search package
+        Laravel\Scout\ScoutServiceProvider::class,
+        TeamTNT\Scout\TNTSearchScoutServiceProvider::class,
 
     ],
 

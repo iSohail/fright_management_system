@@ -13,10 +13,12 @@
         "doctrine/dbal": "^2.10",
         "fideloper/proxy": "^4.0",
         "laravel/framework": "^6.2",
+        "laravel/scout": "^8.0",
         "laravel/tinker": "^2.0",
         "laravel/ui": "^1.2",
         "nesbot/carbon": "^2.30",
         "pusher/pusher-php-server": "~3.0",
+        "teamtnt/laravel-scout-tntsearch-driver": "^8.1",
         "tymon/jwt-auth": "^1.0.0",
         "webpatser/laravel-uuid": "^3.0"
     },

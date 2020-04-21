@@ -15,8 +15,15 @@
             Customers
             <v-spacer></v-spacer>
             <v-text-field
+              @keyup.native.enter="searchCustomer"
               v-model="search"
               append-icon="mdi-magnify"
+              append-outer-icon="mdi-lock-reset"
+              clear-icon="mdi-close-circle"
+              clearable
+              @click:append="searchCustomer"
+              @click:append-outer="defaultCustomer"
+              @click:clear="defaultCustomer"
               label="Search"
               single-line
               hide-details
@@ -26,7 +33,12 @@
           <v-data-table
             :headers="headers"
             :items="customers"
-            :search="search"
+            :loading="loading"
+            :options.sync="options"
+            :server-items-length="totalCustomers"
+            :footer-props="{
+              itemsPerPageOptions: [5, 10, 15],
+            }"
             show-expand
             item-key="id"
             :single-expand="singleExpand"
@@ -215,6 +227,9 @@ export default {
       expanded: [],
       singleExpand: false,
       dialog: false,
+      totalCustomers: 0,
+      options: {},
+      loading: false,
       headers_bilties: [
         {
           text: "Builty No",
@@ -329,52 +344,149 @@ export default {
       selectRule: [v => !!v || "Field is required"]
     };
   },
+  watch: {
+    options: {
+      handler() {
+        this.getCustomersServerSide().then(data => {
+          this.customers = data.items;
+          this.totalCustomers = data.total;
+        });
+      },
+      deep: true
+    }
+  },
   mounted() {
     this.getCustomers();
+    this.getCustomersServerSide().then(data => {
+      this.customers = data.items;
+      this.totalCustomers = data.total;
+    });
+
     this.listen();
   },
   methods: {
+    defaultCustomer() {
+      this.search = "";
+      this.getCustomersServerSide().then(data => {
+        this.customers = data.items;
+        this.totalCustomers = data.total;
+      });
+    },
+    searchCustomer() {
+      this.getCustomersServerSide().then(data => {
+        this.customers = data.items;
+        this.totalCustomers = data.total;
+      });
+    },
+    getCustomersServerSide() {
+      this.loading = true;
+      return new Promise(async (resolve, reject) => {
+        const { sortBy, sortDesc, page, itemsPerPage } = this.options;
+
+        var items = [];
+        var total = 0;
+        var flag = false;
+
+        if (this.search) {
+          await this.getCustomersFiltered(page, itemsPerPage, this.search).then(
+            data => {
+              items = data.data;
+              total = data.total_items;
+              flag = true;
+            }
+          );
+        } else if (sortBy.length === 1 && sortDesc.length === 1) {
+          await this.getCustomersSorted(
+            page,
+            itemsPerPage,
+            sortBy[0],
+            sortDesc[0]
+          ).then(data => {
+            items = data.data;
+            total = data.total_items;
+            flag = true;
+          });
+        } else {
+          await this.getCustomers(page, itemsPerPage).then(data => {
+            items = data.data;
+            total = data.total_items;
+            flag = true;
+          });
+        }
+
+        // if (itemsPerPage > 0) {
+        //   items = items.slice((page - 1) * itemsPerPage, page * itemsPerPage);
+        // }
+        if (flag == true) {
+          this.loading = false;
+          resolve({
+            items,
+            total
+          });
+        }
+      });
+      // get by search keyword
+    },
     listen() {
       Echo.channel("customers").listen("CustomerAdded", customers => {
-        this.addCustomerData(customers.customers);
+        // remove payload from backend and call getCustomersServerSide
+        // this.addCustomerData(customers.customers);
         this.snackbar = true;
         this.text = "New data added";
       });
     },
-    async getBilty(id) {
-      let bilty = {};
+
+    async getCustomers(page, items_per_page) {
+      let customers = {};
       await this.$http({
-        url: `bilty/${id}`,
+        url: `customer/paginate?page=${page}&per_page=${items_per_page}`,
         method: "GET"
       }).then(
         res => {
-          bilty = {
-            no: res.data.attributes.bilty_no,
-            lc_bl_no: res.data.attributes.lg_bl_no,
-            manual: res.data.attributes.manual,
-            sender: res.data.attributes.sender,
-            receiver: res.data.attributes.receiver,
-            payment_status: res.data.attributes.payment_status,
-            status: res.data.attributes.status
-          };
-        },
-        () => {}
-      );
-      return bilty;
-    },
-    getCustomers() {
-      this.$http({
-        url: `customer`,
-        method: "GET"
-      }).then(
-        res => {
-          this.addCustomerData(res.data);
+          customers.data = this.addCustomerData(res.data.data);
+          customers.total_items = res.data.meta.total;
         },
         () => {
           this.snackbar = true;
           this.text = "Error fetching customers, please refresh";
         }
       );
+      return customers;
+    },
+    async getCustomersFiltered(page, items_per_page, search) {
+      let customers = {};
+      await this.$http({
+        url: `customer/search?page=${page}&per_page=${items_per_page}&query=${search}`,
+        method: "GET"
+      }).then(
+        res => {
+          console.log(res, "searched customer");
+          customers.data = this.addCustomerData(res.data.data);
+          customers.total_items = res.data.meta.total;
+        },
+        () => {
+          this.snackbar = true;
+          this.text = "Error fetching customers, please refresh";
+        }
+      );
+      return customers;
+    },
+    async getCustomersSorted(page, items_per_page, sortBy, sortDesc) {
+      let customers = {};
+      await this.$http({
+        url: `customer/sort?page=${page}&per_page=${items_per_page}&sort_by=${sortBy}&sort_desc=${sortDesc}`,
+        method: "GET"
+      }).then(
+        res => {
+          customers.data = this.addCustomerData(res.data.data);
+          customers.total_items = res.data.meta.total;
+        },
+        () => {
+          this.snackbar = true;
+          this.text = "Error fetching customers, please refresh";
+        }
+      );
+      return customers;
     },
     addCustomerData(data) {
       let customers_arr = [];
@@ -400,7 +512,29 @@ export default {
         }
         customers_arr.push(customers_data);
       }
-      this.customers = customers_arr;
+      // this.customers = customers_arr;
+      return customers_arr;
+    },
+    async getBilty(id) {
+      let bilty = {};
+      await this.$http({
+        url: `bilty/${id}`,
+        method: "GET"
+      }).then(
+        res => {
+          bilty = {
+            no: res.data.attributes.bilty_no,
+            lc_bl_no: res.data.attributes.lg_bl_no,
+            manual: res.data.attributes.manual,
+            sender: res.data.attributes.sender,
+            receiver: res.data.attributes.receiver,
+            payment_status: res.data.attributes.payment_status,
+            status: res.data.attributes.status
+          };
+        },
+        () => {}
+      );
+      return bilty;
     },
     updateCustomer(editedItem, id) {
       this.$http({

@@ -29,6 +29,39 @@ class CustomerController extends Controller
         CustomerResource::withoutWrapping();
         return CustomerResource::collection($customers);
     }
+    public function paginate()
+    {
+        $per_page = empty(request('per_page')) ? 10 : (int) request('per_page');
+        $customers = Customer::with('bilties')->latest()->paginate($per_page);
+        return CustomerResource::collection($customers);
+    }
+    public function search()
+    {
+        $per_page = empty(request('per_page')) ? 10 : (int) request('per_page');
+        $customers = Customer::search(request()->query('query'))->paginate($per_page);
+        return CustomerResource::collection($customers);
+    }
+    public function sort()
+    {
+        $per_page = empty(request('per_page')) ? 10 : (int) request('per_page');
+        $sort_desc = request()->query('sort_desc');
+        $sort_by = request()->query('sort_by');
+        // return $sort_by;
+        if ($sort_by == 'no') {
+            $sort_by = 'customer_no';
+        }
+        if ($sort_by == 'cellNo') {
+            $sort_by = 'cell_no';
+        }
+        if ($sort_desc == 'true') {
+            $sort_desc = 'DESC';
+        } else {
+            $sort_desc = 'ASC';
+        }
+        // return $sort_desc;
+        $customers = Customer::with('bilties')->orderBy($sort_by, $sort_desc)->paginate($per_page);
+        return CustomerResource::collection($customers);
+    }
 
     /**
      * Show the form for creating a new resource.
