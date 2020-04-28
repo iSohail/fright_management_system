@@ -14,6 +14,34 @@ class UserController extends Controller
         $users = User::with('_role')->get();
         return UserResource::collection($users);
     }
+
+    public function paginate()
+    {
+        $per_page = empty(request('per_page')) ? 10 : (int) request('per_page');
+        $users = User::with('_role')->latest()->paginate($per_page);
+        return UserResource::collection($users);
+    }
+
+    public function search()
+    {
+        $per_page = empty(request('per_page')) ? 10 : (int) request('per_page');
+        $users = User::search(request()->query('query'))->paginate($per_page);
+        return UserResource::collection($users);
+    }
+
+    public function sort()
+    {
+        $per_page = empty(request('per_page')) ? 10 : (int) request('per_page');
+        $sort_desc = request()->query('sort_desc');
+        $sort_by = request()->query('sort_by');
+        if ($sort_desc == 'true') {
+            $sort_desc = 'DESC';
+        } else {
+            $sort_desc = 'ASC';
+        }
+        $users = User::with('_role')->orderBy($sort_by, $sort_desc)->paginate($per_page);
+        return UserResource::collection($users);
+    }
     
     public function show(Request $request, $id)
     {
@@ -24,7 +52,6 @@ class UserController extends Controller
 
     public function store(Request $request)
     {
-        // return $request;
         $data = json_decode($request->getContent(), true);
 
         $validatedData = $request->validate([
@@ -41,8 +68,6 @@ class UserController extends Controller
                 'message' => 'can not assign admin role',
             ], 500);
         }
-
-        // return $request;
 
         $user = new User;
         $user->name = $request['name'];
@@ -67,7 +92,6 @@ class UserController extends Controller
     {
         $data = json_decode($request->getContent(), true);
 
-        // return $request;
         $user = User::findOrFail($id);
 
         $validatedData = $request->validate([
@@ -84,8 +108,6 @@ class UserController extends Controller
                 'message' => 'can not assign admin role',
             ], 500);
         }
-
-        // return $request;
 
         $user->name = $request['name'];
         $user->user_name = $request['user_name'];

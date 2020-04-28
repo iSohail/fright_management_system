@@ -22,9 +22,7 @@ class LedgerAdded implements ShouldBroadcast
     public $ledgers;
     public function __construct()
     {
-        $ledgers = GeneralLedger::with('bilties')->get();
-        GeneralLedgerResource::withoutWrapping();
-        $this->ledgers = GeneralLedgerResource::collection($ledgers);
+        $this->ledgers = 'ledger added or updated';
     }
 
     /**

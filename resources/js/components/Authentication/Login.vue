@@ -94,7 +94,6 @@ export default {
           this.$router.push({ name: redirectTo });
         },
         error: function() {
-          console.log("eerk");
           this.loading = false;
           app.has_error = true;
           this.snackbar = true;

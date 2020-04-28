@@ -20,6 +20,34 @@ class ReceiverController extends Controller
         return ReceiverResource::collection($receivers);
     }
 
+    public function paginate()
+    {
+        $per_page = empty(request('per_page')) ? 10 : (int) request('per_page');
+        $receivers = Receiver::with('customer')->latest()->paginate($per_page);
+        return ReceiverResource::collection($receivers);
+    }
+
+    public function search()
+    {
+        $per_page = empty(request('per_page')) ? 10 : (int) request('per_page');
+        $receivers = Receiver::search(request()->query('query'))->paginate($per_page);
+        return ReceiverResource::collection($receivers);
+    }
+
+    public function sort()
+    {
+        $per_page = empty(request('per_page')) ? 10 : (int) request('per_page');
+        $sort_desc = request()->query('sort_desc');
+        $sort_by = request()->query('sort_by');
+        if ($sort_desc == 'true') {
+            $sort_desc = 'DESC';
+        } else {
+            $sort_desc = 'ASC';
+        }
+        $receivers = Receiver::with('customer')->orderBy($sort_by, $sort_desc)->paginate($per_page);
+        return ReceiverResource::collection($receivers);
+    }
+
     /**
      * Show the form for creating a new resource.
      *

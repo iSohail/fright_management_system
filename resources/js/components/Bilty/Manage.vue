@@ -15,8 +15,15 @@
           Bilties
           <v-spacer></v-spacer>
           <v-text-field
+            @keyup.native.enter="searchBilty"
             v-model="search"
             append-icon="mdi-magnify"
+            append-outer-icon="mdi-lock-reset"
+            clear-icon="mdi-close-circle"
+            clearable
+            @click:append="searchBilty"
+            @click:append-outer="defaultBilty"
+            @click:clear="defaultBilty"
             label="Search"
             single-line
             hide-details
@@ -25,11 +32,15 @@
         <v-data-table
           :headers="headers"
           :items="bilties"
-          :search="search"
-          show-expand
-          item-key="id"
+          :options.sync="options"
+          :server-items-length="totalBilties"
+          :footer-props="{
+              itemsPerPageOptions: [5, 10, 15],
+            }"
           :loading="loading"
           loading-text="Loading... Please wait"
+          item-key="id"
+          show-expand
           :single-expand="singleExpand"
           :expanded.sync="expanded"
         >
@@ -49,7 +60,7 @@
           </template>
           <template v-slot:expanded-item="{ headers, item }">
             <td :colspan="headers.length" class="black">
-              <v-row>
+              <v-row v-if="item.customer">
                 <v-subheader>Customer Details</v-subheader>
               </v-row>
               <v-row v-if="item.customer">
@@ -85,6 +96,44 @@
                 </v-col>
               </v-row>
               <v-divider></v-divider>
+              <v-row>
+                <v-col v-if="item.challan_no" cols="12" md="6">
+                  <v-row>
+                    <v-subheader>Challan Details</v-subheader>
+                  </v-row>
+                  <v-row>
+                    <v-col cols="12">
+                      <v-text-field
+                        label="Challan no"
+                        placeholder="Challan no"
+                        v-model="item.challan_no"
+                        readonly
+                        outlined
+                        dense
+                      ></v-text-field>
+                    </v-col>
+                  </v-row>
+                </v-col>
+                <v-col v-if="item.ledger_no" cols="12" md="6">
+                  <v-row>
+                    <v-subheader>Ledger Details</v-subheader>
+                  </v-row>
+                  <v-row>
+                    <v-col cols="12">
+                      <v-text-field
+                        label="Ledger no"
+                        placeholder="Ledger no"
+                        v-model="item.ledger_no"
+                        readonly
+                        outlined
+                        dense
+                      ></v-text-field>
+                    </v-col>
+                  </v-row>
+                </v-col>
+              </v-row>
+
+              <v-divider v-if="item.ledger_no || item.challan_no"></v-divider>
               <v-row>
                 <v-subheader>Bilty Details</v-subheader>
               </v-row>
@@ -241,10 +290,12 @@ export default {
       ],
       snackbar: false,
       text: "",
-      search: "",
       expanded: [],
       singleExpand: false,
+      search: "",
       loading: false,
+      totalBilties: 0,
+      options: {},
       headers_packages: [
         {
           text: "Description",
@@ -300,21 +351,11 @@ export default {
           value: "manual",
           class: "light-blue darken-3 white--text"
         },
-        // {
-        //   text: "Lc/bl-no",
-        //   value: "lc_bl_no",
-        //   class: "light-blue darken-3 white--text"
-        // },
         {
           text: "Sender",
           value: "sender",
           class: "light-blue darken-3 white--text"
         },
-        // {
-        //   text: "Receiver",
-        //   value: "receiver",
-        //   class: "light-blue darken-3 white--text"
-        // },
         {
           text: "Status",
           value: "status",
@@ -333,6 +374,7 @@ export default {
         {
           text: "User",
           value: "user_name",
+          sortable: false,
           class: "light-blue darken-3 white--text"
         },
         {
@@ -351,8 +393,23 @@ export default {
       packages: []
     };
   },
-  created() {
-    this.getBilties();
+  watch: {
+    // watch for any changes in table options and trigger function
+    options: {
+      handler() {
+        this.getBiltiesServerSide().then(data => {
+          this.bilties = data.items;
+          this.totalBilties = data.total;
+        });
+      },
+      deep: true
+    }
+  },
+  mounted() {
+    this.getBiltiesServerSide().then(data => {
+      this.bilties = data.items;
+      this.totalBilties = data.total;
+    });
     this.listen();
   },
   methods: {
@@ -362,25 +419,134 @@ export default {
     },
     listen() {
       Echo.channel("bilties").listen("BiltyAdded", bilties => {
-        this.addBiltyData(bilties.bilties);
+        this.getBiltiesServerSide().then(data => {
+          this.bilties = data.items;
+          this.totalBilties = data.total;
+        });
         this.snackbar = true;
         this.text = "New data added";
       });
     },
-    getBilties() {
+    // clearing up search
+    defaultBilty() {
+      this.search = "";
+      this.getBiltiesServerSide().then(data => {
+        this.bilties = data.items;
+        this.totalBilties = data.total;
+      });
+    },
+    // if search button is clicked or input given
+    searchBilty() {
+      this.getBiltiesServerSide().then(data => {
+        this.bilties = data.items;
+        this.totalBilties = data.total;
+      });
+    },
+    // fetch bilties from backend
+    getBiltiesServerSide() {
       this.loading = true;
-      this.$http({
-        url: `bilty`,
+      // using async function to wait for the functions to execute and release results
+      return new Promise(async (resolve, reject) => {
+        const { sortBy, sortDesc, page, itemsPerPage } = this.options;
+        var items = [];
+        var total = 0;
+        var flag = false;
+
+        // if search is given fetch searched item
+        // else if check if sortBy and descending is given fetch items orderBy
+        // else fetch all bilties by Latest
+        if (this.search) {
+          // searching
+          await this.getBiltiesFiltered(page, itemsPerPage, this.search).then(
+            data => {
+              items = data.data;
+              total = data.total_items;
+              flag = true;
+            }
+          );
+        } else if (sortBy.length === 1 && sortDesc.length === 1) {
+          // sorting
+          await this.getBiltiesSorted(
+            page,
+            itemsPerPage,
+            sortBy[0],
+            sortDesc[0]
+          ).then(data => {
+            items = data.data;
+            total = data.total_items;
+            flag = true;
+          });
+        } else {
+          // fetch by latest
+          await this.getBilties(page, itemsPerPage).then(data => {
+            items = data.data;
+            total = data.total_items;
+            flag = true;
+          });
+        }
+
+        // check if functions are executed and release variables
+        if (flag == true) {
+          this.loading = false;
+          resolve({
+            items,
+            total
+          });
+        }
+      });
+    },
+    async getBilties(page, items_per_page) {
+      let bilties = {};
+      await this.$http({
+        url: `bilties/paginate?page=${page}&per_page=${items_per_page}`,
         method: "GET"
       }).then(
         res => {
-          this.addBiltyData(res.data);
+          bilties.data = this.addBiltyData(res.data.data);
+          bilties.total_items = res.data.meta.total;
         },
         () => {
-          this.loading = false;
+          this.snackbar = true;
+          this.text = "Error fetching bilties, please refresh";
         }
       );
+      return bilties;
     },
+    async getBiltiesFiltered(page, items_per_page, search) {
+      let bilties = {};
+      await this.$http({
+        url: `bilties/search?page=${page}&per_page=${items_per_page}&query=${search}`,
+        method: "GET"
+      }).then(
+        res => {
+          bilties.data = this.addBiltyData(res.data.data);
+          bilties.total_items = res.data.meta.total;
+        },
+        () => {
+          this.snackbar = true;
+          this.text = "Can not find data";
+        }
+      );
+      return bilties;
+    },
+    async getBiltiesSorted(page, items_per_page, sortBy, sortDesc) {
+      let bilties = {};
+      await this.$http({
+        url: `bilties/sort?page=${page}&per_page=${items_per_page}&sort_by=${sortBy}&sort_desc=${sortDesc}`,
+        method: "GET"
+      }).then(
+        res => {
+          bilties.data = this.addBiltyData(res.data.data);
+          bilties.total_items = res.data.meta.total;
+        },
+        () => {
+          this.snackbar = true;
+          this.text = "Error fetching bilties, please refresh";
+        }
+      );
+      return bilties;
+    },
+    // utility function to make array of objects
     addBiltyData(data) {
       let bilties = [];
       for (let bilty of data) {
@@ -414,6 +580,12 @@ export default {
             bilty_data.customer = res;
           });
         }
+        if (bilty.relationships.challan.data) {
+          bilty_data.challan_no = bilty.relationships.challan.data.challan_no;
+        }
+        if (bilty.relationships.ledger.data) {
+          bilty_data.ledger_no = bilty.relationships.ledger.data.ledger_no;
+        }
         for (let pck of bilty.relationships.packages.data) {
           this.getPackage(pck.id).then(res => {
             bilty_data.packages.push(res);
@@ -421,9 +593,9 @@ export default {
         }
         bilties.push(bilty_data);
       }
-      this.bilties = bilties;
-      this.loading = false;
+      return bilties;
     },
+    // fetch bilties customer data
     async getCustomer(id) {
       let customer = {};
       await this.$http({
@@ -442,6 +614,7 @@ export default {
       );
       return customer;
     },
+    // fetch bilties packages data
     async getPackage(id) {
       let pck = {};
       await this.$http({

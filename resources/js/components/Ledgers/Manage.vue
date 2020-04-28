@@ -15,8 +15,15 @@
             Ledgers
             <v-spacer></v-spacer>
             <v-text-field
+              @keyup.native.enter="searchLedger"
               v-model="search"
               append-icon="mdi-magnify"
+              append-outer-icon="mdi-lock-reset"
+              clear-icon="mdi-close-circle"
+              clearable
+              @click:append="searchLedger"
+              @click:append-outer="defaultLedger"
+              @click:clear="defaultLedger"
               label="Search"
               single-line
               hide-details
@@ -26,7 +33,11 @@
             v-model="selected"
             :headers="headers"
             :items="ledgers"
-            :search="search"
+            :options.sync="options"
+            :server-items-length="totalLedgers"
+            :footer-props="{
+              itemsPerPageOptions: [5, 10, 15],
+            }"
             show-select
             show-expand
             item-key="id"
@@ -223,6 +234,8 @@ export default {
       search: "",
       expanded: [],
       singleExpand: false,
+      totalLedgers: 0,
+      options: {},
       headers_bilties: [
         {
           text: "Builty No",
@@ -288,11 +301,6 @@ export default {
           value: "amount_paid",
           class: "light-blue darken-3 white--text"
         },
-        // {
-        //   text: "Pending",
-        //   value: "pending_amount",
-        //   class: "light-blue darken-3 white--text"
-        // },
         {
           text: "Status",
           value: "status",
@@ -306,6 +314,7 @@ export default {
         {
           text: "User",
           value: "user_name",
+          sortable: false,
           class: "light-blue darken-3 white--text"
         },
         {
@@ -325,6 +334,16 @@ export default {
     };
   },
   watch: {
+    // watch for any changes in table options and trigger function
+    options: {
+      handler() {
+        this.getLedgersServerSide().then(data => {
+          this.ledgers = data.items;
+          this.totalLedgers = data.total;
+        });
+      },
+      deep: true
+    },
     paid(paid) {
       if (paid == "paid") {
         // this.delivered = false;
@@ -349,64 +368,160 @@ export default {
       return total_amount;
     }
   },
-  created() {
-    this.getLedgers();
-    this.listen();
+  mounted() {
+    this.getLedgersServerSide().then(data => {
+      this.ledgers = data.items;
+      this.totalLedgers = data.total;
+    });
+    this.listenLedger();
+    this.listenPaid();
   },
   methods: {
     changeDateFormat(date) {
       let dateSplit = date.split("-");
       return dateSplit[2] + "-" + dateSplit[1] + "-" + dateSplit[0];
     },
-    listen() {
+    listenLedger() {
       Echo.channel("ledgers").listen("LedgerAdded", ledgers => {
-        this.addLedgerData(ledgers.ledgers);
+        this.getLedgersServerSide().then(data => {
+          this.ledgers = data.items;
+          this.totalLedgers = data.total;
+        });
         this.snackbar = true;
         this.text = "New data added";
       });
     },
-    setPaid() {
-      let ledgers_id = [];
-      for (let item of this.selected) {
-        if (item.status != "pending") {
-          this.snackbar = true;
-          this.text = "Can only receive payments of unpaid bilties.";
-          return;
+    listenPaid() {
+      Echo.channel("ledgers").listen("LedgerAdded", ledgers => {
+        this.getLedgersServerSide().then(data => {
+          this.ledgers = data.items;
+          this.totalLedgers = data.total;
+        });
+        this.snackbar = true;
+        this.text = "Payment status updated";
+      });
+    },
+    // clearing up search
+    defaultLedger() {
+      this.search = "";
+      this.getLedgersServerSide().then(data => {
+        this.ledgers = data.items;
+        this.totalLedgers = data.total;
+      });
+    },
+    // if search button is clicked or input given
+    searchLedger() {
+      this.getLedgersServerSide().then(data => {
+        this.ledgers = data.items;
+        this.totalLedgers = data.total;
+      });
+    },
+    // fetch ledgers from backend
+    getLedgersServerSide() {
+      this.loading = true;
+      // using async function to wait for the functions to execute and release results
+      return new Promise(async (resolve, reject) => {
+        const { sortBy, sortDesc, page, itemsPerPage } = this.options;
+
+        var items = [];
+        var total = 0;
+        var flag = false;
+
+        // if search is given fetch searched item
+        // else if check if sortBy and descending is given fetch items orderBy
+        // else fetch all ledgers by Latest
+        if (this.search) {
+          // searching
+          await this.getLedgersFiltered(page, itemsPerPage, this.search).then(
+            data => {
+              items = data.data;
+              total = data.total_items;
+              flag = true;
+            }
+          );
+        } else if (sortBy.length === 1 && sortDesc.length === 1) {
+          // sorting
+          await this.getLedgersSorted(
+            page,
+            itemsPerPage,
+            sortBy[0],
+            sortDesc[0]
+          ).then(data => {
+            items = data.data;
+            total = data.total_items;
+            flag = true;
+          });
+        } else {
+          // fetch by latest
+          await this.getLedgers(page, itemsPerPage).then(data => {
+            items = data.data;
+            total = data.total_items;
+            flag = true;
+          });
         }
-        ledgers_id.push(item.id);
-      }
-      this.$http({
-        url: `ledger/payment/${"cleared"}`,
-        data: ledgers_id,
-        method: "POST"
+
+        // check if functions are executed and release variables
+        if (flag == true) {
+          this.loading = false;
+          resolve({
+            items,
+            total
+          });
+        }
+      });
+    },
+    async getLedgers(page, items_per_page) {
+      let ledgers = {};
+      await this.$http({
+        url: `ledger/show/paginate?page=${page}&per_page=${items_per_page}`,
+        method: "GET"
       }).then(
-        res => {
-          this.getLedgers();
-          this.selected = [];
-          this.snackbar = true;
-          this.text = "successfully changed status to paid";
-          return;
+        async res => {
+          ledgers.data = await this.addLedgerData(res.data.data);
+          ledgers.total_items = res.data.meta.total;
         },
         err => {
           this.snackbar = true;
-          this.text = "Error: " + err.response.statusText;
+          this.text = "Error fetching customers, please refresh";
         }
       );
+      return ledgers;
     },
-    getLedgers() {
-      this.loading = true;
-      this.$http({
-        url: `ledger`,
+    async getLedgersFiltered(page, items_per_page, search) {
+      let ledgers = {};
+      await this.$http({
+        url: `ledger/show/search?page=${page}&per_page=${items_per_page}&query=${search}`,
         method: "GET"
       }).then(
-        res => {
-          this.addLedgerData(res.data);
-          this.loading = false;
+        async res => {
+          ledgers.data = await this.addLedgerData(res.data.data);
+          ledgers.total_items = res.data.meta.total;
         },
-        () => {}
+        () => {
+          this.snackbar = true;
+          this.text = "Error fetching customers, please refresh";
+        }
       );
+      return ledgers;
     },
-    addLedgerData(data) {
+    async getLedgersSorted(page, items_per_page, sortBy, sortDesc) {
+      let ledgers = {};
+      await this.$http({
+        url: `ledger/show/sort?page=${page}&per_page=${items_per_page}&sort_by=${sortBy}&sort_desc=${sortDesc}`,
+        method: "GET"
+      }).then(
+        async res => {
+          ledgers.data = await this.addLedgerData(res.data.data);
+          ledgers.total_items = res.data.meta.total;
+        },
+        () => {
+          this.snackbar = true;
+          this.text = "Error fetching customers, please refresh";
+        }
+      );
+      return ledgers;
+    },
+    async addLedgerData(data) {
       let ledgers = [];
       for (let ledger of data) {
         let ledger_data = {
@@ -431,18 +546,20 @@ export default {
           bilties: []
         };
         if (ledger.relationships.customer.data) {
-          this.getCustomer(ledger.relationships.customer.data.id).then(res => {
-            ledger_data.customer = res;
-          });
+          await this.getCustomer(ledger.relationships.customer.data.id).then(
+            res => {
+              ledger_data.customer = res;
+            }
+          );
         }
         for (let bilty of ledger.relationships.bilties.data) {
-          this.getBilty(bilty.id).then(res => {
+          await this.getBilty(bilty.id).then(res => {
             ledger_data.bilties.push(res);
           });
         }
         ledgers.push(ledger_data);
       }
-      this.ledgers = ledgers;
+      return ledgers;
     },
     async getCustomer(id) {
       let customer = {};
@@ -454,8 +571,7 @@ export default {
           customer = {
             customer_no: res.data.attributes.customer_no,
             name: res.data.attributes.name,
-            company: res.data.attributes.company,
-            cellNo: res.data.attributes.cell_no
+            company: res.data.attributes.company
           };
         },
         () => {}
@@ -481,33 +597,43 @@ export default {
             total_amount: res.data.attributes.bilty_total,
             created_at: res.data.attributes.created_at.slice(0, 10),
             rent: res.data.attributes.bilty_total,
-            weight: 0,
             date: res.data.attributes.created_at.slice(0, 10)
           };
-          for (let pck of res.data.relationships.packages.data) {
-            this.getPackage(pck.id).then(res => {
-              bilty.weight += parseFloat(res.total_weight);
-            });
-          }
         },
         () => {}
       );
       return bilty;
     },
-    async getPackage(id) {
-      let pck = {};
-      await this.$http({
-        url: `package/${id}`,
-        method: "GET"
+    setPaid() {
+      let ledgers_id = [];
+      for (let item of this.selected) {
+        if (item.status != "pending") {
+          this.snackbar = true;
+          this.text = "Can only receive payments of pending ledgers.";
+          return;
+        }
+        ledgers_id.push(item.id);
+      }
+      this.$http({
+        url: `ledger/payment/${"cleared"}`,
+        data: ledgers_id,
+        method: "POST"
       }).then(
         res => {
-          pck = {
-            total_weight: res.data.attributes.total_weight
-          };
+          this.getLedgersServerSide().then(data => {
+            this.ledgers = data.items;
+            this.totalLedgers = data.total;
+          });
+          this.selected = [];
+          this.snackbar = true;
+          this.text = "successfully changed status to paid";
+          return;
         },
-        () => {}
+        err => {
+          this.snackbar = true;
+          this.text = "Error: " + err.response.statusText;
+        }
       );
-      return pck;
     },
     editItem(item) {
       if (item.status == "pending") {
@@ -534,6 +660,7 @@ export default {
       item.taxed_on = taxed_on;
       item.invoice_no = item.no;
       item.customer_data = item.customer;
+      item.customer_data.no = item.customer.customer_no;
       item.selected_items = item.bilties;
 
       this.$store.dispatch("destroyInvoice");

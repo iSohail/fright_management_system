@@ -205,7 +205,6 @@ export default {
     logout() {
       localStorage.clear();
       this.$router.push({ path: `/login` });
-      console.log("logout");
     }
   }
 };

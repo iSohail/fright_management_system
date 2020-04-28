@@ -138,7 +138,7 @@
                 <template v-slot:expanded-item="{ headers, item }">
                   <td :colspan="headers.length" class="black">
                     <v-row>
-                      <v-subheader>Bilties</v-subheader>
+                      <v-subheader>Customer</v-subheader>
                     </v-row>
                     <v-row v-if="item.customer">
                       <v-col cols="12" md="4">
@@ -545,7 +545,6 @@ export default {
         method: "GET"
       }).then(
         res => {
-          console.log(res, "invoice nunmb");
           this.invoice_no = parseInt(res.data);
         },
         () => {
@@ -557,7 +556,6 @@ export default {
     search_customer() {
       if (this.customer) {
         let customer_data = this.customers.find(k => k.id == this.customer);
-        console.log(customer_data);
         this.income_tax = customer_data.incomeTax;
         this.sales_tax = customer_data.salesTax;
         this.$http({
@@ -565,7 +563,6 @@ export default {
           method: "GET"
         }).then(
           res => {
-            console.log(res);
             let bilties = [];
             for (let bilty of res.data) {
               let bilty_data = {
@@ -599,7 +596,6 @@ export default {
                 );
               }
               for (let pck of bilty.relationships.packages.data) {
-                console.log(pck.id);
                 this.getPackage(pck.id).then(res => {
                   bilty_data.packages.push(res);
                   bilty_data.weight += parseFloat(res.total_weight);
@@ -608,11 +604,8 @@ export default {
               bilties.push(bilty_data);
             }
             this.bilties = bilties;
-            console.log(this.bilties);
           },
-          () => {
-            console.log("error occured");
-          }
+          () => {}
         );
       }
     },
@@ -622,7 +615,6 @@ export default {
         method: "GET"
       }).then(
         res => {
-          console.log(res);
           let customers = [];
           for (let customer of res.data) {
             customers.push({
@@ -684,7 +676,28 @@ export default {
           method: "POST"
         }).then(
           res => {
-            console.log(res);
+            let customer_data = [];
+            if (this.customer) {
+              customer_data = this.customers.find(k => k.id == this.customer);
+            }
+            let invoice = {
+              invoice_no: this.invoice_no,
+              created: this.getCurrentDate,
+              taxed_on: this.taxed_on,
+              selected_items: selected,
+              income_tax: this.selected_income_tax_amount,
+              sales_tax: this.selected_sales_tax_amount,
+              bilty_total: this.selected_gross_amount,
+              account_receivable: this.selected_net_total,
+              customer_data: customer_data
+            };
+            this.$store.dispatch("destroyInvoice");
+            this.$store.dispatch("createInvoice", invoice);
+            let routeData = this.$router.resolve({
+              name: "invoice",
+              query: { id: this.invoice_no }
+            });
+            window.open(routeData.href, "_blank");
             this.snackbar = true;
             this.text = "Successfully created entry in ledger";
             this.emptyFields();
@@ -695,31 +708,6 @@ export default {
             check = false;
           }
         );
-        if (check) {
-          let customer_data = [];
-          if (this.customer) {
-            customer_data = this.customers.find(k => k.id == this.customer);
-          }
-          let invoice = {
-            invoice_no: this.invoice_no,
-            created: this.getCurrentDate,
-            taxed_on: this.taxed_on,
-            selected_items: selected,
-            income_tax: this.selected_income_tax_amount,
-            sales_tax: this.selected_sales_tax_amount,
-            bilty_total: this.selected_gross_amount,
-            account_receivable: this.selected_net_total,
-            customer_data: customer_data
-          };
-          console.log(invoice.selected_items, "this is items");
-          this.$store.dispatch("destroyInvoice");
-          this.$store.dispatch("createInvoice", invoice);
-          let routeData = this.$router.resolve({
-            name: "invoice",
-            query: { id: this.invoice_no }
-          });
-          window.open(routeData.href, "_blank");
-        }
       }
     },
     async getCustomer(id) {
@@ -736,11 +724,9 @@ export default {
           };
         },
         () => {
-          console.log("error occured");
           // this.has_error = true
         }
       );
-      // console.log(customer);
       return customer;
     },
     async getPackage(id) {
@@ -761,14 +747,11 @@ export default {
             labour: res.data.attributes.labour,
             rent: res.data.attributes.rent
           };
-          console.log(pck);
         },
         () => {
-          console.log("error occured");
           // this.has_error = true
         }
       );
-      // console.log(customer);
       return pck;
     },
     editItem(item) {

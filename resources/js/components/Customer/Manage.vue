@@ -293,6 +293,7 @@ export default {
         {
           text: "Action",
           value: "action",
+          sortable: false,
           class: "light-blue darken-3 white--text"
         },
         {
@@ -345,6 +346,7 @@ export default {
     };
   },
   watch: {
+    // watch for any changes in table options and trigger function
     options: {
       handler() {
         this.getCustomersServerSide().then(data => {
@@ -356,15 +358,25 @@ export default {
     }
   },
   mounted() {
-    this.getCustomers();
     this.getCustomersServerSide().then(data => {
       this.customers = data.items;
       this.totalCustomers = data.total;
     });
-
     this.listen();
   },
   methods: {
+    // listens for any customers added
+    listen() {
+      Echo.channel("customers").listen("CustomerAdded", customers => {
+        this.getCustomersServerSide().then(data => {
+          this.customers = data.items;
+          this.totalCustomers = data.total;
+        });
+        this.snackbar = true;
+        this.text = "New data added";
+      });
+    },
+    // clearing up search
     defaultCustomer() {
       this.search = "";
       this.getCustomersServerSide().then(data => {
@@ -372,14 +384,17 @@ export default {
         this.totalCustomers = data.total;
       });
     },
+    // if search button is clicked or input given
     searchCustomer() {
       this.getCustomersServerSide().then(data => {
         this.customers = data.items;
         this.totalCustomers = data.total;
       });
     },
+    // fetch customers from backend
     getCustomersServerSide() {
       this.loading = true;
+      // using async function to wait for the functions to execute and release results
       return new Promise(async (resolve, reject) => {
         const { sortBy, sortDesc, page, itemsPerPage } = this.options;
 
@@ -387,7 +402,11 @@ export default {
         var total = 0;
         var flag = false;
 
+        // if search is given fetch searched item
+        // else if check if sortBy and descending is given fetch items orderBy
+        // else fetch all customers by Latest
         if (this.search) {
+          // searching
           await this.getCustomersFiltered(page, itemsPerPage, this.search).then(
             data => {
               items = data.data;
@@ -396,6 +415,7 @@ export default {
             }
           );
         } else if (sortBy.length === 1 && sortDesc.length === 1) {
+          // sorting
           await this.getCustomersSorted(
             page,
             itemsPerPage,
@@ -407,6 +427,7 @@ export default {
             flag = true;
           });
         } else {
+          // fetch by latest
           await this.getCustomers(page, itemsPerPage).then(data => {
             items = data.data;
             total = data.total_items;
@@ -414,9 +435,7 @@ export default {
           });
         }
 
-        // if (itemsPerPage > 0) {
-        //   items = items.slice((page - 1) * itemsPerPage, page * itemsPerPage);
-        // }
+        // check if functions are executed and release variables
         if (flag == true) {
           this.loading = false;
           resolve({
@@ -425,17 +444,7 @@ export default {
           });
         }
       });
-      // get by search keyword
     },
-    listen() {
-      Echo.channel("customers").listen("CustomerAdded", customers => {
-        // remove payload from backend and call getCustomersServerSide
-        // this.addCustomerData(customers.customers);
-        this.snackbar = true;
-        this.text = "New data added";
-      });
-    },
-
     async getCustomers(page, items_per_page) {
       let customers = {};
       await this.$http({
@@ -460,13 +469,12 @@ export default {
         method: "GET"
       }).then(
         res => {
-          console.log(res, "searched customer");
           customers.data = this.addCustomerData(res.data.data);
           customers.total_items = res.data.meta.total;
         },
         () => {
           this.snackbar = true;
-          this.text = "Error fetching customers, please refresh";
+          this.text = "Can not find data";
         }
       );
       return customers;
@@ -488,6 +496,7 @@ export default {
       );
       return customers;
     },
+    // utility function to make array of objects
     addCustomerData(data) {
       let customers_arr = [];
       for (let customer of data) {
@@ -512,9 +521,9 @@ export default {
         }
         customers_arr.push(customers_data);
       }
-      // this.customers = customers_arr;
       return customers_arr;
     },
+    // fetch customers bilty data
     async getBilty(id) {
       let bilty = {};
       await this.$http({
@@ -536,6 +545,7 @@ export default {
       );
       return bilty;
     },
+    // update customers data
     updateCustomer(editedItem, id) {
       this.$http({
         url: `customer/${id}`,
@@ -543,7 +553,10 @@ export default {
         method: "PUT"
       }).then(
         res => {
-          this.getCustomers();
+          this.getCustomersServerSide().then(data => {
+            this.customers = data.items;
+            this.totalCustomers = data.total;
+          });
           this.snackbar = true;
           this.text = "Success updating customer";
         },
@@ -553,13 +566,11 @@ export default {
         }
       );
     },
-
     editItem(item) {
       this.editedIndex = this.customers.indexOf(item);
       this.editedItem = Object.assign({}, item);
       this.dialog = true;
     },
-
     close() {
       this.dialog = false;
       setTimeout(() => {
@@ -567,7 +578,6 @@ export default {
         this.editedIndex = -1;
       }, 300);
     },
-
     save() {
       if (this.editedIndex > -1) {
         this.updateCustomer(this.editedItem, this.editedItem.id);

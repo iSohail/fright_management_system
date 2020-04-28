@@ -212,7 +212,6 @@ export default {
   },
   methods: {
     revenueColor(revenue) {
-      console.log(revenue);
       if (revenue > 100000) {
         return "red darken-3";
       }
@@ -222,7 +221,6 @@ export default {
       return "blue darken-3";
     },
     pendingColor(revenue) {
-      console.log(revenue);
       if (revenue > 10000) {
         return "red darken-3";
       }
@@ -249,7 +247,6 @@ export default {
         method: "GET"
       }).then(
         res => {
-          console.log(res);
           this.total_bilties = res.data.total_bilties;
         },
         err => {
@@ -264,7 +261,6 @@ export default {
         method: "GET"
       }).then(
         res => {
-          console.log(res);
           this.total_challans = res.data.total_challans;
         },
         err => {
@@ -279,7 +275,6 @@ export default {
         method: "GET"
       }).then(
         res => {
-          console.log(res);
           this.total_customers = res.data.total_customers;
         },
         err => {
@@ -294,7 +289,6 @@ export default {
         method: "GET"
       }).then(
         res => {
-          console.log(res);
           this.amount_paid = res.data.amount_paid;
         },
         err => {
@@ -309,7 +303,6 @@ export default {
         method: "GET"
       }).then(
         res => {
-          console.log(res);
           let pending_ledgers = [];
           for (let ledger of res.data) {
             let ledger_data = {
@@ -323,7 +316,6 @@ export default {
           this.pending_ledgers = pending_ledgers;
         },
         err => {
-          console.log(err);
           // this.snackbar = true;
           // this.text = "Error: " + err.response.statusText;
         }
@@ -335,7 +327,6 @@ export default {
         method: "GET"
       }).then(
         res => {
-          console.log(res);
           let top_customers = [];
           for (let customer of res.data) {
             let match = top_customers.find(x => x.id == customer.id);
@@ -356,7 +347,6 @@ export default {
             return obj2.revenue - obj1.revenue;
           });
           this.top_customers = top_customers.slice(0, 10);
-          console.log(top_customers, "top customers");
         },
         err => {
           // this.snackbar = true;
@@ -370,8 +360,6 @@ export default {
         method: "GET"
       }).then(
         res => {
-          console.log(res);
-
           let jan = 0,
             feb = 0,
             mar = 0,
@@ -413,7 +401,6 @@ export default {
               dec += 1;
             }
           }
-          console.log(jan);
           this.chart_data = [
             { bilties: jan, month: "JAN" },
             { bilties: feb, month: "FEB" },

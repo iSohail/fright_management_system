@@ -3,10 +3,12 @@
 namespace App;
 
 use Illuminate\Database\Eloquent\Model;
+use Laravel\Scout\Searchable;
 use Webpatser\Uuid\Uuid;
 
 class Challan extends Model
 {
+    use Searchable;
     public $timestamps = true;
     public $incrementing = false;
 
@@ -26,13 +28,29 @@ class Challan extends Model
 
     public static function boot()
     {
-         parent::boot();
-         self::creating(function($model){
-             $model->id = self::generateUuid();
-         });
+        parent::boot();
+        self::creating(function ($model) {
+            $model->id = self::generateUuid();
+        });
     }
     public static function generateUuid()
     {
-         return Uuid::generate()->string;
+        return Uuid::generate()->string;
+    }
+
+    // tnt search with scout
+    public function searchableAs()
+    {
+        return 'challans_index';
+    }
+
+    public function toSearchableArray()
+    {
+        $array = $this->toArray();
+
+         // search for user_name in relationship...
+         $array['user_name'] = $this->user['user_name'];
+
+        return $array;
     }
 }

@@ -220,7 +220,6 @@ export default {
   },
   created() {
     let invoice = this.$store.getters.getInvoiceById(this.$route.query.id);
-    console.log(invoice);
     if (invoice) {
       this.invoice_no = invoice.invoice_no;
       this.created = invoice.created;
@@ -235,7 +234,6 @@ export default {
       this.customer_cell = invoice.customer_data.cellNo;
       this.customer_no = invoice.customer_data.no;
     }
-    console.log(this.selected_items);
   },
   methods: {
     print() {

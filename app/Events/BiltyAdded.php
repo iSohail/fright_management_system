@@ -22,9 +22,7 @@ class BiltyAdded implements ShouldBroadcast
     public $bilties;
     public function __construct()
     {
-        $bilties_data = Bilty::with(['customer', 'challan', 'packages'])->get();
-        BiltyResource::withoutWrapping();
-        $this->bilties = BiltyResource::collection($bilties_data);
+        $this->bilties = 'bilty added or updated';
     }
 
     /**

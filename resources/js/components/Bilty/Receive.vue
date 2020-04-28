@@ -15,8 +15,15 @@
             Bilties
             <v-spacer></v-spacer>
             <v-text-field
+              @keyup.native.enter="searchBilty"
               v-model="search"
               append-icon="mdi-magnify"
+              append-outer-icon="mdi-lock-reset"
+              clear-icon="mdi-close-circle"
+              clearable
+              @click:append="searchBilty"
+              @click:append-outer="defaultBilty"
+              @click:clear="defaultBilty"
               label="Search"
               single-line
               hide-details
@@ -26,12 +33,16 @@
             v-model="selected"
             :headers="headers"
             :items="bilties"
-            :search="search"
-            show-select
-            show-expand
-            item-key="id"
+            :options.sync="options"
+            :server-items-length="totalBilties"
+            :footer-props="{
+              itemsPerPageOptions: [5, 10, 15],
+            }"
             :loading="loading"
             loading-text="Loading... Please wait"
+            item-key="id"
+            show-expand
+            show-select
             :single-expand="singleExpand"
             :expanded.sync="expanded"
           >
@@ -299,6 +310,8 @@ export default {
       expanded: [],
       selected: [],
       loading: false,
+      totalBilties: 0,
+      options: {},
       singleExpand: false,
       headers_packages: [
         {
@@ -363,6 +376,7 @@ export default {
         {
           text: "Truck No",
           value: "truck_no",
+          sortable: false,
           class: "light-blue darken-3 white--text"
         },
         {
@@ -415,6 +429,16 @@ export default {
     }
   },
   watch: {
+    // watch for any changes in table options and trigger function
+    options: {
+      handler() {
+        this.getBiltiesServerSide().then(data => {
+          this.bilties = data.items;
+          this.totalBilties = data.total;
+        });
+      },
+      deep: true
+    },
     delivered(delivered) {
       if (delivered == "delivered") {
         let selected = this.selected;
@@ -440,137 +464,206 @@ export default {
       }
     }
   },
-  created() {
-    this.getBilties();
-    this.listen();
+  mounted() {
+    this.getBiltiesServerSide().then(data => {
+      this.bilties = data.items;
+      this.totalBilties = data.total;
+    });
+    this.listenChallan();
+    this.listenReceive();
   },
   methods: {
     changeDateFormat(date) {
       let dateSplit = date.split("-");
       return dateSplit[2] + "-" + dateSplit[1] + "-" + dateSplit[0];
     },
-    listen() {
+    listenChallan() {
       Echo.channel("challans").listen("ChallanAdded", challans => {
-        this.getBilties();
+        this.getBiltiesServerSide().then(data => {
+          this.bilties = data.items;
+          this.totalBilties = data.total;
+        });
         this.snackbar = true;
         this.text = "New data added";
       });
     },
-    setPaid() {
-      let bilties_id = [];
-      for (let item of this.selected) {
-        if (item.payment_status != "unpaid") {
-          this.snackbar = true;
-          this.text = "Can only receive payments of unpaid bilties.";
-          return;
-        }
-        bilties_id.push(item.id);
-      }
-      this.$http({
-        url: `bilties/payment/${"paid"}`,
-        data: bilties_id,
-        method: "POST"
-      }).then(
-        res => {
-          this.getBilties();
-          this.snackbar = true;
-          this.text = "successfully changed status to paid";
-        },
-        err => {
-          this.snackbar = true;
-          this.text = "Error: " + err.response.statusText;
-        }
-      );
+    listenReceive() {
+      Echo.channel("bilties").listen("BiltyAdded", bilty => {
+        this.getBiltiesServerSide().then(data => {
+          this.bilties = data.items;
+          this.totalBilties = data.total;
+        });
+        this.snackbar = true;
+        this.text = "Bilties status updated";
+      });
     },
-    setDelivered() {
-      let bilties_id = [];
-      for (let item of this.selected) {
-        if (item.payment_status == "unpaid") {
-          this.snackbar = true;
-          this.text =
-            "Can not change status of unpaid bilty, please make sure every bilty is paid or monthly.";
-          return;
-        }
-        bilties_id.push(item.id);
-      }
-      this.$http({
-        url: `bilties/status/${"delivered"}`,
-        data: bilties_id,
-        method: "POST"
-      }).then(
-        res => {
-          this.getBilties();
-          this.snackbar = true;
-          this.text = "successfully changed status";
-        },
-        err => {
-          this.snackbar = true;
-          this.text = "Error: " + err.response.statusText;
-        }
-      );
+    // clearing up search
+    defaultBilty() {
+      this.search = "";
+      this.getBiltiesServerSide().then(data => {
+        this.bilties = data.items;
+        this.totalBilties = data.total;
+      });
     },
-    getBilties() {
+    // if search button is clicked or input given
+    searchBilty() {
+      this.getBiltiesServerSide().then(data => {
+        this.bilties = data.items;
+        this.totalBilties = data.total;
+      });
+    },
+    // fetch bilties from backend
+    getBiltiesServerSide() {
       this.loading = true;
-      this.$http({
-        url: `bilty`,
+      // using async function to wait for the functions to execute and release results
+      return new Promise(async (resolve, reject) => {
+        const { sortBy, sortDesc, page, itemsPerPage } = this.options;
+        var items = [];
+        var total = 0;
+        var flag = false;
+
+        // if search is given fetch searched item
+        // else if check if sortBy and descending is given fetch items orderBy
+        // else fetch all bilties by Latest
+        if (this.search) {
+          // searching
+          await this.getBiltiesFiltered(page, itemsPerPage, this.search).then(
+            data => {
+              items = data.data;
+              total = data.total_items;
+              flag = true;
+            }
+          );
+        } else if (sortBy.length === 1 && sortDesc.length === 1) {
+          // sorting
+          await this.getBiltiesSorted(
+            page,
+            itemsPerPage,
+            sortBy[0],
+            sortDesc[0]
+          ).then(data => {
+            items = data.data;
+            total = data.total_items;
+            flag = true;
+          });
+        } else {
+          // fetch by latest
+          await this.getBilties(page, itemsPerPage).then(data => {
+            items = data.data;
+            total = data.total_items;
+            flag = true;
+          });
+        }
+
+        // check if functions are executed and release variables
+        if (flag == true) {
+          this.loading = false;
+          resolve({
+            items,
+            total
+          });
+        }
+      });
+    },
+    async getBilties(page, items_per_page) {
+      let bilties = {};
+      await this.$http({
+        url: `bilties/receive/paginate?page=${page}&per_page=${items_per_page}`,
         method: "GET"
       }).then(
         res => {
-          let bilties = [];
-          for (let bilty of res.data) {
-            if (bilty.attributes.status != "dispatched") {
-              continue;
-            }
-            let bilty_data = {
-              id: bilty.id,
-              no: bilty.attributes.bilty_no,
-              lc_bl_no: bilty.attributes.lg_bl_no,
-              manual: bilty.attributes.manual,
-              from: bilty.attributes.from,
-              to: bilty.attributes.to,
-              sender: bilty.attributes.sender,
-              receiver: bilty.attributes.receiver,
-              receiver_address: bilty.attributes.receiver_address,
-              status: bilty.attributes.status,
-              payment_status: bilty.attributes.payment_status,
-              created_at: this.changeDateFormat(
-                bilty.attributes.created_at.slice(0, 10)
-              ),
-              bilty_charges: bilty.attributes.bilty_charges,
-              local_charges: bilty.attributes.local_charges,
-              packages: [],
-              package_total: bilty.attributes.packages_total,
-              total_amount: bilty.attributes.bilty_total,
-              truck_no: ""
-            };
-            if (bilty.relationships.challan.data) {
-              this.getChallanTruck(bilty.relationships.challan.data.id).then(
-                res => {
-                  bilty_data.truck_no = res;
-                }
-              );
-            }
-            if (bilty.relationships.customer.data) {
-              this.getCustomer(bilty.relationships.customer.data.id).then(
-                res => {
-                  bilty_data.customer = res;
-                }
-              );
-            }
-            for (let pck of bilty.relationships.packages.data) {
-              this.getPackage(pck.id).then(res => {
-                bilty_data.packages.push(res);
-              });
-            }
-            bilties.push(bilty_data);
-          }
-          this.bilties = bilties;
-          this.loading = false;
+          bilties.data = this.addBiltyData(res.data.data);
+          bilties.total_items = res.data.meta.total;
         },
         () => {
-          this.loading = false;
+          this.snackbar = true;
+          this.text = "Error fetching bilties, please refresh";
         }
       );
+      return bilties;
+    },
+    async getBiltiesFiltered(page, items_per_page, search) {
+      let bilties = {};
+      await this.$http({
+        url: `bilties/receive/search?page=${page}&per_page=${items_per_page}&query=${search}`,
+        method: "GET"
+      }).then(
+        res => {
+          bilties.data = this.addBiltyData(res.data.data);
+          bilties.total_items = res.data.meta.total;
+        },
+        () => {
+          this.snackbar = true;
+          this.text = "Can not find data";
+        }
+      );
+      return bilties;
+    },
+    async getBiltiesSorted(page, items_per_page, sortBy, sortDesc) {
+      let bilties = {};
+      await this.$http({
+        url: `bilties/receive/sort?page=${page}&per_page=${items_per_page}&sort_by=${sortBy}&sort_desc=${sortDesc}`,
+        method: "GET"
+      }).then(
+        res => {
+          bilties.data = this.addBiltyData(res.data.data);
+          bilties.total_items = res.data.meta.total;
+        },
+        () => {
+          this.snackbar = true;
+          this.text = "Error fetching bilties, please refresh";
+        }
+      );
+      return bilties;
+    },
+    addBiltyData(data) {
+      let bilties = [];
+      for (let bilty of data) {
+        if (bilty.attributes.status != "dispatched") {
+          continue;
+        }
+        let bilty_data = {
+          id: bilty.id,
+          no: bilty.attributes.bilty_no,
+          lc_bl_no: bilty.attributes.lg_bl_no,
+          manual: bilty.attributes.manual,
+          from: bilty.attributes.from,
+          to: bilty.attributes.to,
+          sender: bilty.attributes.sender,
+          receiver: bilty.attributes.receiver,
+          receiver_address: bilty.attributes.receiver_address,
+          status: bilty.attributes.status,
+          payment_status: bilty.attributes.payment_status,
+          created_at: this.changeDateFormat(
+            bilty.attributes.created_at.slice(0, 10)
+          ),
+          bilty_charges: bilty.attributes.bilty_charges,
+          local_charges: bilty.attributes.local_charges,
+          packages: [],
+          package_total: bilty.attributes.packages_total,
+          total_amount: bilty.attributes.bilty_total,
+          truck_no: ""
+        };
+        if (bilty.relationships.challan.data) {
+          this.getChallanTruck(bilty.relationships.challan.data.id).then(
+            res => {
+              bilty_data.truck_no = res;
+            }
+          );
+        }
+        if (bilty.relationships.customer.data) {
+          this.getCustomer(bilty.relationships.customer.data.id).then(res => {
+            bilty_data.customer = res;
+          });
+        }
+        for (let pck of bilty.relationships.packages.data) {
+          this.getPackage(pck.id).then(res => {
+            bilty_data.packages.push(res);
+          });
+        }
+        bilties.push(bilty_data);
+      }
+      return bilties;
     },
     async getChallanTruck(id) {
       let truck_no = "";
@@ -624,6 +717,65 @@ export default {
         () => {}
       );
       return pck;
+    },
+    setPaid() {
+      let bilties_id = [];
+      for (let item of this.selected) {
+        if (item.payment_status != "unpaid") {
+          this.snackbar = true;
+          this.text = "Can only receive payments of unpaid bilties.";
+          return;
+        }
+        bilties_id.push(item.id);
+      }
+      this.$http({
+        url: `bilties/payment/${"paid"}`,
+        data: bilties_id,
+        method: "POST"
+      }).then(
+        res => {
+          this.getBiltiesServerSide().then(data => {
+            this.bilties = data.items;
+            this.totalBilties = data.total;
+          });
+          this.snackbar = true;
+          this.text = "successfully changed status to paid";
+        },
+        err => {
+          this.snackbar = true;
+          this.text = "Error: " + err.response.statusText;
+        }
+      );
+    },
+    setDelivered() {
+      let bilties_id = [];
+      for (let item of this.selected) {
+        if (item.payment_status == "unpaid") {
+          this.snackbar = true;
+          this.text =
+            "Can not change status of unpaid bilty, please make sure every bilty is paid or monthly.";
+          return;
+        }
+        bilties_id.push(item.id);
+      }
+      this.$http({
+        url: `bilties/status/${"delivered"}`,
+        data: bilties_id,
+        method: "POST"
+      }).then(
+        res => {
+          this.getBiltiesServerSide().then(data => {
+            this.bilties = data.items;
+            this.totalBilties = data.total;
+          });
+          this.snackbar = true;
+          this.text = "successfully changed status";
+        },
+        err => {
+          this.snackbar = true;
+          this.text = "Error: " + err.response.statusText;
+        }
+      );
     }
   }
 };

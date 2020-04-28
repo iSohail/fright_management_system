@@ -24,9 +24,7 @@ class ChallanAdded implements ShouldBroadcast
     public $challans;
     public function __construct()
     {
-        $challan_data = Challan::with('bilties')->get();
-        ChallanResource::withoutWrapping();
-        $this->challans = ChallanResource::collection($challan_data);
+        $this->challans = 'challan added or updated';
     }
 
     /**

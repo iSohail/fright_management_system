@@ -18,22 +18,15 @@ export const store = new Vuex.Store({
             return state.categories;
         },
         getInvoiceById: state => invoice_no => {
-            console.log('get called')
             return state.invoices.find(invoice => invoice.invoice_no == invoice_no);
         },
         getBiltyById: state => (bilty_no, manual) => {
-            console.log(state.bilties)
-            console.log('get called', bilty_no)
             return state.bilties.find(bilty => bilty.bilty_no == bilty_no && bilty.manual == manual);
         },
         getChallanById: state => (challan_no) => {
-            console.log(state.challans)
-            console.log('get called', challan_no)
             return state.challans.find(challan => challan.challan_no == challan_no);
         },
         getEditBiltyById: state => (id) => {
-            console.log(state.editBilty)
-            console.log('get called', id)
             if (state.editBilty.id == id) {
                 return state.editBilty;
             }

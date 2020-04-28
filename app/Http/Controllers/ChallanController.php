@@ -4,10 +4,10 @@ namespace App\Http\Controllers;
 
 use App\Bilty;
 use App\Challan;
-use App\Http\Resources\ChallanResource;
 use App\Events\ChallanAdded;
-use Illuminate\Http\Request;
+use App\Http\Resources\ChallanResource;
 use Carbon\Carbon;
+use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 
 class ChallanController extends Controller
@@ -32,6 +32,40 @@ class ChallanController extends Controller
         return ChallanResource::collection($challan);
     }
 
+    public function paginate()
+    {
+        $per_page = empty(request('per_page')) ? 10 : (int) request('per_page');
+        $challan = Challan::with('bilties')->latest()->paginate($per_page);
+        return ChallanResource::collection($challan);
+    }
+
+    public function search()
+    {
+        $per_page = empty(request('per_page')) ? 10 : (int) request('per_page');
+        $challan = Challan::search(request()->query('query'))->paginate($per_page);
+        return ChallanResource::collection($challan);
+    }
+
+    public function sort()
+    {
+        $per_page = empty(request('per_page')) ? 10 : (int) request('per_page');
+        $sort_desc = request()->query('sort_desc');
+        $sort_by = request()->query('sort_by');
+        if ($sort_by == 'no') {
+            $sort_by = 'challan_no';
+        }
+        if ($sort_by == 'date') {
+            $sort_by = 'created_at';
+        }
+        if ($sort_desc == 'true') {
+            $sort_desc = 'DESC';
+        } else {
+            $sort_desc = 'ASC';
+        }
+        $challan = Challan::with('bilties')->orderBy($sort_by, $sort_desc)->paginate($per_page);
+        return ChallanResource::collection($challan);
+    }
+
     /**
      * Show the form for creating a new resource.
      *
@@ -51,7 +85,6 @@ class ChallanController extends Controller
     public function store(Request $request)
     {
         $data = json_decode($request->getContent(), true);
-        // return $data;
         $challan = new Challan;
 
         $challan->created_at = Carbon::parse($data['date']);
@@ -69,7 +102,6 @@ class ChallanController extends Controller
         $challan->expenses = $data['expenses'];
         $challan->grand_total = $data['grand_total'];
         $challan->user_id = Auth::user()->id;
-        // return $challan;
         if ($challan->save(['timestamps' => false])) {
             $challan = Challan::find($challan->id);
             foreach ($data['bilties'] as $id) {
@@ -80,7 +112,7 @@ class ChallanController extends Controller
             }
             $challan->save();
             event(new ChallanAdded());
-            ChallanResource::withoutWrapping(); 
+            ChallanResource::withoutWrapping();
             return new ChallanResource($challan);
         } else {
             return response()->json([
@@ -102,7 +134,6 @@ class ChallanController extends Controller
         ChallanResource::withoutWrapping();
         return new ChallanResource($challan);
     }
-    
 
     /**
      * Show the form for editing the specified resource.
@@ -125,9 +156,8 @@ class ChallanController extends Controller
     public function update(Request $request, $id)
     {
         $data = json_decode($request->getContent(), true);
-        // return $data;
         $challan = Challan::findOrFail($id);
-        
+
         $challan->from = $data['from'];
         $challan->to = $data['to'];
         $challan->created_at = Carbon::parse($data['date']);
@@ -141,7 +171,6 @@ class ChallanController extends Controller
         $challan->expenses = $data['expenses'];
         $challan->grand_total = $data['grand_total'];
 
-        // return $challan;
         if ($challan->save(['timestamps' => false])) {
             $challan = Challan::find($challan->id);
             $bilties_challan = Bilty::where('challan_id', $challan->id)->get();

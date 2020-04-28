@@ -147,12 +147,10 @@ export default {
     };
   },
   created() {
-    console.log(this.$route.query.id);
     let bilty = this.$store.getters.getBiltyById(
       this.$route.query.id,
       this.$route.query.manual
     );
-    console.log(bilty, "from store");
     if (bilty) {
       this.bilty_no = bilty.bilty_no;
       this.created = bilty.date;
@@ -168,10 +166,8 @@ export default {
       bilty.packages.forEach((element, index) => {
         element.count = index + 1;
       });
-      console.log(bilty.packages);
       this.selected_items = bilty.packages;
     }
-    // console.log(this.selected_items);
   },
   methods: {
     print() {
