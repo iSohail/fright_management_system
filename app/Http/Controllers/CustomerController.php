@@ -46,7 +46,6 @@ class CustomerController extends Controller
         $per_page = empty(request('per_page')) ? 10 : (int) request('per_page');
         $sort_desc = request()->query('sort_desc');
         $sort_by = request()->query('sort_by');
-        // return $sort_by;
         if ($sort_by == 'no') {
             $sort_by = 'customer_no';
         }
@@ -58,7 +57,6 @@ class CustomerController extends Controller
         } else {
             $sort_desc = 'ASC';
         }
-        // return $sort_desc;
         $customers = Customer::with('bilties')->orderBy($sort_by, $sort_desc)->paginate($per_page);
         return CustomerResource::collection($customers);
     }
@@ -118,24 +116,8 @@ class CustomerController extends Controller
         $customer->customer_no = $data['customerNo'];
         $customer->company = $data['company'];
 
-        // return $customer->save();
-
         if ($customer->save()) {
             $customer = Customer::findOrFail($customer->id);
-            // $sender = new Sender;
-            // $sender->name = $data['sender'];
-            // $sender->address = $data['sender_address'];
-            // $sender->customer()->associate($customer);
-
-            // $sender->save();
-
-            // $receiver = new Receiver;
-            // $receiver->name = $data['receiver'];
-            // $receiver->address = $data['receiver_address'];
-            // $receiver->customer()->associate($customer);
-
-            // $receiver->save();
-            // return 'sdfasdfas';
 
             event(new CustomerAdded());
 
@@ -182,13 +164,10 @@ class CustomerController extends Controller
      */
     public function update(Request $request, $id)
     {
-        // problem with data fetch
         $data = json_decode($request->getContent(), true);
 
-        // return $data['name'];
         $customer = Customer::findOrFail($data['id']);
 
-        // return $customer;
         if (isset($data['email'])) {
             $customer->email = $data['email'];
         }
@@ -201,14 +180,14 @@ class CustomerController extends Controller
         if (isset($data['perCbm'])) {
             $customer->per_cbm_rate = $data['perCbm'];
         }
-        if (isset($data['perPckg'])) {
-            $customer->per_pck_rate = $data['perPckg'];
+        if (isset($data['perPackage'])) {
+            $customer->per_pck_rate = $data['perPackage'];
         }
-        if (isset($data['incomeTax'])) {
-            $customer->income_tax = $data['incomeTax'];
+        if (isset($data['income_tax'])) {
+            $customer->income_tax = $data['income_tax'];
         }
-        if (isset($data['salesTax'])) {
-            $customer->sales_tax = $data['salesTax'];
+        if (isset($data['sales_tax'])) {
+            $customer->sales_tax = $data['sales_tax'];
         }
         $customer->name = $data['name'];
         $customer->company = $data['company'];
@@ -269,59 +248,12 @@ class CustomerController extends Controller
 
     public function topCustomer()
     {
-        // $customers = DB::table('general_ledgers')->where('status', 'cleared')->orderBy('amount_paid', 'desc')->pluck('customer_id');
         $customers = DB::table('customers')
             ->join('general_ledgers', 'customers.id', '=', 'general_ledgers.customer_id')
             ->where('general_ledgers.status', 'cleared')
             ->select('customers.id', 'customers.customer_no', 'customers.name', 'general_ledgers.amount_paid')
             ->get();
 
-        // return $customers;
-
         return $customers;
-        $customers_data = [];
-        $customers_id = [];
-        $counter = 0;
-        foreach ($customers as $k => $v) {
-            $arr = (array) $v;
-            // return $arr['id'];
-            // return $v[$k];
-            // foreach ($v as $k2 => $v2) {
-            //     // if ($k2 == 'id'){
-            //     //     if(!($customers_id[$v2]) ){
-            //     //         array_push($customer_id, $v2);
-            //     //     }
-            //     // }
-            //     if (isset($customers_data[$v2]))
-            //     {
-            //         $b[$key] += $value;
-            //     }
-            //     else
-            //     {
-            //         $b[$key] = $value;
-            //     }
-            //     // dd(gettype ( $v ));
-            //         // if($k2 == 'id'){
-
-            //         // }
-            // }
-        }
-        foreach ($customers as $k => $v) {
-            array_search("red", $a);
-        }
-        // foreach ($customers as $id) {
-        //     if($counter < 10){
-        //         if($id){
-        //             $customer = Customer::findOrFail($id);
-        //             array_push($customers_data, $customer);
-        //         }
-        //         $counter++;
-        //     } else{
-        //         break;
-        //     }
-        // }
-        return $customers_id;
-        CustomerResource::withoutWrapping();
-        return CustomerResource::collection($customers_data);
     }
 }

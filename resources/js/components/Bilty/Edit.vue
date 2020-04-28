@@ -1051,7 +1051,7 @@ export default {
       { text: "Rate", value: "rate", class: "light-blue darken-3 white--text" },
       {
         text: "Volume",
-        value: "volume",
+        value: "total_volume",
         class: "light-blue darken-3 white--text"
       },
       {
@@ -1132,7 +1132,6 @@ export default {
       },
       set: function(value) {
         this.setDescriptionFlag = true;
-        console.log(value, "setting");
         return (this.tempDescription = value);
       }
     },
@@ -1164,9 +1163,7 @@ export default {
         this.setRentFlag = false;
       },
       set(value) {
-        console.log(value, "seeter rent");
         this.editedItem.rent = value;
-        console.log(this.editedItem.rent, "seeter rent");
         this.setRentFlag = true;
         return this.editedItem.rent;
         // return value;
@@ -1253,7 +1250,6 @@ export default {
       }
     },
     getCustomerDetails() {
-      console.log(this.description);
       if (this.customer && this.customer.length > 0) {
         this.$http({
           url: `customer/${this.customer}`,
@@ -1374,7 +1370,6 @@ export default {
         if (this.editedIndex > -1) {
           Object.assign(this.packages[this.editedIndex], this.editedItem);
         } else {
-          console.log(this.editedItem);
           this.packages.push(this.editedItem);
         }
         this.close();

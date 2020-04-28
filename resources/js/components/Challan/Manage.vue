@@ -15,8 +15,15 @@
             Challans
             <v-spacer></v-spacer>
             <v-text-field
+              @keyup.native.enter="searchChallan"
               v-model="search"
               append-icon="mdi-magnify"
+              append-outer-icon="mdi-lock-reset"
+              clear-icon="mdi-close-circle"
+              clearable
+              @click:append="searchChallan"
+              @click:append-outer="defaultChallan"
+              @click:clear="defaultChallan"
               label="Search"
               single-line
               hide-details
@@ -25,7 +32,11 @@
           <v-data-table
             :headers="headers"
             :items="challans"
-            :search="search"
+            :options.sync="options"
+            :server-items-length="totalChallan"
+            :footer-props="{
+              itemsPerPageOptions: [5, 10, 15],
+            }"
             show-expand
             item-key="id"
             :loading="loading"
@@ -175,6 +186,8 @@ export default {
       ],
       search: "",
       loading: false,
+      totalChallan: 0,
+      options: {},
       expanded: [],
       singleExpand: false,
       headers_bilties: [
@@ -245,6 +258,7 @@ export default {
         {
           text: "User",
           value: "user_name",
+          sortable: false,
           class: "light-blue darken-3 white--text"
         },
         {
@@ -264,8 +278,23 @@ export default {
       packages: []
     };
   },
-  created() {
-    this.getChallans();
+  watch: {
+    // watch for any changes in table options and trigger function
+    options: {
+      handler() {
+        this.getChallansServerSide().then(data => {
+          this.challans = data.items;
+          this.totalChallan = data.total;
+        });
+      },
+      deep: true
+    }
+  },
+  mounted() {
+    this.getChallansServerSide().then(data => {
+      this.challans = data.items;
+      this.totalChallan = data.total;
+    });
     this.listen();
   },
   methods: {
@@ -275,26 +304,134 @@ export default {
     },
     listen() {
       Echo.channel("challans").listen("ChallanAdded", challans => {
-        this.addChallanData(challans.challans);
+        this.getChallansServerSide().then(data => {
+          this.challans = data.items;
+          this.totalChallan = data.total;
+        });
         this.snackbar = true;
         this.text = "New data added";
       });
     },
-    getChallans() {
+    // clearing up search
+    defaultChallan() {
+      this.search = "";
+      this.getChallansServerSide().then(data => {
+        this.challans = data.items;
+        this.totalChallan = data.total;
+      });
+    },
+    // if search button is clicked or input given
+    searchChallan() {
+      this.getChallansServerSide().then(data => {
+        this.challans = data.items;
+        this.totalChallan = data.total;
+      });
+    },
+    // fetch challans from backend
+    getChallansServerSide() {
       this.loading = true;
-      this.$http({
-        url: `challan`,
+      // using async function to wait for the functions to execute and release results
+      return new Promise(async (resolve, reject) => {
+        const { sortBy, sortDesc, page, itemsPerPage } = this.options;
+
+        var items = [];
+        var total = 0;
+        var flag = false;
+
+        // if search is given fetch searched item
+        // else if check if sortBy and descending is given fetch items orderBy
+        // else fetch all challans by Latest
+        if (this.search) {
+          // searching
+          await this.getChallansFiltered(page, itemsPerPage, this.search).then(
+            data => {
+              items = data.data;
+              total = data.total_items;
+              flag = true;
+            }
+          );
+        } else if (sortBy.length === 1 && sortDesc.length === 1) {
+          // sorting
+          await this.getChallansSorted(
+            page,
+            itemsPerPage,
+            sortBy[0],
+            sortDesc[0]
+          ).then(data => {
+            items = data.data;
+            total = data.total_items;
+            flag = true;
+          });
+        } else {
+          // fetch by latest
+          await this.getChallans(page, itemsPerPage).then(data => {
+            items = data.data;
+            total = data.total_items;
+            flag = true;
+          });
+        }
+        // check if functions are executed and release variables
+        if (flag == true) {
+          this.loading = false;
+          resolve({
+            items,
+            total
+          });
+        }
+      });
+    },
+    async getChallans(page, items_per_page) {
+      let challans = {};
+      await this.$http({
+        url: `challans/paginate?page=${page}&per_page=${items_per_page}`,
         method: "GET"
       }).then(
         res => {
-          this.addChallanData(res.data);
-          this.loading = false;
+          challans.data = this.addChallanData(res.data.data);
+          challans.total_items = res.data.meta.total;
         },
         () => {
-          this.loading = false;
+          this.snackbar = true;
+          this.text = "Error fetching challans, please refresh";
         }
       );
+      return challans;
     },
+    async getChallansFiltered(page, items_per_page, search) {
+      let challans = {};
+      await this.$http({
+        url: `challans/search?page=${page}&per_page=${items_per_page}&query=${search}`,
+        method: "GET"
+      }).then(
+        res => {
+          challans.data = this.addChallanData(res.data.data);
+          challans.total_items = res.data.meta.total;
+        },
+        () => {
+          this.snackbar = true;
+          this.text = "Can not find data";
+        }
+      );
+      return challans;
+    },
+    async getChallansSorted(page, items_per_page, sortBy, sortDesc) {
+      let challans = {};
+      await this.$http({
+        url: `challans/sort?page=${page}&per_page=${items_per_page}&sort_by=${sortBy}&sort_desc=${sortDesc}`,
+        method: "GET"
+      }).then(
+        res => {
+          challans.data = this.addChallanData(res.data.data);
+          challans.total_items = res.data.meta.total;
+        },
+        () => {
+          this.snackbar = true;
+          this.text = "Error fetching challans, please refresh";
+        }
+      );
+      return challans;
+    },
+    // utility function to make array of objects
     addChallanData(data) {
       let challans = [];
       for (let challan of data) {
@@ -325,7 +462,7 @@ export default {
         }
         challans.push(challan_data);
       }
-      this.challans = challans;
+      return challans;
     },
     async getBilty(id) {
       let bilty = {};

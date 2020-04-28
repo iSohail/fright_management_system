@@ -187,9 +187,7 @@ export default {
     };
   },
   created() {
-    console.log(this.$route.query.id);
     let challan = this.$store.getters.getChallanById(this.$route.query.id);
-    console.log(challan);
     if (challan) {
       this.challan_no = challan.challan_no;
       this.from = challan.from;
@@ -207,11 +205,7 @@ export default {
       challan.bilties.forEach((element, index) => {
         this.getBilty(element, index + 1);
       });
-      console.log(this.selected_items);
-      //   console.log(challan.packages);
-      //   this.selected_items = challan.packages;
     }
-    // console.log(this.selected_items);
   },
   methods: {
     getBilty(id, count) {
@@ -220,7 +214,6 @@ export default {
         method: "GET"
       }).then(
         res => {
-          console.log(res.data);
           let item_data = [];
           let item = {
             count: count,
@@ -234,19 +227,14 @@ export default {
           };
 
           for (let pck of res.data.relationships.packages.data) {
-            console.log(pck);
             this.getPackage(pck.id).then(res => {
-              // bilty_data.customer = res;
               item.weight += parseFloat(res.total_weight);
               item.quantity += parseFloat(res.quantity);
             });
           }
           this.selected_items.push(item);
         },
-        () => {
-          console.log("error occured");
-          // this.has_error = true
-        }
+        () => {}
       );
     },
     async getPackage(id) {
@@ -256,17 +244,13 @@ export default {
         method: "GET"
       }).then(
         res => {
-          console.log(res.data);
           pck = {
             id: res.data.id,
             quantity: res.data.attributes.quantity,
             total_weight: res.data.attributes.total_weight
           };
         },
-        () => {
-          console.log("error occured");
-          // this.has_error = true
-        }
+        () => {}
       );
       return pck;
     },

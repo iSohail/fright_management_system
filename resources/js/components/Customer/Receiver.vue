@@ -89,14 +89,32 @@
             Receivers
             <v-spacer></v-spacer>
             <v-text-field
+              @keyup.native.enter="searchReceiver"
               v-model="search"
               append-icon="mdi-magnify"
+              append-outer-icon="mdi-lock-reset"
+              clear-icon="mdi-close-circle"
+              clearable
+              @click:append="searchReceiver"
+              @click:append-outer="defaultReceiver"
+              @click:clear="defaultReceiver"
               label="Search"
               single-line
               hide-details
             ></v-text-field>
           </v-card-title>
-          <v-data-table :headers="headers" :items="receivers" :search="search">
+          <v-data-table
+            :headers="headers"
+            :items="receivers"
+            :options.sync="options"
+            :server-items-length="totalReceivers"
+            :footer-props="{
+              itemsPerPageOptions: [5, 10, 15],
+            }"
+            :loading="loading"
+            loading-text="Loading... Please wait"
+            item-key="id"
+          >
             <template v-slot:item.action="{ item }">
               <v-row>
                 <v-col cols="6" class="px-0 text-right">
@@ -136,11 +154,15 @@ export default {
     text: "",
     customers: [],
     receivers: [],
+    loading: false,
+    totalReceivers: 0,
+    options: {},
     headers: [
       {
         text: "Customer No",
         align: "start",
         value: "customer_no",
+        sortable: false,
         class: "light-blue darken-3 white--text"
       },
       {
@@ -156,6 +178,7 @@ export default {
       {
         text: "Action",
         value: "action",
+        sortable: false,
         class: "light-blue darken-3 white--text"
       }
     ],
@@ -169,34 +192,157 @@ export default {
     ],
     selectRule: [v => !!v || "Field is required"]
   }),
-  created() {
-    this.getReceivers();
+  watch: {
+    // watch for any changes in table options and trigger function
+    options: {
+      handler() {
+        this.getReceiversServerSide().then(data => {
+          this.receivers = data.items;
+          this.totalReceivers = data.total;
+        });
+      },
+      deep: true
+    }
+  },
+  mounted() {
+    this.getReceiversServerSide().then(data => {
+      this.receivers = data.items;
+      this.totalReceivers = data.total;
+    });
     this.getCustomers();
   },
   methods: {
-    getReceivers() {
-      this.$http({
-        url: `receiver`,
+    // clearing up search
+    defaultReceiver() {
+      this.search = "";
+      this.getReceiversServerSide().then(data => {
+        this.receivers = data.items;
+        this.totalReceivers = data.total;
+      });
+    },
+    // if search button is clicked or input given
+    searchReceiver() {
+      this.getReceiversServerSide().then(data => {
+        this.receivers = data.items;
+        this.totalReceivers = data.total;
+      });
+    },
+    // fetch receivers from backend
+    getReceiversServerSide() {
+      this.loading = true;
+      // using async function to wait for the functions to execute and release results
+      return new Promise(async (resolve, reject) => {
+        const { sortBy, sortDesc, page, itemsPerPage } = this.options;
+        var items = [];
+        var total = 0;
+        var flag = false;
+
+        // if search is given fetch searched item
+        // else if check if sortBy and descending is given fetch items orderBy
+        // else fetch all receivers by Latest
+        if (this.search) {
+          // searching
+          await this.getReceiversFiltered(page, itemsPerPage, this.search).then(
+            data => {
+              items = data.data;
+              total = data.total_items;
+              flag = true;
+            }
+          );
+        } else if (sortBy.length === 1 && sortDesc.length === 1) {
+          // sorting
+          await this.getReceiversSorted(
+            page,
+            itemsPerPage,
+            sortBy[0],
+            sortDesc[0]
+          ).then(data => {
+            items = data.data;
+            total = data.total_items;
+            flag = true;
+          });
+        } else {
+          // fetch by latest
+          await this.getReceivers(page, itemsPerPage).then(data => {
+            items = data.data;
+            total = data.total_items;
+            flag = true;
+          });
+        }
+
+        // check if functions are executed and release variables
+        if (flag == true) {
+          this.loading = false;
+          resolve({
+            items,
+            total
+          });
+        }
+      });
+    },
+    async getReceivers(page, items_per_page) {
+      let receivers = {};
+      await this.$http({
+        url: `receivers/paginate?page=${page}&per_page=${items_per_page}`,
         method: "GET"
       }).then(
         res => {
-          let receivers_arr = [];
-          for (let receiver of res.data) {
-            let receivers_data = {
-              id: receiver.id,
-              name: receiver.attributes.name,
-              address: receiver.attributes.address,
-              customer_no: receiver.relationships.customer.data.customer_no
-            };
-            receivers_arr.push(receivers_data);
-          }
-          this.receivers = receivers_arr;
+          receivers.data = this.addReceiverData(res.data.data);
+          receivers.total_items = res.data.meta.total;
         },
         () => {
           this.snackbar = true;
           this.text = "Error fetching receivers, please refresh";
         }
       );
+      return receivers;
+    },
+    async getReceiversFiltered(page, items_per_page, search) {
+      let receivers = {};
+      await this.$http({
+        url: `receivers/search?page=${page}&per_page=${items_per_page}&query=${search}`,
+        method: "GET"
+      }).then(
+        res => {
+          receivers.data = this.addReceiverData(res.data.data);
+          receivers.total_items = res.data.meta.total;
+        },
+        () => {
+          this.snackbar = true;
+          this.text = "Error fetching receivers, please refresh";
+        }
+      );
+      return receivers;
+    },
+    async getReceiversSorted(page, items_per_page, sortBy, sortDesc) {
+      let receivers = {};
+      await this.$http({
+        url: `receivers/sort?page=${page}&per_page=${items_per_page}&sort_by=${sortBy}&sort_desc=${sortDesc}`,
+        method: "GET"
+      }).then(
+        res => {
+          receivers.data = this.addReceiverData(res.data.data);
+          receivers.total_items = res.data.meta.total;
+        },
+        () => {
+          this.snackbar = true;
+          this.text = "Error fetching receivers, please refresh";
+        }
+      );
+      return receivers;
+    },
+    addReceiverData(data) {
+      let receivers_arr = [];
+      for (let receiver of data) {
+        let receivers_data = {
+          id: receiver.id,
+          name: receiver.attributes.name,
+          address: receiver.attributes.address,
+          customer_no: receiver.relationships.customer.data.customer_no
+        };
+        receivers_arr.push(receivers_data);
+      }
+      return receivers_arr;
     },
     getCustomers() {
       this.$http({
@@ -228,7 +374,10 @@ export default {
         method: "DELETE"
       }).then(
         res => {
-          this.getReceivers();
+          this.getReceiversServerSide().then(data => {
+            this.receivers = data.items;
+            this.totalReceivers = data.total;
+          });
           this.snackbar = true;
           this.text = "Success deleting receiver";
         },
@@ -256,7 +405,10 @@ export default {
             this.address = "";
             this.customer = "";
             this.$refs.form.resetValidation();
-            this.getReceivers();
+            this.getReceiversServerSide().then(data => {
+              this.receivers = data.items;
+              this.totalReceivers = data.total;
+            });
             this.snackbar = true;
             this.text = "Success adding receiver";
           },

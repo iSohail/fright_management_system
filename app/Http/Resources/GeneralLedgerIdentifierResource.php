@@ -15,8 +15,9 @@ class GeneralLedgerIdentifierResource extends JsonResource
     public function toArray($request)
     {
         return [
-            'type'       => 'general_ledger',
-            'id'         => (string)$this->id
+            'type' => 'general_ledger',
+            'id' => (string) $this->id,
+            'ledger_no' => (string) $this->ledger_no,
         ];
     }
 }

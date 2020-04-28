@@ -81,14 +81,32 @@
             Users
             <v-spacer></v-spacer>
             <v-text-field
+              @keyup.native.enter="searchUser"
               v-model="search"
               append-icon="mdi-magnify"
+              append-outer-icon="mdi-lock-reset"
+              clear-icon="mdi-close-circle"
+              clearable
+              @click:append="searchUser"
+              @click:append-outer="defaultUser"
+              @click:clear="defaultUser"
               label="Search"
               single-line
               hide-details
             ></v-text-field>
           </v-card-title>
-          <v-data-table :headers="headers" :items="users" :search="search">
+          <v-data-table
+            :headers="headers"
+            :items="users"
+            :options.sync="options"
+            :server-items-length="totalUser"
+            :footer-props="{
+              itemsPerPageOptions: [5, 10, 15],
+            }"
+            :loading="loading"
+            loading-text="Loading... Please wait"
+            item-key="id"
+          >
             <template v-slot:item.action="{ item }">
               <v-row>
                 <v-col cols="6" class="px-0 text-right">
@@ -162,6 +180,9 @@ export default {
     users: [],
     password: "",
     changePasswordItem: "",
+    loading: false,
+    totalUser: 0,
+    options: {},
     headers: [
       {
         text: "Name",
@@ -179,10 +200,16 @@ export default {
         value: "email",
         class: "light-blue darken-3 white--text"
       },
-      { text: "Role", value: "role", class: "light-blue darken-3 white--text" },
+      {
+        text: "Role",
+        value: "role",
+        sortable: false,
+        class: "light-blue darken-3 white--text"
+      },
       {
         text: "Action",
         value: "action",
+        sortable: false,
         class: "light-blue darken-3 white--text"
       }
     ],
@@ -196,38 +223,157 @@ export default {
     ],
     selectRule: [v => !!v || "Field is required"]
   }),
-  created() {
-    this.getUsers();
+  watch: {
+    // watch for any changes in table options and trigger function
+    options: {
+      handler() {
+        this.getUsersServerSide().then(data => {
+          this.users = data.items;
+          this.totalUser = data.total;
+        });
+      },
+      deep: true
+    }
+  },
+  mounted() {
+    this.getUsersServerSide().then(data => {
+      this.users = data.items;
+      this.totalUser = data.total;
+    });
   },
   methods: {
-    getUsers() {
-      this.$http({
-        url: `users`,
+    // clearing up search
+    defaultUser() {
+      this.search = "";
+      this.getUsersServerSide().then(data => {
+        this.users = data.items;
+        this.totalUser = data.total;
+      });
+    },
+    // if search button is clicked or input given
+    searchUser() {
+      this.getUsersServerSide().then(data => {
+        this.users = data.items;
+        this.totalUser = data.total;
+      });
+    },
+    // fetch users from backend
+    getUsersServerSide() {
+      this.loading = true;
+      // using async function to wait for the functions to execute and release results
+      return new Promise(async (resolve, reject) => {
+        const { sortBy, sortDesc, page, itemsPerPage } = this.options;
+        var items = [];
+        var total = 0;
+        var flag = false;
+
+        // if search is given fetch searched item
+        // else if check if sortBy and descending is given fetch items orderBy
+        // else fetch all users by Latest
+        if (this.search) {
+          // searching
+          await this.getUsersFiltered(page, itemsPerPage, this.search).then(
+            data => {
+              items = data.data;
+              total = data.total_items;
+              flag = true;
+            }
+          );
+        } else if (sortBy.length === 1 && sortDesc.length === 1) {
+          // sorting
+          await this.getUsersSorted(
+            page,
+            itemsPerPage,
+            sortBy[0],
+            sortDesc[0]
+          ).then(data => {
+            items = data.data;
+            total = data.total_items;
+            flag = true;
+          });
+        } else {
+          // fetch by latest
+          await this.getUsers(page, itemsPerPage).then(data => {
+            items = data.data;
+            total = data.total_items;
+            flag = true;
+          });
+        }
+
+        // check if functions are executed and release variables
+        if (flag == true) {
+          this.loading = false;
+          resolve({
+            items,
+            total
+          });
+        }
+      });
+    },
+    async getUsersFiltered(page, items_per_page, search) {
+      let users = {};
+      await this.$http({
+        url: `user/search?page=${page}&per_page=${items_per_page}&query=${search}`,
         method: "GET"
       }).then(
         res => {
-          console.log(res.data.data);
-          let users_arr = [];
-          for (let user of res.data.data) {
-            // if (user.relationships.role.data.id == "2") {
-            //   continue;
-            // }
-            let users_data = {
-              id: user.id,
-              name: user.attributes.name,
-              email: user.attributes.email,
-              user_name: user.attributes.user_name,
-              role: user.relationships.role.data.role
-            };
-            users_arr.push(users_data);
-          }
-          this.users = users_arr;
+          users.data = this.addUserData(res.data.data);
+          users.total_items = res.data.meta.total;
         },
         () => {
           this.snackbar = true;
           this.text = "Error fetching users, please refresh";
         }
       );
+      return users;
+    },
+    async getUsersSorted(page, items_per_page, sortBy, sortDesc) {
+      let users = {};
+      await this.$http({
+        url: `user/sort?page=${page}&per_page=${items_per_page}&sort_by=${sortBy}&sort_desc=${sortDesc}`,
+        method: "GET"
+      }).then(
+        res => {
+          users.data = this.addUserData(res.data.data);
+          users.total_items = res.data.meta.total;
+        },
+        () => {
+          this.snackbar = true;
+          this.text = "Error fetching users, please refresh";
+        }
+      );
+      return users;
+    },
+    async getUsers(page, items_per_page) {
+      let users = {};
+      await this.$http({
+        url: `user/paginate?page=${page}&per_page=${items_per_page}`,
+        method: "GET"
+      }).then(
+        res => {
+          users.data = this.addUserData(res.data.data);
+          users.total_items = res.data.meta.total;
+        },
+        () => {
+          this.snackbar = true;
+          this.text = "Error fetching users, please refresh";
+        }
+      );
+      return users;
+    },
+    addUserData(data) {
+      let users_arr = [];
+      for (let user of data) {
+        let users_data = {
+          id: user.id,
+          name: user.attributes.name,
+          email: user.attributes.email,
+          user_name: user.attributes.user_name,
+          role: user.relationships.role.data.role
+        };
+        users_arr.push(users_data);
+      }
+      return users_arr;
     },
     openDialog(item) {
       this.changePasswordItem = item;
@@ -239,13 +385,14 @@ export default {
         method: "DELETE"
       }).then(
         res => {
-          console.log(res);
-          this.getUsers();
+          this.getUsersServerSide().then(data => {
+            this.users = data.items;
+            this.totalUser = data.total;
+          });
           this.snackbar = true;
           this.text = "Success deleting user";
         },
         err => {
-          console.log(err);
           this.snackbar = true;
           this.text = "Error deleting user";
         }
@@ -259,14 +406,15 @@ export default {
           method: "POST"
         }).then(
           res => {
-            console.log(res);
-            this.getUsers();
+            this.getUsersServerSide().then(data => {
+              this.users = data.items;
+              this.totalUser = data.total;
+            });
             this.snackbar = true;
             this.password = "";
             this.text = "Success changing password";
           },
           err => {
-            console.log(err);
             this.snackbar = true;
             this.password = "";
             this.text = "Error changing password";
@@ -297,19 +445,20 @@ export default {
           method: "POST"
         }).then(
           res => {
-            console.log(res);
             this.name = "";
             this.email = "";
             this.password = "";
             this.user_name = "";
             this.role = "";
             this.$refs.form.resetValidation();
-            this.getUsers();
+            this.getUsersServerSide().then(data => {
+              this.users = data.items;
+              this.totalUser = data.total;
+            });
             this.snackbar = true;
             this.text = "Success adding user";
           },
           err => {
-            console.log(err);
             this.snackbar = true;
             this.text = "Error adding user";
           }

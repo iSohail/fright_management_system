@@ -5,7 +5,8 @@
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
 
-    <title>Laravel</title>
+    <title>BMS</title>
+    <link rel="shortcut icon" href="{{ asset('storage/title_logo.png') }}" />
     <link rel="stylesheet" href="{{asset('css/app.css')}}">
     <style>
         [v-cloak]>* {

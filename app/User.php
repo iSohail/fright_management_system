@@ -4,11 +4,14 @@ namespace App;
 
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
+use Laravel\Scout\Searchable;
 use Tymon\JWTAuth\Contracts\JWTSubject;
 use Webpatser\Uuid\Uuid;
 
 class User extends Authenticatable implements JWTSubject
 {
+    use Searchable;
+
     use Notifiable;
 
     public $timestamps = true;
@@ -79,6 +82,22 @@ class User extends Authenticatable implements JWTSubject
     public function getJWTCustomClaims()
     {
         return [];
+    }
+
+    // tnt search with scout
+    public function searchableAs()
+    {
+        return 'users_index';
+    }
+
+    public function toSearchableArray()
+    {
+        $array = $this->toArray();
+
+        // search for customer_no in relationship...
+        $array['role'] = $this->_role['role'];
+
+        return $array;
     }
 
 }

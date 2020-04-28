@@ -17,6 +17,7 @@ class BiltyIdentifierResource extends JsonResource
         return [
             'type'       => 'bilty',
             'id'         => (string)$this->id,
+            'bilty_no'         => (string)$this->bilty_no,
         ];
     }
 }

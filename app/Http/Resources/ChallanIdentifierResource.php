@@ -17,6 +17,7 @@ class ChallanIdentifierResource extends JsonResource
         return [
             'type'       => 'challan',
             'id'         => (string)$this->id,
+            'challan_no'         => (string)$this->challan_no,
         ];
     }
 }

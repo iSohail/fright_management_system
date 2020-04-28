@@ -490,7 +490,6 @@ export default {
           method: "PUT"
         }).then(
           res => {
-            console.log(res);
             this.isUpdating = false;
             this.snackbar = true;
             this.text = "Successfully updated challan";

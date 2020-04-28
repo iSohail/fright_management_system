@@ -14,7 +14,7 @@
           <!-- START OF FORM  -->
           <v-form ref="form">
             <v-row class="pr-4">
-              <v-col cols="7" md="5">
+              <v-col cols="12" sm="6">
                 <v-autocomplete
                   v-model="customer"
                   :items="customers"
@@ -44,8 +44,8 @@
                   </template>
                 </v-autocomplete>
               </v-col>
-              <v-col cols="3">
-                <v-btn class="mt-6" @click="search_customer">Search</v-btn>
+              <v-col cols="12" sm="3">
+                <v-btn class="mt-sm-6" @click="search_customer">Search</v-btn>
               </v-col>
             </v-row>
             <v-divider horizontal dark></v-divider>
@@ -93,11 +93,6 @@
               :single-expand="singleExpand"
               :expanded.sync="expanded"
             >
-              <template v-slot:item.action="{ item }">
-                <v-btn class="primary mr-2" small @click="editItem(item)">
-                  <v-icon>mdi-pencil</v-icon>
-                </v-btn>
-              </template>
               <template v-slot:expanded-item="{ headers, item }">
                 <td :colspan="headers.length" class="black">
                   <v-row>
@@ -133,54 +128,6 @@
                         outlined
                         dense
                       ></v-text-field>
-                    </v-col>
-                  </v-row>
-                  <v-row>
-                    <v-subheader>Customer Details</v-subheader>
-                  </v-row>
-                  <v-row v-if="item.customer">
-                    <v-col cols="12" md="4">
-                      <v-text-field
-                        label="Number"
-                        placeholder="Number"
-                        v-model="item.customer.customer_no"
-                        readonly
-                        outlined
-                        dense
-                      ></v-text-field>
-                    </v-col>
-                    <v-col cols="12" md="4">
-                      <v-text-field
-                        label="Name"
-                        placeholder="Name"
-                        v-model="item.customer.name"
-                        readonly
-                        outlined
-                        dense
-                      ></v-text-field>
-                    </v-col>
-                    <v-col cols="12" md="4">
-                      <v-text-field
-                        label="Company"
-                        placeholder="Company"
-                        v-model="item.customer.company"
-                        readonly
-                        outlined
-                        dense
-                      ></v-text-field>
-                    </v-col>
-                  </v-row>
-                  <v-divider></v-divider>
-                  <v-row>
-                    <v-subheader>Bilty Details</v-subheader>
-                  </v-row>
-                  <v-row>
-                    <v-col cols="12">
-                      <v-data-table
-                        :headers="headers_bilties"
-                        :items="item.bilties"
-                        :items-per-page="5"
-                      ></v-data-table>
                     </v-col>
                   </v-row>
                 </td>
@@ -328,22 +275,15 @@ export default {
 
   methods: {
     changeDateFormat(date) {
-      let dateSplit = date.split("-");
-      return dateSplit[2] + "-" + dateSplit[1] + "-" + dateSplit[0];
+      if (date) {
+        let dateSplit = date.split("-");
+        return dateSplit[2] + "-" + dateSplit[1] + "-" + dateSplit[0];
+      } else {
+        return "-";
+      }
     },
     initialize() {
-      // THIS IS DUMMY DATA OF TABLE
-      // this.getLedgers();
       this.getCustomers();
-      this.desserts = [
-        {
-          packages: "Frozen Yogurt",
-          calories: 159,
-          fat: 6.0,
-          carbs: 24,
-          protein: 4.0
-        }
-      ];
     },
     hasValue: function() {
       return this.mySelectDataValue == 0 || null; // some comparison to determine its been selected
@@ -384,7 +324,6 @@ export default {
         method: "GET"
       }).then(
         res => {
-          console.log(res);
           this.amount_paid = res.data.amount_paid;
           this.amount_pending = res.data.amount_pending;
         },
@@ -397,7 +336,6 @@ export default {
         method: "GET"
       }).then(
         res => {
-          console.log(res.data);
           let ledgers = [];
           for (let ledger of res.data) {
             let ledger_data = {
@@ -419,84 +357,14 @@ export default {
               ),
               bilties: []
             };
-            if (ledger.relationships.customer.data) {
-              this.getCustomer(ledger.relationships.customer.data.id).then(
-                res => {
-                  ledger_data.customer = res;
-                }
-              );
-            }
-            for (let bilty of ledger.relationships.bilties.data) {
-              console.log(bilty.id);
-              this.getBilty(bilty.id).then(res => {
-                ledger_data.bilties.push(res);
-              });
-            }
             ledgers.push(ledger_data);
           }
           this.ledgers = ledgers;
-          // console.log(bilties);
         },
         () => {
           console.log("error occured");
-          // this.has_error = true
         }
       );
-    },
-    async getCustomer(id) {
-      let customer = {};
-      await this.$http({
-        url: `customer/${id}`,
-        method: "GET"
-      }).then(
-        res => {
-          customer = {
-            customer_no: res.data.attributes.customer_no,
-            name: res.data.attributes.name,
-            company: res.data.attributes.company
-          };
-        },
-        () => {
-          console.log("error occured");
-          // this.has_error = true
-        }
-      );
-      // console.log(customer);
-      return customer;
-    },
-    async getBilty(id) {
-      let bilty = {};
-      await this.$http({
-        url: `bilty/${id}`,
-        method: "GET"
-      }).then(
-        res => {
-          bilty = {
-            no: res.data.attributes.bilty_no,
-            manual: res.data.attributes.manual,
-            sender: res.data.attributes.sender,
-            receiver: res.data.attributes.receiver,
-            status: res.data.attributes.status,
-            total_amount: res.data.attributes.bilty_total,
-            created_at: res.data.attributes.created_at.slice(0, 10)
-          };
-          console.log(bilty);
-        },
-        () => {
-          console.log("error occured");
-          // this.has_error = true
-        }
-      );
-      // console.log(customer);
-      return bilty;
-    },
-    editItem(item) {
-      let user = this.$auth.user();
-      if (user.role == 2) {
-        this.$router.push({ path: `/admin/bilty/edit/${item.id}` });
-      } else {
-        this.$router.push({ path: `/operator/bilty/edit/${item.id}` });
-      }
     }
   }
 };

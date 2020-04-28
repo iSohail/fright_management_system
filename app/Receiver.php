@@ -3,10 +3,12 @@
 namespace App;
 
 use Illuminate\Database\Eloquent\Model;
+use Laravel\Scout\Searchable;
 use Webpatser\Uuid\Uuid;
 
 class Receiver extends Model
 {
+    use Searchable;
     public $timestamps = true;
     public $incrementing = false;
 
@@ -29,5 +31,21 @@ class Receiver extends Model
     public static function generateUuid()
     {
         return Uuid::generate()->string;
+    }
+
+    // tnt search with scout
+    public function searchableAs()
+    {
+        return 'receivers_index';
+    }
+
+    public function toSearchableArray()
+    {
+        $array = $this->toArray();
+
+        // search for customer_no in relationship...
+        $array['customer_no'] = $this->customer['customer_no'];
+
+        return $array;
     }
 }

@@ -3,10 +3,12 @@
 namespace App;
 
 use Illuminate\Database\Eloquent\Model;
+use Laravel\Scout\Searchable;
 use Webpatser\Uuid\Uuid;
 
 class Bilty extends Model
 {
+    use Searchable;
     public $timestamps = true;
     public $incrementing = false;
 
@@ -49,5 +51,21 @@ class Bilty extends Model
     public static function generateUuid()
     {
         return Uuid::generate()->string;
+    }
+
+    // tnt search with scout
+    public function searchableAs()
+    {
+        return 'bilties_index';
+    }
+
+    public function toSearchableArray()
+    {
+        $array = $this->toArray();
+
+        // search for user_name in relationship...
+        $array['user_name'] = $this->user['user_name'];
+
+        return $array;
     }
 }

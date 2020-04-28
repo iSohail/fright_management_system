@@ -273,12 +273,12 @@ const routes = [
             },
             {
                 path: 'customer/sender',
-                name: 'operator.customer.sender',
+                name: 'admin.customer.sender',
                 component: Sender
             },
             {
                 path: 'customer/receiver',
-                name: 'operator.customer.receiver',
+                name: 'admin.customer.receiver',
                 component: Receiver
             },
             {

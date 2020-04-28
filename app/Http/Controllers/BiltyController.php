@@ -36,6 +36,68 @@ class BiltyController extends Controller
         return BiltyResource::collection($bilties);
     }
 
+    public function paginate()
+    {
+        $per_page = empty(request('per_page')) ? 10 : (int) request('per_page');
+        $bilties = Bilty::with(['customer', 'challan', 'packages'])->latest()->paginate($per_page);
+        return BiltyResource::collection($bilties);
+    }
+
+    public function search()
+    {
+        $per_page = empty(request('per_page')) ? 10 : (int) request('per_page');
+        $bilties = Bilty::search(request()->query('query'))->paginate($per_page);
+        return BiltyResource::collection($bilties);
+    }
+
+    public function sort()
+    {
+        $per_page = empty(request('per_page')) ? 10 : (int) request('per_page');
+        $sort_desc = request()->query('sort_desc');
+        $sort_by = request()->query('sort_by');
+        if ($sort_by == 'no') {
+            $sort_by = 'bilty_no';
+        }
+        if ($sort_desc == 'true') {
+            $sort_desc = 'DESC';
+        } else {
+            $sort_desc = 'ASC';
+        }
+        $bilties = Bilty::with(['customer', 'challan', 'packages', 'user'])->orderBy($sort_by, $sort_desc)->paginate($per_page);
+        return BiltyResource::collection($bilties);
+    }
+
+    public function receivePaginate()
+    {
+        $per_page = empty(request('per_page')) ? 10 : (int) request('per_page');
+        $bilties = Bilty::where('status', "dispatched")->latest()->paginate($per_page);
+        return BiltyResource::collection($bilties);
+    }
+
+    public function receiveSearch()
+    {
+        $per_page = empty(request('per_page')) ? 10 : (int) request('per_page');
+        $bilties = Bilty::search(request()->query('query'))->where('status','dispatched')->paginate($per_page);
+        return BiltyResource::collection($bilties);
+    }
+
+    public function receiceSort()
+    {
+        $per_page = empty(request('per_page')) ? 10 : (int) request('per_page');
+        $sort_desc = request()->query('sort_desc');
+        $sort_by = request()->query('sort_by');
+        if ($sort_by == 'no') {
+            $sort_by = 'bilty_no';
+        }
+        if ($sort_desc == 'true') {
+            $sort_desc = 'DESC';
+        } else {
+            $sort_desc = 'ASC';
+        }
+        $bilties = Bilty::where('status', "dispatched")->orderBy($sort_by, $sort_desc)->paginate($per_page);
+        return BiltyResource::collection($bilties);
+    }
+
     /**
      * Show the form for creating a new resource.
      *
@@ -69,7 +131,6 @@ class BiltyController extends Controller
         $validatedData = $request->validate([
             'date' => 'required',
             'bilty_no' => 'required',
-            
             'from' => 'required',
             'to' => 'required',
             'sender' => 'required',
@@ -104,14 +165,12 @@ class BiltyController extends Controller
         $bilty->packages_total = $data['packages_total'];
         $bilty->manual = $data['manual'];
         $bilty->user_id = Auth::user()->id;
-
-        // return $bilty;
+        if ($customer) {
+            $bilty->customer_id = $data['customer_id'];
+        }
         if ($bilty->save(['timestamps' => false])) {
-            $bilty = Bilty::find($bilty->id);
-            if ($customer) {
-                $bilty->customer()->associate($customer);
-            }
-
+            $bilty_rel = Bilty::find($bilty->id);
+            
             foreach ($data['packages'] as $val) {
                 $package = Package::orderby('package_no', 'desc')->first();
                 $package_no = 1000;
@@ -119,13 +178,13 @@ class BiltyController extends Controller
                     $package_no = $package['package_no'] + 1;
                 }
                 $package = new Package(['package_no' => $package_no, 'description' => $val['description'], 'total_volume' => $val['total_volume'], 'rate' => $val['rate'], 'unit' => $val['unit'], 'quantity' => $val['quantity'], 'total_weight' => $val['total_weight'], 'rent' => $val['rent'], 'labour' => $val['labour']]);
-                $bilty->packages()->save($package);
+                $bilty_rel->packages()->save($package);
             }
-            $bilty->save();
+            $bilty_rel->save();
 
             event(new BiltyAdded());
             BiltyResource::withoutWrapping();
-            return new BiltyResource($bilty);
+            return new BiltyResource($bilty_rel);
         } else {
             return response()->json([
                 'status' => 'error',
@@ -176,13 +235,10 @@ class BiltyController extends Controller
     { // converting JSON object into PHP code
         $data = json_decode($request->getContent(), true);
 
-        // return $data;
         $bilty = Bilty::findOrFail($id);
-        // $customer = -1;
         if ($data['customer_id'] != -1) {
             $customer = Customer::findOrFail($data['customer_id']);
         }
-        // return $bilty;
         $validatedData = $request->validate([
             'date' => 'required',
             'from' => 'required',
@@ -197,8 +253,6 @@ class BiltyController extends Controller
             'packages_total' => 'required',
             'manual' => 'required',
         ]);
-        // $challan = Challan::findOrFail($data['challan_id']);
-        // return $customer;
         $bilty->created_at = Carbon::parse($data['date']);
 
         if (!empty($data['lc_bl_no'])) {
@@ -218,22 +272,15 @@ class BiltyController extends Controller
         $bilty->local_charges = $data['local_charges'];
         $bilty->bilty_total = $data['bilty_total'];
         $bilty->packages_total = $data['packages_total'];
-        // return $bilty;
 
-        // $packages=['1','2','3'];
         if ($bilty->save(['timestamps' => false])) {
 
             $bilty = Bilty::find($bilty->id);
             if (isset($customer)) {
-                // return $bilty;
-                $bilty->customer()->associate($customer);
+                $bilty->customer_id = $data['customer_id'];
             } else {
-                // return 'dafad';
-                // return $bilty->id;
                 $bilty->customer_id = null;
-                // $bilty->save();
             }
-            // $bilty->challan()->associate($challan);
             $packages_bilty = Package::where('bilty_id', $bilty->id)->get();
             foreach ($packages_bilty as $package) {
                 $package->delete();
@@ -249,9 +296,7 @@ class BiltyController extends Controller
                 $bilty->packages()->save($package);
             }
             $bilty->save();
-            // return $bilty->id;
             event(new BiltyAdded());
-            // $bilty = Bilty::find($bilty->id);
             BiltyResource::withoutWrapping();
             return new BiltyResource($bilty);
         } else {
@@ -306,6 +351,7 @@ class BiltyController extends Controller
             $bilty->status = $status;
             $bilty->save();
         }
+        event(new BiltyAdded());
 
         return response()->json([
             'status' => 'success',
@@ -322,7 +368,7 @@ class BiltyController extends Controller
             $bilty->payment_status = $status;
             $bilty->save();
         }
-
+        event(new BiltyAdded());
         return response()->json([
             'status' => 'success',
             'message' => 'status changed to ' . $status,
@@ -383,9 +429,7 @@ class BiltyController extends Controller
     public function resetRegisteredBilties(Request $request)
     {
         $data = json_decode($request->getContent(), true);
-        // return $data;
         foreach ($data as $data_bilty) {
-            // return $data_bilty['id'];
             $bilty = Bilty::findOrFail($data_bilty['id']);
             $bilty->status = 'registered';
             $bilty->save();
@@ -395,10 +439,5 @@ class BiltyController extends Controller
             'status' => 'success',
             'message' => 'bilty registeration reset',
         ], 200);
-
-        // $bilties = Bilty::where('status', 'registered')->get();
-
-        // BiltyResource::withoutWrapping();
-        // return BiltyResource::collection($bilties);
     }
 }

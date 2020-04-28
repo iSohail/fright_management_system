@@ -19,6 +19,34 @@ class SenderController extends Controller
         SenderResource::withoutWrapping();
         return SenderResource::collection($senders);
     }
+    
+    public function paginate()
+    {
+        $per_page = empty(request('per_page')) ? 10 : (int) request('per_page');
+        $senders = Sender::with('customer')->latest()->paginate($per_page);
+        return SenderResource::collection($senders);
+    }
+
+    public function search()
+    {
+        $per_page = empty(request('per_page')) ? 10 : (int) request('per_page');
+        $senders = Sender::search(request()->query('query'))->paginate($per_page);
+        return SenderResource::collection($senders);
+    }
+
+    public function sort()
+    {
+        $per_page = empty(request('per_page')) ? 10 : (int) request('per_page');
+        $sort_desc = request()->query('sort_desc');
+        $sort_by = request()->query('sort_by');
+        if ($sort_desc == 'true') {
+            $sort_desc = 'DESC';
+        } else {
+            $sort_desc = 'ASC';
+        }
+        $senders = Sender::with('customer')->orderBy($sort_by, $sort_desc)->paginate($per_page);
+        return SenderResource::collection($senders);
+    }
 
     /**
      * Show the form for creating a new resource.

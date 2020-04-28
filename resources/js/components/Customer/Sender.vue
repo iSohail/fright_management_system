@@ -89,14 +89,32 @@
             Senders
             <v-spacer></v-spacer>
             <v-text-field
+              @keyup.native.enter="searchSender"
               v-model="search"
               append-icon="mdi-magnify"
+              append-outer-icon="mdi-lock-reset"
+              clear-icon="mdi-close-circle"
+              clearable
+              @click:append="searchSender"
+              @click:append-outer="defaultSender"
+              @click:clear="defaultSender"
               label="Search"
               single-line
               hide-details
             ></v-text-field>
           </v-card-title>
-          <v-data-table :headers="headers" :items="senders" :search="search">
+          <v-data-table
+            :headers="headers"
+            :items="senders"
+            :options.sync="options"
+            :server-items-length="totalSenders"
+            :footer-props="{
+              itemsPerPageOptions: [5, 10, 15],
+            }"
+            :loading="loading"
+            loading-text="Loading... Please wait"
+            item-key="id"
+          >
             <template v-slot:item.action="{ item }">
               <v-row>
                 <v-col cols="6" class="px-0 text-right">
@@ -136,11 +154,15 @@ export default {
     text: "",
     customers: [],
     senders: [],
+    loading: false,
+    totalSenders: 0,
+    options: {},
     headers: [
       {
         text: "Customer No",
         align: "start",
         value: "customer_no",
+        sortable: false,
         class: "light-blue darken-3 white--text"
       },
       {
@@ -156,6 +178,7 @@ export default {
       {
         text: "Action",
         value: "action",
+        sortable: false,
         class: "light-blue darken-3 white--text"
       }
     ],
@@ -169,34 +192,157 @@ export default {
     ],
     selectRule: [v => !!v || "Field is required"]
   }),
-  created() {
-    this.getSenders();
+  watch: {
+    // watch for any changes in table options and trigger function
+    options: {
+      handler() {
+        this.getSendersServerSide().then(data => {
+          this.senders = data.items;
+          this.totalSenders = data.total;
+        });
+      },
+      deep: true
+    }
+  },
+  mounted() {
+    this.getSendersServerSide().then(data => {
+      this.senders = data.items;
+      this.totalSenders = data.total;
+    });
     this.getCustomers();
   },
   methods: {
-    getSenders() {
-      this.$http({
-        url: `sender`,
+    // clearing up search
+    defaultSender() {
+      this.search = "";
+      this.getSendersServerSide().then(data => {
+        this.senders = data.items;
+        this.totalSenders = data.total;
+      });
+    },
+    // if search button is clicked or input given
+    searchSender() {
+      this.getSendersServerSide().then(data => {
+        this.senders = data.items;
+        this.totalSenders = data.total;
+      });
+    },
+    // fetch senders from backend
+    getSendersServerSide() {
+      this.loading = true;
+      // using async function to wait for the functions to execute and release results
+      return new Promise(async (resolve, reject) => {
+        const { sortBy, sortDesc, page, itemsPerPage } = this.options;
+        var items = [];
+        var total = 0;
+        var flag = false;
+
+        // if search is given fetch searched item
+        // else if check if sortBy and descending is given fetch items orderBy
+        // else fetch all senders by Latest
+        if (this.search) {
+          // searching
+          await this.getSendersFiltered(page, itemsPerPage, this.search).then(
+            data => {
+              items = data.data;
+              total = data.total_items;
+              flag = true;
+            }
+          );
+        } else if (sortBy.length === 1 && sortDesc.length === 1) {
+          // sorting
+          await this.getSendersSorted(
+            page,
+            itemsPerPage,
+            sortBy[0],
+            sortDesc[0]
+          ).then(data => {
+            items = data.data;
+            total = data.total_items;
+            flag = true;
+          });
+        } else {
+          // fetch by latest
+          await this.getSenders(page, itemsPerPage).then(data => {
+            items = data.data;
+            total = data.total_items;
+            flag = true;
+          });
+        }
+
+        // check if functions are executed and release variables
+        if (flag == true) {
+          this.loading = false;
+          resolve({
+            items,
+            total
+          });
+        }
+      });
+    },
+    async getSenders(page, items_per_page) {
+      let senders = {};
+      await this.$http({
+        url: `senders/paginate?page=${page}&per_page=${items_per_page}`,
         method: "GET"
       }).then(
         res => {
-          let senders_arr = [];
-          for (let sender of res.data) {
-            let senders_data = {
-              id: sender.id,
-              name: sender.attributes.name,
-              address: sender.attributes.address,
-              customer_no: sender.relationships.customer.data.customer_no
-            };
-            senders_arr.push(senders_data);
-          }
-          this.senders = senders_arr;
+          senders.data = this.addSenderData(res.data.data);
+          senders.total_items = res.data.meta.total;
         },
         () => {
           this.snackbar = true;
           this.text = "Error fetching senders, please refresh";
         }
       );
+      return senders;
+    },
+    async getSendersFiltered(page, items_per_page, search) {
+      let senders = {};
+      await this.$http({
+        url: `senders/search?page=${page}&per_page=${items_per_page}&query=${search}`,
+        method: "GET"
+      }).then(
+        res => {
+          senders.data = this.addSenderData(res.data.data);
+          senders.total_items = res.data.meta.total;
+        },
+        () => {
+          this.snackbar = true;
+          this.text = "Error fetching senders, please refresh";
+        }
+      );
+      return senders;
+    },
+    async getSendersSorted(page, items_per_page, sortBy, sortDesc) {
+      let senders = {};
+      await this.$http({
+        url: `senders/sort?page=${page}&per_page=${items_per_page}&sort_by=${sortBy}&sort_desc=${sortDesc}`,
+        method: "GET"
+      }).then(
+        res => {
+          senders.data = this.addSenderData(res.data.data);
+          senders.total_items = res.data.meta.total;
+        },
+        () => {
+          this.snackbar = true;
+          this.text = "Error fetching senders, please refresh";
+        }
+      );
+      return senders;
+    },
+    addSenderData(data) {
+      let senders_arr = [];
+      for (let sender of data) {
+        let senders_data = {
+          id: sender.id,
+          name: sender.attributes.name,
+          address: sender.attributes.address,
+          customer_no: sender.relationships.customer.data.customer_no
+        };
+        senders_arr.push(senders_data);
+      }
+      return senders_arr;
     },
     getCustomers() {
       this.$http({
@@ -228,7 +374,10 @@ export default {
         method: "DELETE"
       }).then(
         res => {
-          this.getSenders();
+          this.getSendersServerSide().then(data => {
+            this.senders = data.items;
+            this.totalSenders = data.total;
+          });
           this.snackbar = true;
           this.text = "Success deleting sender";
         },
@@ -256,7 +405,10 @@ export default {
             this.address = "";
             this.customer = "";
             this.$refs.form.resetValidation();
-            this.getSenders();
+            this.getSendersServerSide().then(data => {
+              this.senders = data.items;
+              this.totalSenders = data.total;
+            });
             this.snackbar = true;
             this.text = "Success adding sender";
           },

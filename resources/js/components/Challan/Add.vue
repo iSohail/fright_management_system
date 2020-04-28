@@ -329,7 +329,6 @@ export default {
     this.listen();
     this.getLastChallanNo();
     await this.getBilties();
-    console.log(this.bilties);
   },
   methods: {
     changeDateFormat(date) {
@@ -352,7 +351,6 @@ export default {
           this.challan_no = parseInt(res.data);
         },
         () => {
-          console.log("error occured");
           // this.has_error = true
         }
       );
@@ -365,7 +363,6 @@ export default {
         method: "GET"
       }).then(
         res => {
-          console.log(res.data);
           for (let bilty of res.data) {
             let bilty_data = {
               id: bilty.id,
@@ -389,7 +386,6 @@ export default {
                 res => {
                   // bilty_data.customer = res;
                   bilty_data.customer_name = res.name;
-                  console.log(bilty_data.customer_name);
                 }
               );
             }
@@ -397,10 +393,8 @@ export default {
           }
           this.bilties = bilties;
           this.loading = false;
-          console.log(bilties);
         },
         () => {
-          console.log("error occured");
           this.loading = false;
           // this.has_error = true
         }
@@ -421,11 +415,9 @@ export default {
           this.loading = false;
         },
         () => {
-          console.log("error occured");
           // this.has_error = true
         }
       );
-      // console.log(customer);
       return customer;
     },
     validate() {
@@ -481,18 +473,15 @@ export default {
 
         // this.created_challan.bilties = this.selected;
         for (let bilty of this.selected) {
-          console.log(bilty, "bilty check");
           challan.bilties.push(bilty.id);
         }
         this.created_challan = challan;
-        console.log(challan);
         this.$http({
           url: `challan/create`,
           data: challan,
           method: "POST"
         }).then(
           res => {
-            console.log(res);
             this.isUpdating = false;
             this.snackbar = true;
             this.text = "Successfully added challan";
@@ -507,8 +496,6 @@ export default {
             this.text =
               "Error adding challan, Failed with Error: " +
               err.response.statusText;
-            console.log("error status", err.response.status);
-            console.log("error status text", err.response.statusText);
             // this.has_error = true
           }
         );
@@ -522,7 +509,6 @@ export default {
     },
     submit_print_challan() {
       if (this.submit_challan()) {
-        console.log(this.created_challan);
         this.created_challan.date = this.changeDateFormat(
           this.created_challan.date
         );

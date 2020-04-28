@@ -128,151 +128,10 @@
                 :items="bilties"
                 :search="search"
                 show-select
-                show-expand
                 item-key="id"
                 :loading="loading"
                 loading-text="Loading... Please wait"
-                :single-expand="singleExpand"
-                :expanded.sync="expanded"
-              >
-                <template v-slot:expanded-item="{ headers, item }">
-                  <td :colspan="headers.length" class="black">
-                    <v-row>
-                      <v-subheader>Bilties</v-subheader>
-                    </v-row>
-                    <v-row v-if="item.customer">
-                      <v-col cols="12" md="4">
-                        <v-text-field
-                          label="Number"
-                          placeholder="Number"
-                          v-model="item.customer.customer_no"
-                          readonly
-                          outlined
-                          dense
-                        ></v-text-field>
-                      </v-col>
-                      <v-col cols="12" md="4">
-                        <v-text-field
-                          label="Name"
-                          placeholder="Name"
-                          v-model="item.customer.name"
-                          readonly
-                          outlined
-                          dense
-                        ></v-text-field>
-                      </v-col>
-                      <v-col cols="12" md="4">
-                        <v-text-field
-                          label="Company"
-                          placeholder="Company"
-                          v-model="item.customer.company"
-                          readonly
-                          outlined
-                          dense
-                        ></v-text-field>
-                      </v-col>
-                    </v-row>
-                    <v-divider></v-divider>
-                    <v-row>
-                      <v-subheader>Bilty Details</v-subheader>
-                    </v-row>
-                    <v-row>
-                      <v-col cols="12" md="6">
-                        <v-text-field
-                          label="From"
-                          placeholder="From"
-                          v-model="item.from"
-                          readonly
-                          outlined
-                          dense
-                        ></v-text-field>
-                      </v-col>
-                      <v-col cols="12" md="6">
-                        <v-text-field
-                          label="To"
-                          placeholder="To"
-                          v-model="item.to"
-                          readonly
-                          outlined
-                          dense
-                        ></v-text-field>
-                      </v-col>
-                    </v-row>
-                    <v-row class="mt-0">
-                      <v-col cols="12" class="pt-sm-0">
-                        <v-textarea
-                          label="Receiver Address"
-                          auto-grow
-                          outlined
-                          readonly
-                          v-model="item.receiver_address"
-                          rows="1"
-                          row-height="10"
-                        ></v-textarea>
-                      </v-col>
-                    </v-row>
-                    <v-divider></v-divider>
-                    <v-row>
-                      <v-subheader>Package Details</v-subheader>
-                    </v-row>
-                    <v-row>
-                      <v-col cols="12">
-                        <v-data-table
-                          :headers="headers_packages"
-                          :items="item.packages"
-                          :items-per-page="5"
-                        ></v-data-table>
-                      </v-col>
-                    </v-row>
-                    <v-divider></v-divider>
-                    <v-row>
-                      <v-subheader>Account Receivable</v-subheader>
-                    </v-row>
-                    <v-row>
-                      <v-col cols="12" md="3">
-                        <v-text-field
-                          label="Bilty Charges"
-                          placeholder="Bilty Charges"
-                          v-model="item.bilty_charges"
-                          readonly
-                          outlined
-                          dense
-                        ></v-text-field>
-                      </v-col>
-                      <v-col cols="12" md="3">
-                        <v-text-field
-                          label="Local Charges"
-                          placeholder="Local Charges"
-                          v-model="item.local_charges"
-                          readonly
-                          outlined
-                          dense
-                        ></v-text-field>
-                      </v-col>
-                      <v-col cols="12" md="3">
-                        <v-text-field
-                          label="Packages Total"
-                          placeholder="Packages Total"
-                          v-model="item.package_total"
-                          readonly
-                          outlined
-                          dense
-                        ></v-text-field>
-                      </v-col>
-                      <v-col cols="12" md="3">
-                        <v-text-field
-                          label="Total Amount"
-                          placeholder="Total Amount"
-                          v-model="item.total_amount"
-                          readonly
-                          outlined
-                          dense
-                        ></v-text-field>
-                      </v-col>
-                    </v-row>
-                  </td>
-                </template>
-              </v-data-table>
+              ></v-data-table>
             </v-card>
 
             <v-card-actions>
@@ -331,54 +190,9 @@ export default {
       text: "",
       paid: false,
       search: "",
-      expanded: [],
       selected: [],
       selected_items: [],
       loading: false,
-      singleExpand: false,
-      headers_packages: [
-        {
-          text: "Description",
-          align: "left",
-          value: "description",
-          class: "light-blue darken-3 white--text"
-        },
-        {
-          text: "Unit",
-          value: "unit",
-          class: "light-blue darken-3 white--text"
-        },
-        {
-          text: "Quantity",
-          value: "quantity",
-          class: "light-blue darken-3 white--text"
-        },
-        {
-          text: "Weight",
-          value: "total_weight",
-          class: "light-blue darken-3 white--text"
-        },
-        {
-          text: "Volume",
-          value: "total_volume",
-          class: "light-blue darken-3 white--text"
-        },
-        {
-          text: "Labour",
-          value: "labour",
-          class: "light-blue darken-3 white--text"
-        },
-        {
-          text: "Rate",
-          value: "rate",
-          class: "light-blue darken-3 white--text"
-        },
-        {
-          text: "Rent",
-          value: "rent",
-          class: "light-blue darken-3 white--text"
-        }
-      ],
       headers: [
         {
           text: "",
@@ -438,7 +252,6 @@ export default {
         }
       ],
       bilties: [],
-      packages: [],
       selectRule: [v => !!v || "Field is required"],
       descriptionRule: [
         v => !!v || "Description is required",
@@ -531,18 +344,13 @@ export default {
         method: "GET"
       }).then(
         res => {
-          console.log(res, "invoice edit");
           this.customer = res.data.relationships.customer.data.id;
-          this.search_customer();
           this.invoice_no = res.data.attributes.ledger_no;
           this.description = res.data.attributes.description;
-          //   this.income_tax = res.data.attributes.income_tax;
-          //   this.sales_tax = res.data.attributes.sales_tax;
+          this.search_customer();
           for (let bilty of res.data.relationships.bilties.data) {
-            console.log(bilty);
             this.getBilty(bilty.id);
           }
-          console.log(this.selected, "kkllkjkljlkl");
         },
         () => {
           this.isUpdating = false;
@@ -557,7 +365,6 @@ export default {
         method: "GET"
       }).then(
         res => {
-          console.log(res.data);
           let bilty = res.data;
           let bilty_data = {
             id: bilty.id,
@@ -575,34 +382,21 @@ export default {
             created_at: bilty.attributes.created_at,
             bilty_charges: bilty.attributes.bilty_charges,
             local_charges: bilty.attributes.local_charges,
-            packages: [],
             package_total: bilty.attributes.packages_total,
             total_amount: bilty.attributes.bilty_total
           };
-          if (bilty.relationships.customer.data) {
-            this.getCustomer(bilty.relationships.customer.data.id).then(res => {
-              bilty_data.customer = res;
-            });
-          }
-          for (let pck of bilty.relationships.packages.data) {
-            console.log(pck.id);
-            this.getPackage(pck.id).then(res => {
-              bilty_data.packages.push(res);
-            });
-          }
           this.bilties.push(bilty_data);
           this.selected.push(bilty_data);
         },
         () => {
-          console.log("error occured");
-          // this.has_error = true
+          this.snackbar = true;
+          this.text = "Error!";
         }
       );
     },
     search_customer() {
       if (this.customer) {
         let customer_data = this.customers.find(k => k.id == this.customer);
-        console.log(customer_data);
         this.income_tax = customer_data.incomeTax;
         this.sales_tax = customer_data.salesTax;
         this.$http({
@@ -610,7 +404,6 @@ export default {
           method: "GET"
         }).then(
           res => {
-            console.log(res);
             let bilties = [];
             for (let bilty of res.data) {
               let bilty_data = {
@@ -629,32 +422,16 @@ export default {
                 created_at: bilty.attributes.created_at,
                 bilty_charges: bilty.attributes.bilty_charges,
                 local_charges: bilty.attributes.local_charges,
-                packages: [],
-                weight: 0,
                 package_total: bilty.attributes.packages_total,
                 total_amount: bilty.attributes.bilty_total
               };
-              if (bilty.relationships.customer.data) {
-                this.getCustomer(bilty.relationships.customer.data.id).then(
-                  res => {
-                    bilty_data.customer = res;
-                  }
-                );
-              }
-              for (let pck of bilty.relationships.packages.data) {
-                console.log(pck.id);
-                this.getPackage(pck.id).then(res => {
-                  bilty_data.packages.push(res);
-                  bilty_data.weight += parseFloat(res.total_weight);
-                });
-              }
               bilties.push(bilty_data);
             }
             this.bilties = bilties;
-            console.log(this.bilties);
           },
           () => {
-            console.log("error occured");
+            this.snackbar = true;
+            this.text = "Error!";
           }
         );
       }
@@ -665,7 +442,6 @@ export default {
         method: "GET"
       }).then(
         res => {
-          console.log(res);
           let customers = [];
           for (let customer of res.data) {
             customers.push({
@@ -683,7 +459,10 @@ export default {
           }
           this.customers = customers;
         },
-        () => {}
+        () => {
+          this.snackbar = true;
+          this.text = "Error!";
+        }
       );
     },
     setPaid() {
@@ -706,14 +485,12 @@ export default {
           bilties_id.push(item.id);
         }
         ledger_data.bilties = bilties_id;
-
         this.$http({
           url: `ledger/${this.$route.params.id}`,
           data: ledger_data,
           method: "PUT"
         }).then(
           res => {
-            console.log(res);
             this.snackbar = true;
             this.text = "Successfully updated entry in ledger";
             let user = this.$auth.user();
@@ -730,77 +507,6 @@ export default {
           }
         );
       }
-    },
-    async getCustomer(id) {
-      let customer = {};
-      await this.$http({
-        url: `customer/${id}`,
-        method: "GET"
-      }).then(
-        res => {
-          customer = {
-            customer_no: res.data.attributes.customer_no,
-            name: res.data.attributes.name,
-            company: res.data.attributes.company
-          };
-        },
-        () => {
-          console.log("error occured");
-          // this.has_error = true
-        }
-      );
-      // console.log(customer);
-      return customer;
-    },
-    async getPackage(id) {
-      let pck = {};
-      await this.$http({
-        url: `package/${id}`,
-        method: "GET"
-      }).then(
-        res => {
-          pck = {
-            description: res.data.attributes.description,
-            unit: res.data.attributes.unit,
-            quantity: res.data.attributes.quantity,
-            total_weight: res.data.attributes.total_weight,
-            total_volume: res.data.attributes.total_volume,
-            labour: res.data.attributes.labour,
-            rate: res.data.attributes.rate,
-            labour: res.data.attributes.labour,
-            rent: res.data.attributes.rent
-          };
-          console.log(pck);
-        },
-        () => {
-          console.log("error occured");
-          // this.has_error = true
-        }
-      );
-      // console.log(customer);
-      return pck;
-    },
-    emptyFields() {
-      this.isUpdating = false;
-      this.invoice_no = "";
-      this.description = "";
-      this.taxed_on = "None";
-      this.income_tax = "0";
-      this.sales_tax = "0";
-      this.apply_tax_on = ["None", "Income Tax", "Sales Tax", "Both"];
-      this.customer = "";
-      this.snackbar = false;
-      this.text = "";
-      this.paid = false;
-      this.search = "";
-      this.expanded = [];
-      this.selected = [];
-      this.selected_items = [];
-      this.loading = false;
-      this.singleExpand = false;
-      this.$refs.ledger_form.resetValidation();
-      this.getLastLedgerNo();
-      this.getCustomers();
     }
   }
 };

@@ -25,6 +25,8 @@ class GeneralLedgerController extends Controller
         return GeneralLedgerResource::collection($ledgers);
     }
 
+    
+
     /**
      * Show the form for creating a new resource.
      *
@@ -44,7 +46,6 @@ class GeneralLedgerController extends Controller
     public function store(Request $request)
     {
         $data = json_decode($request->getContent(), true);
-        // return $data['bilties'];
         $ledger = new GeneralLedger;
 
         $customer = null;
@@ -63,13 +64,12 @@ class GeneralLedgerController extends Controller
         $ledger->pending_amount = $data['pending_amount'];
         $ledger->status = $data['status'];
         $ledger->user_id = Auth::user()->id;
-
+        if ($customer) {
+            $ledger->customer_id = $data['customer_id'];
+        }
         if ($ledger->save()) {
             $ledger = GeneralLedger::findOrFail($ledger->id);
-            if ($customer) {
-                $ledger->customer()->associate($customer);
-                $ledger->save();
-            }
+            
             $bilties_arr = [];
             foreach ($data['bilties'] as $val) {
                 $bilty = Bilty::find($val);
@@ -122,7 +122,6 @@ class GeneralLedgerController extends Controller
     public function update(Request $request, $id) 
     {
         $data = json_decode($request->getContent(), true);
-        // return $data['bilties'];
         $ledger = GeneralLedger::findOrFail($id);
 
         $customer = null;
@@ -139,17 +138,16 @@ class GeneralLedgerController extends Controller
         $ledger->amount_paid = $data['amount_paid'];
         $ledger->pending_amount = $data['pending_amount'];
         $ledger->status = $data['status'];
+        $ledger->user_id = Auth::user()->id;
+        if (isset($customer)) {
+            $ledger->customer_id = $data['customer_id'];
+        } else {
+            $ledger->customer_id = null;
+        }
 
-        // return $ledger;
         if ($ledger->save()) {
             $ledger = GeneralLedger::findOrFail($ledger->id);
 
-            if (isset($customer)) {
-                $ledger->customer()->associate($customer);
-            } else {
-                $ledger->customer_id = null;
-            }
-            $ledger->save();
             $bilties = Bilty::where('ledger_id', $ledger->id)->get();
             foreach ($bilties as $bilty) {
                 $bilty->ledger_id = null;
@@ -209,6 +207,7 @@ class GeneralLedgerController extends Controller
             $ledger->status = $status;
             $ledger->save();
         }
+        event(new LedgerAdded());
 
         return response()->json([
             'status' => 'success',
@@ -218,9 +217,7 @@ class GeneralLedgerController extends Controller
 
     public function showCustomerLedgers($customer_id)
     {
-        // return $customer_id;
         $ledgers = Customer::find($customer_id)->generalLedgers;
-        // return $ledgers;
         GeneralLedgerResource::withoutWrapping();
         return GeneralLedgerResource::collection($ledgers);
     }
@@ -260,10 +257,37 @@ class GeneralLedgerController extends Controller
 
     public function showPendingLedgers()
     {
-        // return '234';
         $ledgers = GeneralLedger::where('status', "pending")->get();
         GeneralLedgerResource::withoutWrapping();
         return GeneralLedgerResource::collection($ledgers);
     }
 
+    public function paginate()
+    {
+        $per_page = empty(request('per_page')) ? 10 : (int) request('per_page');
+        $ledgers = GeneralLedger::with('bilties')->latest()->paginate($per_page);
+        return GeneralLedgerResource::collection($ledgers);
+    }
+    public function search()
+    {
+        $per_page = empty(request('per_page')) ? 10 : (int) request('per_page');
+        $ledgers = GeneralLedger::search(request()->query('query'))->paginate($per_page);
+        return GeneralLedgerResource::collection($ledgers);
+    }
+    public function sort()
+    {
+        $per_page = empty(request('per_page')) ? 10 : (int) request('per_page');
+        $sort_desc = request()->query('sort_desc');
+        $sort_by = request()->query('sort_by');
+        if ($sort_by == 'no') {
+            $sort_by = 'ledger_no';
+        }
+        if ($sort_desc == 'true') {
+            $sort_desc = 'DESC';
+        } else {
+            $sort_desc = 'ASC';
+        }
+        $ledgers = GeneralLedger::with('bilties')->orderBy($sort_by, $sort_desc)->paginate($per_page);
+        return GeneralLedgerResource::collection($ledgers);
+    }
 }

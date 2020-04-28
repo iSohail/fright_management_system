@@ -40,10 +40,7 @@ class AuthController extends Controller
     }
     public function logout()
     {
-        // return '123';
-        // auth()->invalidate();
         $this->guard()->logout();
-        // auth()->logout(true);
         return response()->json([
             'status' => 'success',
             'msg' => 'Logged out Successfully.',
@@ -59,7 +56,6 @@ class AuthController extends Controller
     }
     public function refresh()
     {
-        // $current_token = $this->guard()->tokenById(Auth::user()->id);
         $token = auth()->refresh();
         if ($token) {
             return response()->json(['status' => 'successs'], 200)->header('Authorization', $token);
