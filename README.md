@@ -1,9 +1,12 @@
 Installation:
 -> composer install
 -> npm install
+-> install algolia driver for laravel scout
 -> configure database in .env
+-> copy MIX_APP_URL="${APP_URL}" in .env
+-> configure other variables in .env
 -> php artisan key:generate
 -> php artisan jwt:secret
--> copy MIX_APP_URL="${APP_URL}" in .env
+-> php artisan migrate:refresh --seed
 -> php artisan serve
 -> npm run watch
